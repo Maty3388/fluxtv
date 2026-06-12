@@ -40,7 +40,7 @@ class MainActivity : AppCompatActivity() {
 
         setupSidebar()
         binding.btnProfile.setOnClickListener {
-            startActivity(android.content.Intent(this, ProfileActivity::class.java))
+
         }
         
         // Mostrar vencimiento en header
