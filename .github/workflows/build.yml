@@ -1,0 +1,44 @@
+name: Build FluxTV APK
+
+on:
+  push:
+    branches: [master]
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Setup JDK 17
+        uses: actions/setup-java@v3
+        with:
+          java-version: '17'
+          distribution: 'temurin'
+
+      - name: Setup Android SDK
+        uses: android-actions/setup-android@v3
+
+      - name: Setup Keystore
+        run: |
+          echo "${{ secrets.KEYSTORE_BASE64 }}" | base64 -d > fluxtv.keystore
+          printf "storeFile=../fluxtv.keystore\nstorePassword=${{ secrets.KEYSTORE_PASSWORD }}\nkeyAlias=${{ secrets.KEY_ALIAS }}\nkeyPassword=${{ secrets.KEY_PASSWORD }}\n" > keystore.properties
+
+      - name: Build APK
+        run: ./gradlew assembleRelease
+
+      - name: Get version
+        id: ver
+        run: echo "VERSION=$(grep versionName app/build.gradle | grep -v '//' | head -1 | sed 's/.*versionName[[:space:]]*"//;s/".*//')" >> $GITHUB_OUTPUT
+
+      - name: Create Release
+        uses: softprops/action-gh-release@v1
+        with:
+          tag_name: v${{ steps.ver.outputs.VERSION }}
+          files: app/build/outputs/apk/release/app-release.apk
+          name: FluxTV v${{ steps.ver.outputs.VERSION }}
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
