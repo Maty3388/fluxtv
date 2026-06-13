@@ -44,8 +44,8 @@ class MainActivity : AppCompatActivity() {
 
     private fun setupSidebar() {
         binding.btnTv.setOnClickListener { selectItem(0); mainFragment?.filterCategory(null) }
-        binding.btnPeliculas.setOnClickListener { selectItem(1); mainFragment?.filterCategory("CINE") }
-        binding.btnSeries.setOnClickListener { selectItem(2); mainFragment?.filterCategory("SERIES") }
+        binding.btnPeliculas.setOnClickListener { selectItem(1); startActivity(Intent(this, VodActivity::class.java).apply { putExtra(VodActivity.EXTRA_TYPE, VodActivity.TYPE_MOVIES) }) }
+        binding.btnSeries.setOnClickListener { selectItem(2); startActivity(Intent(this, VodActivity::class.java).apply { putExtra(VodActivity.EXTRA_TYPE, VodActivity.TYPE_SERIES) }) }
         binding.btnAdultos.setOnClickListener { selectItem(3); mainFragment?.filterCategory("ADULTOS") }
         binding.btnBuscar.setOnClickListener { startActivity(Intent(this, SearchActivity::class.java)) }
         binding.btnFavoritos.setOnClickListener { selectItem(5); mainFragment?.loadFavorites() }

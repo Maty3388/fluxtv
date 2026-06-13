@@ -58,6 +58,12 @@ class MainFragment : BrowseSupportFragment() {
             }
             if (favs.isEmpty()) {
                 val rowsAdapter = ArrayObjectAdapter(ListRowPresenter(FocusHighlight.ZOOM_FACTOR_SMALL).apply { shadowEnabled = false; selectEffectEnabled = false })
+        // Carrusel de destacados
+        if (featured.isNotEmpty()) {
+            val featAdapter = ArrayObjectAdapter(ChannelPresenter())
+            featured.forEach { featAdapter.add(it) }
+            rowsAdapter.add(ListRow(HeaderItem("⭐ DESTACADOS"), featAdapter))
+        }
                 val adapter = ArrayObjectAdapter(ChannelPresenter())
                 rowsAdapter.add(ListRow(HeaderItem("Sin favoritos"), adapter))
                 this@MainFragment.adapter = rowsAdapter
@@ -80,14 +86,22 @@ class MainFragment : BrowseSupportFragment() {
     fun loadChannels() {
         scope.launch {
             allChannels = withContext(Dispatchers.IO) {
-                try { ApiService.getChannels() } catch (e: Exception) { emptyList() }
+                try { ApiService.getChannels() } catch (_: Exception) { emptyList() }
             }
-            buildRows(allChannels)
+            // Cargar destacados (MUNDIAL 2026 + EVENTOS)
+            val featured = allChannels.filter { it.category == "MUNDIAL 2026" || it.category == "EVENTOS" }
+            buildRows(allChannels, featured)
         }
     }
 
-    private fun buildRows(channels: List<Channel>) {
+    private fun buildRows(channels: List<Channel>, featured: List<Channel> = emptyList()) {
         val rowsAdapter = ArrayObjectAdapter(ListRowPresenter(FocusHighlight.ZOOM_FACTOR_SMALL).apply { shadowEnabled = false; selectEffectEnabled = false })
+        // Carrusel de destacados
+        if (featured.isNotEmpty()) {
+            val featAdapter = ArrayObjectAdapter(ChannelPresenter())
+            featured.forEach { featAdapter.add(it) }
+            rowsAdapter.add(ListRow(HeaderItem("⭐ DESTACADOS"), featAdapter))
+        }
         val grouped = channels.filter { it.category != "ADULTOS" }.groupBy { it.category }
         val sorted = catOrder.mapNotNull { grouped[it]?.let { chs -> it to chs } } +
                      grouped.filter { it.key !in catOrder }.map { it.key to it.value }

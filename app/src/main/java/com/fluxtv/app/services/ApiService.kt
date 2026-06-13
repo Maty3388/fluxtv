@@ -59,6 +59,35 @@ object ApiService {
             .header("Authorization", "Bearer $token").delete().build()).execute()
     }
 
+    fun getMovies(featured: Boolean = false): List<com.fluxtv.app.models.Movie> {
+        val url = if (featured) "$BASE/movies?featured=true" else "$BASE/movies?limit=200"
+        val res = client.newCall(Request.Builder().url(url)
+            .header("Authorization", "Bearer $token").build()).execute()
+        val json = org.json.JSONObject(res.body?.string() ?: return emptyList())
+        val arr = json.optJSONArray("movies") ?: return emptyList()
+        return (0 until arr.length()).map {
+            val m = arr.getJSONObject(it)
+            com.fluxtv.app.models.Movie(m.optString("_id"), m.optString("title"), m.optString("category"),
+                m.optString("posterUrl"), m.optString("backdropUrl"), m.optString("stream_url"),
+                m.optString("description"), m.optString("rating"), m.optString("year"),
+                m.optBoolean("featured"))
+        }
+    }
+
+    fun getSeries(featured: Boolean = false): List<com.fluxtv.app.models.Serie> {
+        val url = if (featured) "$BASE/series?featured=true" else "$BASE/series"
+        val res = client.newCall(Request.Builder().url(url)
+            .header("Authorization", "Bearer $token").build()).execute()
+        val json = org.json.JSONObject(res.body?.string() ?: return emptyList())
+        val arr = json.optJSONArray("series") ?: return emptyList()
+        return (0 until arr.length()).map {
+            val s = arr.getJSONObject(it)
+            com.fluxtv.app.models.Serie(s.optString("_id"), s.optString("title"), s.optString("category"),
+                s.optString("posterUrl"), s.optString("stream_url"), s.optString("description"),
+                s.optString("rating"), s.optString("year"), s.optBoolean("featured"))
+        }
+    }
+
     fun getVersion(): AppVersion? = try {
         val res = client.newCall(Request.Builder().url("$BASE/fluxtv/version").build()).execute()
         val json = JSONObject(res.body?.string() ?: return null)
