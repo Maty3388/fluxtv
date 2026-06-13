@@ -135,9 +135,20 @@ class MainActivity : AppCompatActivity() {
     }
 
     override fun dispatchKeyEvent(event: KeyEvent): Boolean {
-        if (event.keyCode == KeyEvent.KEYCODE_DPAD_LEFT) {
-            val inSidebar = isViewInSidebar(currentFocus)
-            if (!inSidebar) return true
+        if (event.action == KeyEvent.ACTION_DOWN &&
+            event.keyCode == KeyEvent.KEYCODE_DPAD_LEFT) {
+            val focused = currentFocus
+            if (!isViewInSidebar(focused)) {
+                // Verificar si está en posición 0 de un RecyclerView
+                val parent = focused?.parent
+                if (parent is androidx.recyclerview.widget.RecyclerView) {
+                    val pos = parent.getChildAdapterPosition(focused)
+                    if (pos == 0 || pos == RecyclerView.NO_ID) return true
+                } else {
+                    // En Leanback headers u otros views, bloquear escape al sidebar
+                    return true
+                }
+            }
         }
         return super.dispatchKeyEvent(event)
     }
