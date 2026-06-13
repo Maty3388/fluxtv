@@ -34,7 +34,7 @@
             android:layout_width="match_parent" android:layout_height="48dp"
             android:gravity="center_vertical" android:paddingHorizontal="16dp"
             android:orientation="horizontal" android:focusable="true"
-            android:background="@color/surface2">
+            android:background="@drawable/sidebar_item_selector">
             <ImageView android:layout_width="18dp" android:layout_height="18dp"
                 android:src="@drawable/ic_home" android:tint="@color/primary"
                 android:layout_marginEnd="12dp"/>
@@ -50,7 +50,8 @@
         <LinearLayout android:id="@+id/btnTv"
             android:layout_width="match_parent" android:layout_height="48dp"
             android:gravity="center_vertical" android:paddingHorizontal="16dp"
-            android:orientation="horizontal" android:focusable="true">
+            android:orientation="horizontal" android:focusable="true"
+            android:background="@drawable/sidebar_item_selector">
             <ImageView android:layout_width="18dp" android:layout_height="18dp"
                 android:src="@drawable/ic_tv" android:tint="@color/text_secondary"
                 android:layout_marginEnd="12dp"/>
@@ -62,7 +63,8 @@
         <LinearLayout android:id="@+id/btnPeliculas"
             android:layout_width="match_parent" android:layout_height="48dp"
             android:gravity="center_vertical" android:paddingHorizontal="16dp"
-            android:orientation="horizontal" android:focusable="true">
+            android:orientation="horizontal" android:focusable="true"
+            android:background="@drawable/sidebar_item_selector">
             <ImageView android:layout_width="18dp" android:layout_height="18dp"
                 android:src="@drawable/ic_movie" android:tint="@color/text_secondary"
                 android:layout_marginEnd="12dp"/>
@@ -74,7 +76,8 @@
         <LinearLayout android:id="@+id/btnSeries"
             android:layout_width="match_parent" android:layout_height="48dp"
             android:gravity="center_vertical" android:paddingHorizontal="16dp"
-            android:orientation="horizontal" android:focusable="true">
+            android:orientation="horizontal" android:focusable="true"
+            android:background="@drawable/sidebar_item_selector">
             <ImageView android:layout_width="18dp" android:layout_height="18dp"
                 android:src="@drawable/ic_star" android:tint="@color/text_secondary"
                 android:layout_marginEnd="12dp"/>
@@ -86,7 +89,8 @@
         <LinearLayout android:id="@+id/btnAdultos"
             android:layout_width="match_parent" android:layout_height="48dp"
             android:gravity="center_vertical" android:paddingHorizontal="16dp"
-            android:orientation="horizontal" android:focusable="true">
+            android:orientation="horizontal" android:focusable="true"
+            android:background="@drawable/sidebar_item_selector">
             <ImageView android:layout_width="18dp" android:layout_height="18dp"
                 android:src="@drawable/ic_lock" android:tint="@color/text_secondary"
                 android:layout_marginEnd="12dp"/>
@@ -98,7 +102,8 @@
         <LinearLayout android:id="@+id/btnBuscar"
             android:layout_width="match_parent" android:layout_height="48dp"
             android:gravity="center_vertical" android:paddingHorizontal="16dp"
-            android:orientation="horizontal" android:focusable="true">
+            android:orientation="horizontal" android:focusable="true"
+            android:background="@drawable/sidebar_item_selector">
             <ImageView android:layout_width="18dp" android:layout_height="18dp"
                 android:src="@drawable/ic_search" android:tint="@color/text_secondary"
                 android:layout_marginEnd="12dp"/>
@@ -110,7 +115,8 @@
         <LinearLayout android:id="@+id/btnFavoritos"
             android:layout_width="match_parent" android:layout_height="48dp"
             android:gravity="center_vertical" android:paddingHorizontal="16dp"
-            android:orientation="horizontal" android:focusable="true">
+            android:orientation="horizontal" android:focusable="true"
+            android:background="@drawable/sidebar_item_selector">
             <ImageView android:layout_width="18dp" android:layout_height="18dp"
                 android:src="@drawable/ic_star" android:tint="@color/text_secondary"
                 android:layout_marginEnd="12dp"/>
@@ -127,7 +133,8 @@
         <LinearLayout android:id="@+id/btnClearCache"
             android:layout_width="match_parent" android:layout_height="48dp"
             android:gravity="center_vertical" android:paddingHorizontal="16dp"
-            android:orientation="horizontal" android:focusable="true">
+            android:orientation="horizontal" android:focusable="true"
+            android:background="@drawable/sidebar_item_selector">
             <ImageView android:layout_width="18dp" android:layout_height="18dp"
                 android:src="@drawable/ic_refresh" android:tint="@color/text_secondary"
                 android:layout_marginEnd="12dp"/>
@@ -139,7 +146,8 @@
         <LinearLayout android:id="@+id/btnLogout"
             android:layout_width="match_parent" android:layout_height="48dp"
             android:gravity="center_vertical" android:paddingHorizontal="16dp"
-            android:orientation="horizontal" android:focusable="true">
+            android:orientation="horizontal" android:focusable="true"
+            android:background="@drawable/sidebar_item_selector">
             <ImageView android:layout_width="18dp" android:layout_height="18dp"
                 android:src="@drawable/ic_logout" android:tint="@color/error"
                 android:layout_marginEnd="12dp"/>
