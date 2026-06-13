@@ -5,8 +5,6 @@ import android.os.Bundle
 import android.view.KeyEvent
 import android.view.View
 import androidx.recyclerview.widget.RecyclerView
-import androidx.recyclerview.widget.RecyclerView
-import android.widget.Toast
 import androidx.activity.OnBackPressedCallback
 import androidx.appcompat.app.AppCompatActivity
 import com.fluxtv.app.BuildConfig
@@ -145,7 +143,7 @@ class MainActivity : AppCompatActivity() {
                 val parent = focused?.parent
                 if (parent is androidx.recyclerview.widget.RecyclerView) {
                     val pos = parent.getChildAdapterPosition(focused)
-                    if (pos == 0 || pos == RecyclerView.NO_ID) return true
+                    if (pos == 0 || pos == RecyclerView.NO_POSITION) return true
                 } else {
                     // En Leanback headers u otros views, bloquear escape al sidebar
                     return true
