@@ -135,14 +135,9 @@ class MainActivity : AppCompatActivity() {
     }
 
     override fun dispatchKeyEvent(event: KeyEvent): Boolean {
-        if (event.action == KeyEvent.ACTION_DOWN &&
-            event.keyCode == KeyEvent.KEYCODE_DPAD_LEFT) {
-            val focused = currentFocus
-            // Si el foco está en el sidebar, no hacer nada especial
-            if (focused?.id == R.id.sidebar || isViewInSidebar(focused)) return super.dispatchKeyEvent(event)
-            // Si el foco está en la grilla, mover foco al sidebar
-            binding.btnTv.requestFocus()
-            return true
+        if (event.keyCode == KeyEvent.KEYCODE_DPAD_LEFT) {
+            val inSidebar = isViewInSidebar(currentFocus)
+            if (!inSidebar) return true
         }
         return super.dispatchKeyEvent(event)
     }
