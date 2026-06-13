@@ -43,7 +43,7 @@ class MainFragment : BrowseSupportFragment() {
             when {
                 keyCode == android.view.KeyEvent.KEYCODE_DPAD_LEFT && event.action == android.view.KeyEvent.ACTION_DOWN -> true
                 keyCode == android.view.KeyEvent.KEYCODE_BACK && event.action == android.view.KeyEvent.ACTION_DOWN -> {
-                    (activity as? MainActivity)?.toggleSidebar()
+                    
                     true
                 }
                 else -> false
