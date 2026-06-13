@@ -5,7 +5,7 @@
 
     <!-- Sidebar izquierdo fijo -->
     <LinearLayout android:id="@+id/sidebar"
-        android:layout_width="220dp" android:layout_height="match_parent"
+        android:layout_width="170dp" android:layout_height="match_parent"
         android:background="@color/surface" android:orientation="vertical">
 
         <!-- Header sidebar con avatar y nombre app -->
