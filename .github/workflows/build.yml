@@ -25,7 +25,7 @@ jobs:
       - name: Setup Keystore
         run: |
           echo "${{ secrets.KEYSTORE_BASE64 }}" | base64 -d > fluxtv.keystore
-          printf "storeFile=../fluxtv.keystore\nstorePassword=${{ secrets.KEYSTORE_PASSWORD }}\nkeyAlias=${{ secrets.KEY_ALIAS }}\nkeyPassword=${{ secrets.KEY_PASSWORD }}\n" > keystore.properties
+          printf "storeFile=../fluxtv.keystore\nstorePassword=fluxtv2026\nkeyAlias=fluxtv\nkeyPassword=fluxtv2026\n" > keystore.properties
 
       - name: Build APK
         run: ./gradlew assembleRelease
