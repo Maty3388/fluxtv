@@ -3,139 +3,186 @@
     android:layout_width="match_parent" android:layout_height="match_parent"
     android:background="@color/background" android:orientation="horizontal">
 
-    <!-- Sidebar colapsado (solo íconos) -->
-    <LinearLayout android:id="@+id/sidebarCollapsed"
-        android:layout_width="56dp" android:layout_height="match_parent"
-        android:background="@color/surface" android:orientation="vertical"
-        android:gravity="center_horizontal" android:paddingVertical="12dp">
+    <!-- Sidebar izquierdo fijo -->
+    <LinearLayout android:id="@+id/sidebar"
+        android:layout_width="220dp" android:layout_height="match_parent"
+        android:background="@color/surface" android:orientation="vertical">
 
-        <TextView android:layout_width="36dp" android:layout_height="36dp"
-            android:text="Z" android:textColor="@color/primary"
-            android:textSize="20sp" android:textStyle="bold"
-            android:gravity="center" android:layout_marginBottom="12dp"
-            android:background="@color/surface2"/>
+        <!-- Header sidebar con avatar y nombre app -->
+        <LinearLayout android:layout_width="match_parent" android:layout_height="80dp"
+            android:background="@color/primary" android:gravity="center_vertical"
+            android:paddingHorizontal="16dp" android:orientation="horizontal">
+            <TextView android:layout_width="44dp" android:layout_height="44dp"
+                android:text="F" android:textColor="@color/background"
+                android:textSize="24sp" android:textStyle="bold"
+                android:gravity="center" android:background="@color/background"
+                android:layout_marginEnd="12dp"/>
+            <LinearLayout android:layout_width="wrap_content" android:layout_height="wrap_content"
+                android:orientation="vertical">
+                <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
+                    android:text="FLUX TV" android:textColor="@color/background"
+                    android:textSize="16sp" android:textStyle="bold"/>
+                <TextView android:id="@+id/tvUserEmail"
+                    android:layout_width="wrap_content" android:layout_height="wrap_content"
+                    android:textColor="@color/background" android:textSize="10sp"
+                    android:alpha="0.8"/>
+            </LinearLayout>
+        </LinearLayout>
 
-        <View android:layout_width="36dp" android:layout_height="1dp"
-            android:background="@color/border" android:layout_marginBottom="6dp"/>
-
-        <ImageButton android:id="@+id/btnTvIcon"
-            android:layout_width="40dp" android:layout_height="40dp"
-            android:src="@drawable/ic_home" android:tint="@color/primary"
-            android:background="@color/surface2" android:layout_marginBottom="4dp"
-            android:padding="8dp" android:focusable="true"/>
-
-        <ImageButton android:id="@+id/btnPeliculasIcon"
-            android:layout_width="40dp" android:layout_height="40dp"
-            android:src="@drawable/ic_movie" android:tint="@color/text_hint"
-            android:background="@color/surface" android:layout_marginBottom="4dp"
-            android:padding="8dp" android:focusable="true"/>
-
-        <ImageButton android:id="@+id/btnSeriesIcon"
-            android:layout_width="40dp" android:layout_height="40dp"
-            android:src="@drawable/ic_tv" android:tint="@color/text_hint"
-            android:background="@color/surface" android:layout_marginBottom="4dp"
-            android:padding="8dp" android:focusable="true"/>
-
-        <ImageButton android:id="@+id/btnAdultosIcon"
-            android:layout_width="40dp" android:layout_height="40dp"
-            android:src="@drawable/ic_lock" android:tint="@color/text_hint"
-            android:background="@color/surface" android:layout_marginBottom="4dp"
-            android:padding="8dp" android:focusable="true"/>
-
-        <View android:layout_width="0dp" android:layout_height="0dp" android:layout_weight="1"/>
-
-        <ImageButton android:id="@+id/btnClearCacheIcon"
-            android:layout_width="40dp" android:layout_height="40dp"
-            android:src="@drawable/ic_refresh" android:tint="@color/text_hint"
-            android:background="@color/surface" android:layout_marginBottom="4dp"
-            android:padding="8dp" android:focusable="true"/>
-
-        <ImageButton android:id="@+id/btnLogoutIcon"
-            android:layout_width="40dp" android:layout_height="40dp"
-            android:src="@drawable/ic_logout" android:tint="@color/error"
-            android:background="@color/surface" android:padding="8dp" android:focusable="true"/>
-    </LinearLayout>
-
-    <!-- Sidebar expandido (íconos + texto) -->
-    <LinearLayout android:id="@+id/sidebarExpanded"
-        android:layout_width="180dp" android:layout_height="match_parent"
-        android:background="@color/surface" android:orientation="vertical"
-        android:paddingVertical="12dp" android:paddingHorizontal="8dp"
-        android:visibility="gone">
-
-        <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
-            android:text="FLUX TV" android:textColor="@color/primary"
-            android:textSize="16sp" android:textStyle="bold"
-            android:layout_marginBottom="12dp" android:layout_marginStart="4dp"/>
+        <!-- Info cuenta -->
+        <LinearLayout android:id="@+id/btnMiCuenta"
+            android:layout_width="match_parent" android:layout_height="48dp"
+            android:gravity="center_vertical" android:paddingHorizontal="16dp"
+            android:orientation="horizontal" android:focusable="true"
+            android:background="@color/surface2">
+            <ImageView android:layout_width="18dp" android:layout_height="18dp"
+                android:src="@drawable/ic_home" android:tint="@color/primary"
+                android:layout_marginEnd="12dp"/>
+            <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
+                android:text="Mi cuenta" android:textColor="@color/primary"
+                android:textSize="13sp" android:textStyle="bold"/>
+        </LinearLayout>
 
         <View android:layout_width="match_parent" android:layout_height="1dp"
-            android:background="@color/border" android:layout_marginBottom="8dp"/>
+            android:background="@color/border"/>
 
-        <Button android:id="@+id/btnTv"
-            android:layout_width="match_parent" android:layout_height="44dp"
-            android:text="  Televisión" android:textColor="@color/primary"
-            android:backgroundTint="@color/surface2" android:gravity="start|center_vertical"
-            android:paddingStart="8dp" android:layout_marginBottom="4dp" android:focusable="true"/>
+        <!-- Menú items -->
+        <LinearLayout android:id="@+id/btnTv"
+            android:layout_width="match_parent" android:layout_height="48dp"
+            android:gravity="center_vertical" android:paddingHorizontal="16dp"
+            android:orientation="horizontal" android:focusable="true">
+            <ImageView android:layout_width="18dp" android:layout_height="18dp"
+                android:src="@drawable/ic_tv" android:tint="@color/text_secondary"
+                android:layout_marginEnd="12dp"/>
+            <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
+                android:text="Televisión" android:textColor="@color/text_primary"
+                android:textSize="13sp"/>
+        </LinearLayout>
 
-        <Button android:id="@+id/btnPeliculas"
-            android:layout_width="match_parent" android:layout_height="44dp"
-            android:text="  Películas" android:textColor="@color/text_primary"
-            android:backgroundTint="@color/surface" android:gravity="start|center_vertical"
-            android:paddingStart="8dp" android:layout_marginBottom="4dp" android:focusable="true"/>
+        <LinearLayout android:id="@+id/btnPeliculas"
+            android:layout_width="match_parent" android:layout_height="48dp"
+            android:gravity="center_vertical" android:paddingHorizontal="16dp"
+            android:orientation="horizontal" android:focusable="true">
+            <ImageView android:layout_width="18dp" android:layout_height="18dp"
+                android:src="@drawable/ic_movie" android:tint="@color/text_secondary"
+                android:layout_marginEnd="12dp"/>
+            <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
+                android:text="Películas" android:textColor="@color/text_primary"
+                android:textSize="13sp"/>
+        </LinearLayout>
 
-        <Button android:id="@+id/btnSeries"
-            android:layout_width="match_parent" android:layout_height="44dp"
-            android:text="  Series" android:textColor="@color/text_primary"
-            android:backgroundTint="@color/surface" android:gravity="start|center_vertical"
-            android:paddingStart="8dp" android:layout_marginBottom="4dp" android:focusable="true"/>
+        <LinearLayout android:id="@+id/btnSeries"
+            android:layout_width="match_parent" android:layout_height="48dp"
+            android:gravity="center_vertical" android:paddingHorizontal="16dp"
+            android:orientation="horizontal" android:focusable="true">
+            <ImageView android:layout_width="18dp" android:layout_height="18dp"
+                android:src="@drawable/ic_star" android:tint="@color/text_secondary"
+                android:layout_marginEnd="12dp"/>
+            <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
+                android:text="Series" android:textColor="@color/text_primary"
+                android:textSize="13sp"/>
+        </LinearLayout>
 
-        <Button android:id="@+id/btnAdultos"
-            android:layout_width="match_parent" android:layout_height="44dp"
-            android:text="  Adultos" android:textColor="@color/text_primary"
-            android:backgroundTint="@color/surface" android:gravity="start|center_vertical"
-            android:paddingStart="8dp" android:layout_marginBottom="4dp" android:focusable="true"/>
+        <LinearLayout android:id="@+id/btnAdultos"
+            android:layout_width="match_parent" android:layout_height="48dp"
+            android:gravity="center_vertical" android:paddingHorizontal="16dp"
+            android:orientation="horizontal" android:focusable="true">
+            <ImageView android:layout_width="18dp" android:layout_height="18dp"
+                android:src="@drawable/ic_lock" android:tint="@color/text_secondary"
+                android:layout_marginEnd="12dp"/>
+            <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
+                android:text="Adultos" android:textColor="@color/text_primary"
+                android:textSize="13sp"/>
+        </LinearLayout>
+
+        <LinearLayout android:id="@+id/btnBuscar"
+            android:layout_width="match_parent" android:layout_height="48dp"
+            android:gravity="center_vertical" android:paddingHorizontal="16dp"
+            android:orientation="horizontal" android:focusable="true">
+            <ImageView android:layout_width="18dp" android:layout_height="18dp"
+                android:src="@drawable/ic_search" android:tint="@color/text_secondary"
+                android:layout_marginEnd="12dp"/>
+            <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
+                android:text="Buscar" android:textColor="@color/text_primary"
+                android:textSize="13sp"/>
+        </LinearLayout>
+
+        <LinearLayout android:id="@+id/btnFavoritos"
+            android:layout_width="match_parent" android:layout_height="48dp"
+            android:gravity="center_vertical" android:paddingHorizontal="16dp"
+            android:orientation="horizontal" android:focusable="true">
+            <ImageView android:layout_width="18dp" android:layout_height="18dp"
+                android:src="@drawable/ic_star" android:tint="@color/text_secondary"
+                android:layout_marginEnd="12dp"/>
+            <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
+                android:text="Favoritos" android:textColor="@color/text_primary"
+                android:textSize="13sp"/>
+        </LinearLayout>
 
         <View android:layout_width="0dp" android:layout_height="0dp" android:layout_weight="1"/>
 
-        <Button android:id="@+id/btnClearCache"
-            android:layout_width="match_parent" android:layout_height="44dp"
-            android:text="  Borrar Caché" android:textColor="@color/text_secondary"
-            android:backgroundTint="@color/surface" android:gravity="start|center_vertical"
-            android:paddingStart="8dp" android:layout_marginBottom="4dp" android:focusable="true"/>
+        <View android:layout_width="match_parent" android:layout_height="1dp"
+            android:background="@color/border"/>
 
-        <Button android:id="@+id/btnLogout"
-            android:layout_width="match_parent" android:layout_height="44dp"
-            android:text="  Cerrar Sesión" android:textColor="@color/error"
-            android:backgroundTint="@color/surface" android:gravity="start|center_vertical"
-            android:paddingStart="8dp" android:focusable="true"/>
+        <LinearLayout android:id="@+id/btnClearCache"
+            android:layout_width="match_parent" android:layout_height="48dp"
+            android:gravity="center_vertical" android:paddingHorizontal="16dp"
+            android:orientation="horizontal" android:focusable="true">
+            <ImageView android:layout_width="18dp" android:layout_height="18dp"
+                android:src="@drawable/ic_refresh" android:tint="@color/text_secondary"
+                android:layout_marginEnd="12dp"/>
+            <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
+                android:text="Borrar Caché" android:textColor="@color/text_secondary"
+                android:textSize="13sp"/>
+        </LinearLayout>
+
+        <LinearLayout android:id="@+id/btnLogout"
+            android:layout_width="match_parent" android:layout_height="48dp"
+            android:gravity="center_vertical" android:paddingHorizontal="16dp"
+            android:orientation="horizontal" android:focusable="true">
+            <ImageView android:layout_width="18dp" android:layout_height="18dp"
+                android:src="@drawable/ic_logout" android:tint="@color/error"
+                android:layout_marginEnd="12dp"/>
+            <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
+                android:text="Cerrar Sesión" android:textColor="@color/error"
+                android:textSize="13sp"/>
+        </LinearLayout>
     </LinearLayout>
 
     <!-- Borde cian -->
-    <View android:id="@+id/sidebarBorder"
-        android:layout_width="2dp" android:layout_height="match_parent"
+    <View android:layout_width="2dp" android:layout_height="match_parent"
         android:background="@color/primary"/>
 
-    <!-- Header + contenido -->
+    <!-- Contenido principal -->
     <LinearLayout android:layout_width="match_parent" android:layout_height="match_parent"
         android:orientation="vertical">
 
-        <LinearLayout android:layout_width="match_parent" android:layout_height="48dp"
+        <!-- Header con bienvenida y vencimiento -->
+        <LinearLayout android:layout_width="match_parent" android:layout_height="56dp"
             android:background="@color/surface" android:gravity="center_vertical"
-            android:paddingHorizontal="16dp">
-            <TextView android:layout_width="0dp" android:layout_height="wrap_content"
-                android:layout_weight="1" android:text="FLUX TV"
-                android:textColor="@color/primary" android:textSize="16sp" android:textStyle="bold"/>
-            <TextView android:id="@+id/tvVencimiento"
-                android:layout_width="wrap_content" android:layout_height="wrap_content"
-                android:textColor="@color/text_secondary" android:textSize="11sp"
-                android:layout_marginEnd="12dp"/>
-            <ImageButton android:id="@+id/btnProfile"
-                android:layout_width="36dp" android:layout_height="36dp"
-                android:src="@drawable/ic_home" android:tint="@color/primary"
-                android:background="@color/surface2" android:padding="6dp"
-                android:focusable="true"/>
+            android:paddingHorizontal="20dp">
+            <LinearLayout android:layout_width="0dp" android:layout_height="wrap_content"
+                android:layout_weight="1" android:orientation="vertical">
+                <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
+                    android:text="¡Bienvenido!" android:textColor="@color/text_secondary"
+                    android:textSize="11sp"/>
+                <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
+                    android:text="Listo para disfrutar" android:textColor="@color/primary"
+                    android:textSize="14sp" android:textStyle="bold"/>
+            </LinearLayout>
+            <LinearLayout android:layout_width="wrap_content" android:layout_height="wrap_content"
+                android:orientation="vertical" android:gravity="end">
+                <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
+                    android:text="VENCIMIENTO" android:textColor="@color/text_secondary"
+                    android:textSize="9sp"/>
+                <TextView android:id="@+id/tvVencimiento"
+                    android:layout_width="wrap_content" android:layout_height="wrap_content"
+                    android:textColor="@color/text_primary" android:textSize="12sp"
+                    android:textStyle="bold"/>
+            </LinearLayout>
         </LinearLayout>
 
+        <!-- Fragment canales -->
         <FrameLayout android:id="@+id/mainContainer"
             android:layout_width="match_parent" android:layout_height="match_parent"/>
     </LinearLayout>
