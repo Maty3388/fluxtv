@@ -58,12 +58,6 @@ class MainFragment : BrowseSupportFragment() {
             }
             if (favs.isEmpty()) {
                 val rowsAdapter = ArrayObjectAdapter(ListRowPresenter(FocusHighlight.ZOOM_FACTOR_SMALL).apply { shadowEnabled = false; selectEffectEnabled = false })
-        // Carrusel de destacados
-        if (featured.isNotEmpty()) {
-            val featAdapter = ArrayObjectAdapter(ChannelPresenter())
-            featured.forEach { featAdapter.add(it) }
-            rowsAdapter.add(ListRow(HeaderItem("⭐ DESTACADOS"), featAdapter))
-        }
                 val adapter = ArrayObjectAdapter(ChannelPresenter())
                 rowsAdapter.add(ListRow(HeaderItem("Sin favoritos"), adapter))
                 this@MainFragment.adapter = rowsAdapter
