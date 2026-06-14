@@ -23,12 +23,27 @@ class MainActivity : AppCompatActivity() {
     private val scope = CoroutineScope(Dispatchers.Main)
     private var selectedItem = 0
 
+    private var isMobile = false
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        com.fluxtv.app.services.ApiService.appContext = applicationContext
+        isMobile = !com.fluxtv.app.utils.DeviceUtils.isTV(this)
+
+        if (isMobile) {
+            setContentView(R.layout.activity_main_mobile)
+            mainFragment = MainFragment()
+            supportFragmentManager.beginTransaction()
+                .replace(R.id.mainContainer, mainFragment!!)
+                .commit()
+            setupMobileNav()
+            highlightMobileNav(R.id.navInicio)
+            checkUpdate()
+            return
+        }
+
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
-
-        com.fluxtv.app.services.ApiService.appContext = applicationContext
 
         mainFragment = MainFragment()
         supportFragmentManager.beginTransaction()
@@ -43,6 +58,57 @@ class MainActivity : AppCompatActivity() {
         setupSidebar()
         setupNavigation()
         checkUpdate()
+    }
+
+    private fun setupMobileNav() {
+        findViewById<View>(R.id.navInicio).setOnClickListener {
+            mainFragment?.filterCategory(null)
+            highlightMobileNav(R.id.navInicio)
+        }
+        findViewById<View>(R.id.navPeliculas).setOnClickListener {
+            startActivity(Intent(this, VodActivity::class.java).apply { putExtra(VodActivity.EXTRA_TYPE, VodActivity.TYPE_MOVIES) })
+        }
+        findViewById<View>(R.id.navSeries).setOnClickListener {
+            startActivity(Intent(this, VodActivity::class.java).apply { putExtra(VodActivity.EXTRA_TYPE, VodActivity.TYPE_SERIES) })
+        }
+        findViewById<View>(R.id.navBuscar).setOnClickListener {
+            startActivity(Intent(this, SearchActivity::class.java))
+        }
+        findViewById<View>(R.id.navMas).setOnClickListener { showMoreMenu() }
+        findViewById<View>(R.id.btnMoreMobile).setOnClickListener { showMoreMenu() }
+    }
+
+    private fun highlightMobileNav(activeId: Int) {
+        val navIds = listOf(R.id.navInicio, R.id.navPeliculas, R.id.navSeries, R.id.navBuscar, R.id.navMas)
+        navIds.forEach { id ->
+            val layout = findViewById<android.widget.LinearLayout>(id)
+            val icon = layout.getChildAt(0) as? android.widget.ImageView
+            val label = layout.getChildAt(1) as? android.widget.TextView
+            val active = id == activeId
+            icon?.setColorFilter(if (active) getColor(R.color.primary) else getColor(R.color.text_secondary))
+            label?.setTextColor(if (active) getColor(R.color.primary) else getColor(R.color.text_secondary))
+        }
+    }
+
+    private fun showMoreMenu() {
+        val options = arrayOf("👤 Mi Cuenta", "🔥 Adultos", "⭐ Favoritos", "🕒 Historial", "📑 Mis Listas", "🗑️ Borrar Caché", "🚪 Cerrar Sesión")
+        android.app.AlertDialog.Builder(this)
+            .setTitle("Más opciones")
+            .setItems(options) { _, which ->
+                when (which) {
+                    0 -> startActivity(Intent(this, AccountActivity::class.java))
+                    1 -> { mainFragment?.filterCategory("ADULTOS"); highlightMobileNav(R.id.navInicio) }
+                    2 -> { mainFragment?.loadFavorites(); highlightMobileNav(R.id.navInicio) }
+                    3 -> startActivity(Intent(this, HistorialActivity::class.java))
+                    4 -> startActivity(Intent(this, MisListasActivity::class.java))
+                    5 -> { cacheDir.deleteRecursively(); Toast.makeText(this, "Caché borrado", Toast.LENGTH_SHORT).show() }
+                    6 -> {
+                        Prefs.logout(this)
+                        startActivity(Intent(this, LoginActivity::class.java))
+                        finishAffinity()
+                    }
+                }
+            }.show()
     }
 
     private fun setupSidebar() {
@@ -148,6 +214,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     override fun dispatchKeyEvent(event: KeyEvent): Boolean {
+        if (isMobile) return super.dispatchKeyEvent(event)
         if (event.action == KeyEvent.ACTION_DOWN &&
             event.keyCode == KeyEvent.KEYCODE_DPAD_LEFT) {
             val focused = currentFocus
@@ -167,7 +234,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun isViewInSidebar(view: View?): Boolean {
-        if (view == null) return false
+        if (view == null || isMobile) return false
         var parent = view.parent
         while (parent != null) {
             if (parent === binding.sidebar) return true
