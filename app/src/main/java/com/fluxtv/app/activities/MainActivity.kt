@@ -95,7 +95,14 @@ class MainActivity : AppCompatActivity() {
 
         onBackPressedDispatcher.addCallback(this, object : OnBackPressedCallback(true) {
             override fun handleOnBackPressed() {
-                binding.btnTv.requestFocus()
+                if (isViewInSidebar(currentFocus)) {
+                    android.app.AlertDialog.Builder(this@MainActivity)
+                        .setTitle("Salir").setMessage("¿Querés salir de Flux TV?")
+                        .setPositiveButton("Salir") { _,_ -> finish() }
+                        .setNegativeButton("Cancelar", null).show()
+                } else {
+                    binding.btnTv.requestFocus()
+                }
             }
         })
     }
