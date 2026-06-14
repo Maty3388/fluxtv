@@ -19,7 +19,8 @@ class MainFragment : BrowseSupportFragment() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        title = "FLUX TV"
+        title = ""
+        isShowTitle = false
         headersState = HEADERS_DISABLED
         brandColor = 0xFF030810.toInt()
         searchAffordanceColor = 0xFF00E5FF.toInt()
