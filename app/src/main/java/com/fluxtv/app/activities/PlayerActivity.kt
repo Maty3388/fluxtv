@@ -34,6 +34,8 @@ class PlayerActivity : AppCompatActivity() {
     private var loadTimer: CountDownTimer? = null
     private var controlsTimer: CountDownTimer? = null
     private var urlIdx = 0 // índice de URL múltiple
+    private var networkMonitor: com.fluxtv.app.utils.NetworkMonitor? = null
+    private var wasDisconnected = false
 
     companion object {
         const val EXTRA_CHANNELS = "channels"
@@ -52,6 +54,26 @@ class PlayerActivity : AppCompatActivity() {
 
         initPlayer()
         loadChannel(idx)
+
+        networkMonitor = com.fluxtv.app.utils.NetworkMonitor(this).apply {
+            onDisconnected = {
+                wasDisconnected = true
+                runOnUiThread {
+                    android.widget.Toast.makeText(this@PlayerActivity, "Sin conexión a internet", android.widget.Toast.LENGTH_SHORT).show()
+                }
+            }
+            onConnected = {
+                if (wasDisconnected) {
+                    wasDisconnected = false
+                    runOnUiThread {
+                        android.widget.Toast.makeText(this@PlayerActivity, "Conexión restaurada", android.widget.Toast.LENGTH_SHORT).show()
+                        retries = 0; urlIdx = 0
+                        loadChannel(idx)
+                    }
+                }
+            }
+            start()
+        }
     }
 
     private fun initPlayer() {
@@ -200,9 +222,76 @@ class PlayerActivity : AppCompatActivity() {
                 if (binding.layoutControls.visibility == View.VISIBLE) hideControls()
                 else showControls(); true
             }
+            KeyEvent.KEYCODE_DPAD_DOWN, KeyEvent.KEYCODE_MENU -> { showOptionsMenu(); true }
             KeyEvent.KEYCODE_BACK -> { finish(); true }
             else -> super.onKeyDown(keyCode, event)
         }
+    }
+
+    // ===== Menu de opciones: Velocidad / Volumen / Calidad =====
+    private fun showOptionsMenu() {
+        val items = arrayOf("⏩ Velocidad de reproducción", "🔊 Volumen", "🎬 Calidad")
+        android.app.AlertDialog.Builder(this)
+            .setTitle("Opciones")
+            .setItems(items) { _, which ->
+                when (which) {
+                    0 -> showSpeedSelector()
+                    1 -> showVolumeSelector()
+                    2 -> showQualitySelector()
+                }
+            }.show()
+    }
+
+    private fun showSpeedSelector() {
+        val speeds = floatArrayOf(0.5f, 0.75f, 1f, 1.25f, 1.5f, 2f)
+        val labels = speeds.map { "${it}x" }.toTypedArray()
+        val current = player?.playbackParameters?.speed ?: 1f
+        val checked = speeds.indexOfFirst { it == current }.coerceAtLeast(2)
+        android.app.AlertDialog.Builder(this)
+            .setTitle("Velocidad de reproducción")
+            .setSingleChoiceItems(labels, checked) { dialog, which ->
+                player?.setPlaybackSpeed(speeds[which])
+                dialog.dismiss()
+            }.show()
+    }
+
+    private fun showVolumeSelector() {
+        val levels = intArrayOf(0, 10, 20, 30, 40, 50, 60, 70, 80, 90, 100)
+        val labels = levels.map { "$it%" }.toTypedArray()
+        val currentVol = ((player?.volume ?: 1f) * 100).toInt()
+        val checked = levels.indexOfFirst { it == currentVol }.coerceAtLeast(levels.size - 1)
+        android.app.AlertDialog.Builder(this)
+            .setTitle("Volumen")
+            .setSingleChoiceItems(labels, checked) { dialog, which ->
+                player?.volume = levels[which] / 100f
+                dialog.dismiss()
+            }.show()
+    }
+
+    private fun showQualitySelector() {
+        val tracks = player?.currentTracks
+        val videoGroup = tracks?.groups?.firstOrNull { it.type == androidx.media3.common.C.TRACK_TYPE_VIDEO }
+        if (videoGroup == null || videoGroup.length <= 1) {
+            android.widget.Toast.makeText(this, "Solo hay una calidad disponible", android.widget.Toast.LENGTH_SHORT).show()
+            return
+        }
+        val qualities = mutableListOf("Automática")
+        for (i in 0 until videoGroup.length) {
+            val fmt = videoGroup.getTrackFormat(i)
+            qualities.add("${fmt.height}p (${(fmt.bitrate / 1000)}kbps)")
+        }
+        android.app.AlertDialog.Builder(this)
+            .setTitle("Calidad de video")
+            .setItems(qualities.toTypedArray()) { _, which ->
+                val trackSelector = player?.trackSelector as? androidx.media3.exoplayer.trackselection.DefaultTrackSelector
+                if (which == 0) {
+                    trackSelector?.setParameters(trackSelector.buildUponParameters().clearOverridesOfType(androidx.media3.common.C.TRACK_TYPE_VIDEO))
+                } else {
+                    val fmt = videoGroup.getTrackFormat(which - 1)
+                    val override = androidx.media3.common.TrackSelectionOverride(videoGroup.mediaTrackGroup, which - 1)
+                    trackSelector?.setParameters(trackSelector.buildUponParameters().setOverrideForType(override))
+                }
+            }.show()
     }
 
     override fun onDestroy() {
@@ -215,6 +304,6 @@ class PlayerActivity : AppCompatActivity() {
                 com.fluxtv.app.utils.Prefs.saveProgress(this, ch.id, pos, dur)
             }
         } catch (_: Exception) {}
-        loadTimer?.cancel(); controlsTimer?.cancel(); scope.cancel(); player?.release()
+        loadTimer?.cancel(); controlsTimer?.cancel(); scope.cancel(); player?.release(); networkMonitor?.stop()
     }
 }

@@ -12,7 +12,21 @@ object ApiService {
     private const val BASE = "http://149.104.92.205:25461"
     private val client = OkHttpClient.Builder()
         .connectTimeout(15, TimeUnit.SECONDS)
-        .readTimeout(20, TimeUnit.SECONDS).build()
+        .readTimeout(20, TimeUnit.SECONDS)
+        .apply {
+            try {
+                val sslContext = javax.net.ssl.SSLContext.getInstance("TLS")
+                sslContext.init(null, null, null)
+                sslSocketFactory(
+                    com.fluxtv.app.utils.Tls12SocketFactory(sslContext.socketFactory),
+                    javax.net.ssl.X509TrustManager::class.java.let {
+                        val tmf = javax.net.ssl.TrustManagerFactory.getInstance(javax.net.ssl.TrustManagerFactory.getDefaultAlgorithm())
+                        tmf.init(null as java.security.KeyStore?)
+                        tmf.trustManagers.filterIsInstance<javax.net.ssl.X509TrustManager>().first()
+                    }
+                )
+            } catch (_: Exception) {}
+        }.build()
     var token = ""
     var subEnd = ""
 
