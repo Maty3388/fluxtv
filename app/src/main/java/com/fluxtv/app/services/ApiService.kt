@@ -29,6 +29,34 @@ object ApiService {
         }.build()
     var token = ""
     var subEnd = ""
+    var appContext: android.content.Context? = null
+
+    private const val CACHE_NAME = "flux_cache"
+
+    private fun saveCache(key: String, json: String) {
+        appContext?.getSharedPreferences(CACHE_NAME, android.content.Context.MODE_PRIVATE)
+            ?.edit()?.putString(key, json)?.apply()
+    }
+
+    private fun getCache(key: String): String? =
+        appContext?.getSharedPreferences(CACHE_NAME, android.content.Context.MODE_PRIVATE)
+            ?.getString(key, null)
+
+    // Devuelve la lista cacheada de canales inmediatamente (puede estar vacia si no hay cache)
+    fun getCachedChannels(): List<Channel> {
+        val cached = getCache("channels") ?: return emptyList()
+        return parseChannels(cached)
+    }
+
+    private fun parseChannels(jsonStr: String): List<Channel> {
+        val json = JSONObject(jsonStr)
+        val arr = json.optJSONArray("channels") ?: return emptyList()
+        return (0 until arr.length()).map {
+            val ch = arr.getJSONObject(it)
+            Channel(ch.optString("_id"), ch.optString("name"), ch.optString("category"),
+                ch.optString("logo"), ch.optString("stream_url"), ch.optInt("number", 999))
+        }
+    }
 
     fun login(email: String, password: String): String? {
         val body = """{"email":"$email","password":"$password"}""".toRequestBody("application/json".toMediaType())
@@ -41,13 +69,9 @@ object ApiService {
     fun getChannels(): List<Channel> {
         val res = client.newCall(Request.Builder().url("$BASE/channels?limit=5000")
             .header("Authorization", "Bearer $token").build()).execute()
-        val json = JSONObject(res.body?.string() ?: return emptyList())
-        val arr = json.optJSONArray("channels") ?: return emptyList()
-        return (0 until arr.length()).map {
-            val ch = arr.getJSONObject(it)
-            Channel(ch.optString("_id"), ch.optString("name"), ch.optString("category"),
-                ch.optString("logo"), ch.optString("stream_url"), ch.optInt("number", 999))
-        }
+        val bodyStr = res.body?.string() ?: return getCachedChannels()
+        saveCache("channels", bodyStr)
+        return parseChannels(bodyStr)
     }
 
     fun getFavorites(): List<Channel> {

@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent" android:layout_height="match_parent"
+    android:background="@color/background" android:orientation="vertical">
+
+    <LinearLayout android:layout_width="match_parent" android:layout_height="52dp"
+        android:background="@color/surface" android:gravity="center_vertical"
+        android:paddingHorizontal="16dp">
+        <TextView android:id="@+id/tvTitle"
+            android:layout_width="0dp" android:layout_height="wrap_content"
+            android:layout_weight="1" android:textColor="@color/primary"
+            android:textSize="18sp" android:textStyle="bold"
+            android:text="🕒 Historial"/>
+        <Button android:id="@+id/btnClear"
+            android:layout_width="wrap_content" android:layout_height="36dp"
+            android:text="Borrar historial" android:textColor="@color/error"
+            android:backgroundTint="@color/surface2" android:focusable="true"
+            android:layout_marginEnd="8dp"/>
+        <Button android:id="@+id/btnBack"
+            android:layout_width="wrap_content" android:layout_height="36dp"
+            android:text="← Volver" android:textColor="@color/text_secondary"
+            android:backgroundTint="@color/surface2" android:focusable="true"/>
+    </LinearLayout>
+
+    <TextView android:id="@+id/tvEmpty"
+        android:layout_width="match_parent" android:layout_height="wrap_content"
+        android:text="No hay contenido en el historial todavía"
+        android:textColor="@color/text_secondary" android:textSize="14sp"
+        android:gravity="center" android:padding="32dp" android:visibility="gone"/>
+
+    <androidx.recyclerview.widget.RecyclerView android:id="@+id/rvList"
+        android:layout_width="match_parent" android:layout_height="match_parent"
+        android:padding="8dp"/>
+</LinearLayout>

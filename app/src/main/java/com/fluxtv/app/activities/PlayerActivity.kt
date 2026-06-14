@@ -134,6 +134,18 @@ class PlayerActivity : AppCompatActivity() {
         updateZapOverlay(ch, i)
         val urls = getUrls(ch)
         if (urls.isNotEmpty()) playUrl(urls[0])
+
+        // Registrar en historial
+        if (ch.id.isNotEmpty()) {
+            val type = when {
+                ch.id.contains("_s") && ch.id.contains("e") -> "serie"
+                ch.isLive -> "channel"
+                else -> "movie"
+            }
+            com.fluxtv.app.utils.WatchHistory.add(this, com.fluxtv.app.utils.HistoryEntry(
+                ch.id, ch.name, ch.category, ch.logoUrl, ch.streamUrl, type, System.currentTimeMillis()
+            ))
+        }
     }
 
     private fun playUrl(url: String) {

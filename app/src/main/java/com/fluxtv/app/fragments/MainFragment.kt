@@ -73,12 +73,24 @@ class MainFragment : RowsSupportFragment() {
 
     fun loadChannels() {
         scope.launch {
-            allChannels = withContext(Dispatchers.IO) {
+            // Mostrar cache inmediatamente si existe
+            val cached = withContext(Dispatchers.IO) {
+                try { ApiService.getCachedChannels() } catch (_: Exception) { emptyList() }
+            }
+            if (cached.isNotEmpty()) {
+                allChannels = cached
+                val featuredCached = allChannels.filter { it.category == "MUNDIAL 2026" || it.category == "EVENTOS" }
+                buildRows(allChannels, featuredCached)
+            }
+            // Refrescar desde la API en segundo plano
+            val fresh = withContext(Dispatchers.IO) {
                 try { ApiService.getChannels() } catch (_: Exception) { emptyList() }
             }
-            // Cargar destacados (MUNDIAL 2026 + EVENTOS)
-            val featured = allChannels.filter { it.category == "MUNDIAL 2026" || it.category == "EVENTOS" }
-            buildRows(allChannels, featured)
+            if (fresh.isNotEmpty()) {
+                allChannels = fresh
+                val featured = allChannels.filter { it.category == "MUNDIAL 2026" || it.category == "EVENTOS" }
+                buildRows(allChannels, featured)
+            }
         }
     }
 

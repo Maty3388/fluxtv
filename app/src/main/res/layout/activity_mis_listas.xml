@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent" android:layout_height="match_parent"
+    android:background="@color/background" android:orientation="vertical">
+
+    <LinearLayout android:layout_width="match_parent" android:layout_height="52dp"
+        android:background="@color/surface" android:gravity="center_vertical"
+        android:paddingHorizontal="16dp">
+        <TextView android:id="@+id/tvTitle"
+            android:layout_width="0dp" android:layout_height="wrap_content"
+            android:layout_weight="1" android:textColor="@color/primary"
+            android:textSize="18sp" android:textStyle="bold"
+            android:text="📑 Mis Listas"/>
+        <Button android:id="@+id/btnNew"
+            android:layout_width="wrap_content" android:layout_height="36dp"
+            android:text="+ Nueva lista" android:textColor="@color/background"
+            android:backgroundTint="@color/primary" android:focusable="true"
+            android:layout_marginEnd="8dp"/>
+        <Button android:id="@+id/btnBack"
+            android:layout_width="wrap_content" android:layout_height="36dp"
+            android:text="← Volver" android:textColor="@color/text_secondary"
+            android:backgroundTint="@color/surface2" android:focusable="true"/>
+    </LinearLayout>
+
+    <LinearLayout android:layout_width="match_parent" android:layout_height="match_parent"
+        android:orientation="horizontal">
+
+        <!-- Columna de listas -->
+        <androidx.recyclerview.widget.RecyclerView android:id="@+id/rvListas"
+            android:layout_width="220dp" android:layout_height="match_parent"
+            android:background="@color/surface" android:padding="8dp"/>
+
+        <!-- Items de la lista seleccionada -->
+        <FrameLayout android:layout_width="0dp" android:layout_height="match_parent"
+            android:layout_weight="1">
+            <TextView android:id="@+id/tvEmpty"
+                android:layout_width="match_parent" android:layout_height="wrap_content"
+                android:text="Seleccioná o creá una lista" android:textColor="@color/text_secondary"
+                android:textSize="14sp" android:gravity="center" android:padding="32dp"
+                android:layout_gravity="center"/>
+            <androidx.recyclerview.widget.RecyclerView android:id="@+id/rvItems"
+                android:layout_width="match_parent" android:layout_height="match_parent"
+                android:padding="8dp" android:visibility="gone"/>
+        </FrameLayout>
+    </LinearLayout>
+</LinearLayout>
