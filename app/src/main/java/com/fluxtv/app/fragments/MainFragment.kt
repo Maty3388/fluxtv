@@ -39,6 +39,16 @@ class MainFragment : BrowseSupportFragment() {
 
     override fun onViewCreated(view: android.view.View, savedInstanceState: android.os.Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        view.findViewById<android.view.View>(androidx.leanback.R.id.browse_title_group)?.visibility = android.view.View.GONE
+    }
+
+    override fun onViewCreated(view: android.view.View, savedInstanceState: android.os.Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        view.findViewById<android.view.View>(androidx.leanback.R.id.browse_title_group)?.visibility = android.view.View.GONE
+    }
+
+    override fun onViewCreated(view: android.view.View, savedInstanceState: android.os.Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
         view.setOnKeyListener { _, keyCode, event ->
             when {
                 keyCode == android.view.KeyEvent.KEYCODE_DPAD_LEFT && event.action == android.view.KeyEvent.ACTION_DOWN -> true
