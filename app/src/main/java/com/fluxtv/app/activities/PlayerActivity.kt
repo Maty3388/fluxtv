@@ -15,6 +15,9 @@ import androidx.media3.exoplayer.DefaultLoadControl
 import androidx.media3.exoplayer.ExoPlayer
 import androidx.media3.exoplayer.hls.HlsMediaSource
 import androidx.media3.exoplayer.source.ProgressiveMediaSource
+import androidx.media3.exoplayer.dash.DashMediaSource
+import androidx.media3.exoplayer.rtsp.RtspMediaSource
+import androidx.media3.datasource.DefaultDataSource
 import com.bumptech.glide.Glide
 import com.fluxtv.app.databinding.ActivityPlayerBinding
 import com.fluxtv.app.models.Channel
@@ -24,7 +27,7 @@ import kotlinx.coroutines.*
 class PlayerActivity : AppCompatActivity() {
     private lateinit var binding: ActivityPlayerBinding
     private var player: ExoPlayer? = null
-    private var channels = listOf<Channel>()
+    private var channels: List<Channel> = listOf()
     private var idx = 0
     private val scope = CoroutineScope(Dispatchers.Main)
     private var retries = 0
@@ -72,10 +75,28 @@ class PlayerActivity : AppCompatActivity() {
                 if (urlIdx < urls.size - 1) {
                     urlIdx++
                     playUrl(urls[urlIdx])
-                } else if (retries < 3) {
+                } else if (retries < 5) {
+                    val backoff = (1000L * (retries + 1)).coerceAtMost(8000L)
                     retries++; urlIdx = 0
-                    scope.launch { delay(2000); loadChannel(idx) }
-                } else { retries = 0; showLoading(false) }
+                    scope.launch { delay(backoff); loadChannel(idx) }
+                } else {
+                    // Ultimo intento: refrescar datos del canal desde la API (token/url puede haber cambiado)
+                    scope.launch {
+                        val fresh = withContext(Dispatchers.IO) {
+                            try {
+                                com.fluxtv.app.services.ApiService.getChannels()
+                                    .firstOrNull { it.id == channels[idx].id }
+                            } catch (_: Exception) { null }
+                        }
+                        if (fresh != null && fresh.streamUrl.isNotEmpty() && fresh.streamUrl != channels[idx].streamUrl) {
+                            channels = channels.toMutableList().also { it[idx] = fresh }
+                            retries = 0; urlIdx = 0
+                            loadChannel(idx)
+                        } else {
+                            retries = 0; showLoading(false)
+                        }
+                    }
+                }
             }
         })
     }
@@ -96,10 +117,20 @@ class PlayerActivity : AppCompatActivity() {
     private fun playUrl(url: String) {
         val ch = channels[idx]
         val headers = mapOf("User-Agent" to "Mozilla/5.0") + ch.headers
-        val dsf = DefaultHttpDataSource.Factory().setDefaultRequestProperties(headers)
-        val src = if (url.contains(".m3u8") || url.contains(".ts"))
-            HlsMediaSource.Factory(dsf).createMediaSource(MediaItem.fromUri(url))
-        else ProgressiveMediaSource.Factory(dsf).createMediaSource(MediaItem.fromUri(url))
+        val dsf = DefaultHttpDataSource.Factory()
+            .setDefaultRequestProperties(headers)
+            .setAllowCrossProtocolRedirects(true)
+            .setConnectTimeoutMs(15000)
+            .setReadTimeoutMs(15000)
+        val src = when {
+            url.contains(".m3u8") || url.contains(".ts") ->
+                HlsMediaSource.Factory(dsf).createMediaSource(MediaItem.fromUri(url))
+            url.contains(".mpd") ->
+                DashMediaSource.Factory(DefaultDataSource.Factory(this)).createMediaSource(MediaItem.fromUri(url))
+            url.startsWith("rtsp://") ->
+                RtspMediaSource.Factory().createMediaSource(MediaItem.fromUri(url))
+            else -> ProgressiveMediaSource.Factory(dsf).createMediaSource(MediaItem.fromUri(url))
+        }
         player?.stop(); player?.setMediaSource(src); player?.prepare(); player?.play()
         if (ch.id.isNotEmpty()) {
             val savedPos = com.fluxtv.app.utils.Prefs.getProgress(this, ch.id)
