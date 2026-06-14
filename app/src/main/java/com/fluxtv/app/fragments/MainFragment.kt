@@ -152,12 +152,12 @@ class ChannelPresenter : Presenter() {
                 android.view.ViewGroup.LayoutParams.MATCH_PARENT, (34*dp).toInt()).apply {
                 gravity = android.view.Gravity.BOTTOM
             }
-            setBackgroundColor(0xCC000000.toInt())
+            setBackgroundColor(0xCC1F0F2E.toInt())
             setPadding((8*dp).toInt(), 0, (8*dp).toInt(), 0)
             gravity = android.view.Gravity.CENTER_VERTICAL
             background = android.graphics.drawable.GradientDrawable().apply {
                 cornerRadii = floatArrayOf(0f,0f,0f,0f,14*dp,14*dp,14*dp,14*dp)
-                setColor(0xCC000000.toInt())
+                setColor(0xCC1F0F2E.toInt())
             }
         }
         val name = android.widget.TextView(ctx).apply {
