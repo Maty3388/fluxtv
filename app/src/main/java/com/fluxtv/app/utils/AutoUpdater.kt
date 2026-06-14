@@ -65,12 +65,16 @@ object AutoUpdater {
         val tvProg = TextView(ctx).apply{text="";textSize=12f;setTextColor(Color.GRAY);gravity=android.view.Gravity.CENTER;visibility=android.view.View.GONE}
         layout.addView(progress); layout.addView(tvProg)
         val btnRow = LinearLayout(ctx).apply{setPadding(0,32,0,0)}
-        val btnLater = Button(ctx).apply{text="Más tarde";setTextColor(Color.WHITE);setBackgroundColor(Color.parseColor("#333333"));layoutParams=LinearLayout.LayoutParams(0,LinearLayout.LayoutParams.WRAP_CONTENT,1f).apply{marginEnd=16};setOnClickListener{dialog.dismiss()}}
-        val btnUpdate = Button(ctx).apply{text="ACTUALIZAR";setTextColor(Color.BLACK);setBackgroundColor(Color.parseColor("#00E5FF"));layoutParams=LinearLayout.LayoutParams(0,LinearLayout.LayoutParams.WRAP_CONTENT,1f)
+        val btnLater = Button(ctx).apply{text="Más tarde";setTextColor(Color.WHITE);setBackgroundColor(Color.parseColor("#333333"));layoutParams=LinearLayout.LayoutParams(0,LinearLayout.LayoutParams.WRAP_CONTENT,1f).apply{marginEnd=16};isFocusable=true
+            setOnClickListener{dialog.dismiss()}
+            setOnFocusChangeListener{v,focused-> v.setBackgroundColor(if(focused) Color.parseColor("#555555") else Color.parseColor("#333333")) }}
+        val btnUpdate = Button(ctx).apply{text="ACTUALIZAR";setTextColor(Color.BLACK);setBackgroundColor(Color.parseColor("#00E5FF"));layoutParams=LinearLayout.LayoutParams(0,LinearLayout.LayoutParams.WRAP_CONTENT,1f);isFocusable=true
+            setOnFocusChangeListener{v,focused-> v.setBackgroundColor(if(focused) Color.parseColor("#80FFFF") else Color.parseColor("#00E5FF")) }
             setOnClickListener{isEnabled=false;btnLater.isEnabled=false;progress.visibility=android.view.View.VISIBLE;tvProg.visibility=android.view.View.VISIBLE
                 download(ctx,ver.apkUrl,ver.version,progress,tvProg){dialog.dismiss()}}}
         if(!ver.forceUpdate) btnRow.addView(btnLater); btnRow.addView(btnUpdate)
         layout.addView(btnRow); dialog.setContentView(layout); dialog.show()
+        btnUpdate.requestFocus()
     }
 
     private fun download(ctx: Context, url: String, ver: String, pb: ProgressBar, tv: TextView, done: ()->Unit) {

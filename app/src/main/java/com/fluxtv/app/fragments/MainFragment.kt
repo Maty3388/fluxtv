@@ -39,7 +39,16 @@ class MainFragment : BrowseSupportFragment() {
 
     override fun onViewCreated(view: android.view.View, savedInstanceState: android.os.Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        view.findViewById<android.view.View>(androidx.leanback.R.id.browse_title_group)?.visibility = android.view.View.GONE
+        view.findViewById<android.view.View>(androidx.leanback.R.id.browse_title_group)?.apply {
+            visibility = android.view.View.GONE
+            layoutParams?.height = 0
+        }
+        view.findViewById<android.view.View>(androidx.leanback.R.id.browse_headers_dock)?.apply {
+            visibility = android.view.View.GONE
+            layoutParams?.height = 0
+        }
+        val container = view.findViewById<android.view.ViewGroup>(androidx.leanback.R.id.browse_container_dock)
+        container?.setPadding(0, 0, 0, 0)
         view.setOnKeyListener { _, keyCode, event ->
             when {
                 keyCode == android.view.KeyEvent.KEYCODE_DPAD_LEFT && event.action == android.view.KeyEvent.ACTION_DOWN -> true
