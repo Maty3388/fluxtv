@@ -10,7 +10,7 @@ import android.net.NetworkRequest
  * Monitorea el estado de la conexion a internet y notifica cambios.
  */
 class NetworkMonitor(private val ctx: Context) {
-    private val cm = ctx.getSystemService(Context.CONNECTIVITY_MANAGER) as ConnectivityManager
+    private val cm = ctx.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
     private var callback: ConnectivityManager.NetworkCallback? = null
     var onConnected: (() -> Unit)? = null
     var onDisconnected: (() -> Unit)? = null
