@@ -82,9 +82,14 @@ object ApiService {
         val arr = json.optJSONArray("series") ?: return emptyList()
         return (0 until arr.length()).map {
             val s = arr.getJSONObject(it)
+            val epArr = s.optJSONArray("episodes")
+            val episodes = if (epArr != null) (0 until epArr.length()).map { j ->
+                val e = epArr.getJSONObject(j)
+                com.fluxtv.app.models.Episode(e.optString("title"), e.optInt("season"), e.optInt("episode"), e.optString("streamUrl"))
+            } else emptyList()
             com.fluxtv.app.models.Serie(s.optString("_id"), s.optString("title"), s.optString("category"),
-                s.optString("posterUrl"), s.optString("stream_url"), s.optString("description"),
-                s.optString("rating"), s.optString("year"), s.optBoolean("featured"))
+                s.optString("posterUrl"), s.optString("stream_url").ifEmpty { s.optString("streamUrl") }, s.optString("description"),
+                s.optString("rating"), s.optString("year"), s.optBoolean("featured"), episodes)
         }
     }
 

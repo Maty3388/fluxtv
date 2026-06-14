@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent" android:layout_height="match_parent"
+    android:background="@color/background">
+
+    <ImageView android:id="@+id/ivBackdrop"
+        android:layout_width="match_parent" android:layout_height="match_parent"
+        android:scaleType="centerCrop" android:alpha="0.35"/>
+
+    <View android:layout_width="match_parent" android:layout_height="match_parent"
+        android:background="@drawable/detail_gradient"/>
+
+    <LinearLayout android:layout_width="match_parent" android:layout_height="match_parent"
+        android:orientation="horizontal" android:padding="32dp">
+
+        <ImageView android:id="@+id/ivPoster"
+            android:layout_width="200dp" android:layout_height="300dp"
+            android:scaleType="centerCrop" android:background="@color/surface2"/>
+
+        <LinearLayout android:layout_width="0dp" android:layout_height="match_parent"
+            android:layout_weight="1" android:orientation="vertical"
+            android:layout_marginStart="24dp" android:gravity="center_vertical">
+
+            <TextView android:id="@+id/tvTitle"
+                android:layout_width="match_parent" android:layout_height="wrap_content"
+                android:textColor="@color/text_primary" android:textSize="28sp"
+                android:textStyle="bold" android:maxLines="2"/>
+
+            <TextView android:id="@+id/tvMeta"
+                android:layout_width="match_parent" android:layout_height="wrap_content"
+                android:textColor="@color/primary" android:textSize="14sp"
+                android:textStyle="bold" android:layout_marginTop="8dp"/>
+
+            <TextView android:id="@+id/tvDescription"
+                android:layout_width="match_parent" android:layout_height="wrap_content"
+                android:textColor="@color/text_secondary" android:textSize="13sp"
+                android:layout_marginTop="12dp" android:maxLines="5"
+                android:ellipsize="end"/>
+
+            <Button android:id="@+id/btnPlay"
+                android:layout_width="180dp" android:layout_height="48dp"
+                android:text="▶ REPRODUCIR" android:textColor="@color/background"
+                android:backgroundTint="@color/primary" android:textStyle="bold"
+                android:layout_marginTop="20dp" android:focusable="true"/>
+
+            <Button android:id="@+id/btnBack"
+                android:layout_width="180dp" android:layout_height="40dp"
+                android:text="← Volver" android:textColor="@color/text_secondary"
+                android:backgroundTint="@color/surface2"
+                android:layout_marginTop="8dp" android:focusable="true"/>
+        </LinearLayout>
+
+        <!-- Lista de episodios (solo series) -->
+        <androidx.recyclerview.widget.RecyclerView android:id="@+id/rvEpisodes"
+            android:layout_width="0dp" android:layout_height="match_parent"
+            android:layout_weight="1" android:visibility="gone"/>
+    </LinearLayout>
+</FrameLayout>

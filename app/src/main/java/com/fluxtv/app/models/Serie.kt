@@ -9,5 +9,6 @@ data class Serie(
     val description: String = "",
     val rating: String = "",
     val year: String = "",
-    val featured: Boolean = false
+    val featured: Boolean = false,
+    val episodes: List<Episode> = emptyList()
 ) : Serializable

@@ -15,6 +15,7 @@ import kotlinx.coroutines.*
 class VodFragment : RowsSupportFragment() {
     private val scope = CoroutineScope(Dispatchers.Main)
     private var type = VodActivity.TYPE_MOVIES
+    var onCategoriesLoaded: ((List<Pair<String, Int>>) -> Unit)? = null
 
     override fun onViewCreated(view: android.view.View, savedInstanceState: android.os.Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -23,15 +24,12 @@ class VodFragment : RowsSupportFragment() {
         }
 
         onItemViewClickedListener = OnItemViewClickedListener { _, item, _, _ ->
-            val ch = when (item) {
-                is Movie -> Channel(item.id, item.title, item.category, item.posterUrl, item.streamUrl)
-                is Serie -> Channel(item.id, item.title, item.category, item.posterUrl, item.streamUrl)
-                else -> null
-            }
-            if (ch != null) {
-                startActivity(Intent(requireContext(), PlayerActivity::class.java).apply {
-                    putExtra(PlayerActivity.EXTRA_CHANNELS, arrayListOf(ch))
-                    putExtra(PlayerActivity.EXTRA_INDEX, 0)
+            when (item) {
+                is Movie -> startActivity(Intent(requireContext(), com.fluxtv.app.activities.DetailActivity::class.java).apply {
+                    putExtra(com.fluxtv.app.activities.DetailActivity.EXTRA_MOVIE, item)
+                })
+                is Serie -> startActivity(Intent(requireContext(), com.fluxtv.app.activities.DetailActivity::class.java).apply {
+                    putExtra(com.fluxtv.app.activities.DetailActivity.EXTRA_SERIE, item)
                 })
             }
         }
@@ -61,12 +59,15 @@ class VodFragment : RowsSupportFragment() {
                     featured.forEach { adapter.add(it) }
                     rowsAdapter.add(ListRow(HeaderItem("⭐ DESTACADAS"), adapter))
                 }
+                val categoryIndices = mutableListOf<Pair<String, Int>>()
                 val byCategory = movies.groupBy { it.category }
                 byCategory.forEach { (cat, items) ->
                     val adapter = ArrayObjectAdapter(MoviePresenter())
                     items.forEach { adapter.add(it) }
+                    categoryIndices.add(cat.ifEmpty { "OTRAS" } to rowsAdapter.size())
                     rowsAdapter.add(ListRow(HeaderItem(cat.ifEmpty { "OTRAS" }), adapter))
                 }
+                onCategoriesLoaded?.invoke(categoryIndices)
             } else {
                 val series = withContext(Dispatchers.IO) {
                     try { ApiService.getSeries() } catch (_: Exception) { emptyList() }
@@ -77,12 +78,15 @@ class VodFragment : RowsSupportFragment() {
                     featured.forEach { adapter.add(it) }
                     rowsAdapter.add(ListRow(HeaderItem("⭐ DESTACADAS"), adapter))
                 }
+                val categoryIndices = mutableListOf<Pair<String, Int>>()
                 val byCategory = series.groupBy { it.category }
                 byCategory.forEach { (cat, items) ->
                     val adapter = ArrayObjectAdapter(SeriePresenter())
                     items.forEach { adapter.add(it) }
+                    categoryIndices.add(cat.ifEmpty { "OTRAS" } to rowsAdapter.size())
                     rowsAdapter.add(ListRow(HeaderItem(cat.ifEmpty { "OTRAS" }), adapter))
                 }
+                onCategoriesLoaded?.invoke(categoryIndices)
             }
             adapter = rowsAdapter
         }

@@ -26,6 +26,34 @@ class VodActivity : AppCompatActivity() {
         binding.btnBack.setOnClickListener { finish() }
 
         val fragment = VodFragment()
+        fragment.onCategoriesLoaded = { categories ->
+            runOnUiThread {
+                binding.filterContainer.removeAllViews()
+                categories.forEach { (cat, rowIndex) ->
+                    val btn = android.widget.Button(this).apply {
+                        text = cat
+                        textSize = 11f
+                        setTextColor(getColor(R.color.text_secondary))
+                        setBackgroundColor(getColor(R.color.surface2))
+                        isFocusable = true
+                        setPadding(20, 0, 20, 0)
+                        val params = android.widget.LinearLayout.LayoutParams(
+                            android.widget.LinearLayout.LayoutParams.WRAP_CONTENT,
+                            android.widget.LinearLayout.LayoutParams.WRAP_CONTENT
+                        )
+                        params.marginEnd = 8
+                        layoutParams = params
+                        setOnClickListener { fragment.setSelectedPosition(rowIndex, true) }
+                        setOnFocusChangeListener { v, focused ->
+                            setTextColor(if (focused) getColor(R.color.background) else getColor(R.color.text_secondary))
+                            setBackgroundColor(if (focused) getColor(R.color.primary) else getColor(R.color.surface2))
+                        }
+                    }
+                    binding.filterContainer.addView(btn)
+                }
+            }
+        }
+
         supportFragmentManager.beginTransaction()
             .replace(R.id.rvVod, fragment)
             .commit()
