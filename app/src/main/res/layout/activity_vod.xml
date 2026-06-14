@@ -16,7 +16,6 @@
             android:backgroundTint="@color/surface2" android:focusable="true"/>
     </LinearLayout>
 
-    <androidx.recyclerview.widget.RecyclerView android:id="@+id/rvVod"
-        android:layout_width="match_parent" android:layout_height="match_parent"
-        android:padding="8dp" android:focusable="true"/>
+    <FrameLayout android:id="@+id/rvVod"
+        android:layout_width="match_parent" android:layout_height="match_parent"/>
 </LinearLayout>

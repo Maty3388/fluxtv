@@ -101,6 +101,19 @@ class PlayerActivity : AppCompatActivity() {
             HlsMediaSource.Factory(dsf).createMediaSource(MediaItem.fromUri(url))
         else ProgressiveMediaSource.Factory(dsf).createMediaSource(MediaItem.fromUri(url))
         player?.stop(); player?.setMediaSource(src); player?.prepare(); player?.play()
+        if (ch.id.isNotEmpty()) {
+            val savedPos = com.fluxtv.app.utils.Prefs.getProgress(this, ch.id)
+            if (savedPos > 0) {
+                player?.addListener(object : Player.Listener {
+                    override fun onPlaybackStateChanged(state: Int) {
+                        if (state == Player.STATE_READY) {
+                            player?.seekTo(savedPos)
+                            player?.removeListener(this)
+                        }
+                    }
+                })
+            }
+        }
     }
 
     private fun updateZapOverlay(ch: Channel, i: Int) {
@@ -163,6 +176,14 @@ class PlayerActivity : AppCompatActivity() {
 
     override fun onDestroy() {
         super.onDestroy()
+        try {
+            val ch = channels.getOrNull(idx)
+            val pos = player?.currentPosition ?: 0L
+            val dur = player?.duration ?: 0L
+            if (ch != null && ch.id.isNotEmpty()) {
+                com.fluxtv.app.utils.Prefs.saveProgress(this, ch.id, pos, dur)
+            }
+        } catch (_: Exception) {}
         loadTimer?.cancel(); controlsTimer?.cancel(); scope.cancel(); player?.release()
     }
 }

@@ -59,7 +59,7 @@ class MainActivity : AppCompatActivity() {
             startActivity(Intent(this, LoginActivity::class.java))
             finishAffinity()
         }
-        binding.btnMiCuenta.setOnClickListener { selectItem(-1) }
+        binding.btnMiCuenta.setOnClickListener { startActivity(Intent(this, AccountActivity::class.java)) }
         selectItem(0)
     }
 

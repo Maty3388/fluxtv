@@ -12,4 +12,27 @@ object Prefs {
     fun isProfileSelected(ctx: Context) = ctx.getSharedPreferences(NAME, Context.MODE_PRIVATE).getBoolean("profile_selected", false)
     fun isLoggedIn(ctx: Context) = getToken(ctx).isNotEmpty()
     fun logout(ctx: Context) = ctx.getSharedPreferences(NAME, Context.MODE_PRIVATE).edit().clear().apply()
+
+    // Continuar viendo: guarda posicion en ms por id de contenido VOD
+    fun saveProgress(ctx: Context, id: String, positionMs: Long, durationMs: Long) {
+        val p = ctx.getSharedPreferences(NAME, Context.MODE_PRIVATE)
+        if (durationMs <= 0) return
+        val pct = positionMs.toFloat() / durationMs.toFloat()
+        val editor = p.edit()
+        if (pct < 0.05f || pct > 0.95f) {
+            // No guardar si recien empezo o ya casi termino
+            editor.remove("progress_$id")
+        } else {
+            editor.putLong("progress_$id", positionMs)
+        }
+        editor.apply()
+    }
+
+    fun getProgress(ctx: Context, id: String): Long =
+        ctx.getSharedPreferences(NAME, Context.MODE_PRIVATE).getLong("progress_$id", 0L)
+
+    fun getAllProgressIds(ctx: Context): List<String> {
+        val p = ctx.getSharedPreferences(NAME, Context.MODE_PRIVATE)
+        return p.all.keys.filter { it.startsWith("progress_") }.map { it.removePrefix("progress_") }
+    }
 }
