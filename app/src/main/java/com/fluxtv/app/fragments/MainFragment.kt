@@ -2,7 +2,7 @@ package com.fluxtv.app.fragments
 
 import android.content.Intent
 import android.os.Bundle
-import androidx.leanback.app.BrowseSupportFragment
+import androidx.leanback.app.RowsSupportFragment
 import androidx.leanback.widget.*
 import androidx.leanback.widget.FocusHighlight
 import com.bumptech.glide.Glide
@@ -12,17 +12,14 @@ import com.fluxtv.app.activities.MainActivity
 import com.fluxtv.app.services.ApiService
 import kotlinx.coroutines.*
 
-class MainFragment : BrowseSupportFragment() {
+class MainFragment : RowsSupportFragment() {
     private val scope = CoroutineScope(Dispatchers.Main)
     private var allChannels = listOf<Channel>()
     private val catOrder = listOf("MUNDIAL 2026","EVENTOS","ARGENTINA","ARGENTINA INTERIOR","ARGENTINA 2","DEPORTES","DEPORTES 2","NOTICIAS","NOTICIAS 2","MÚSICA","MÚSICA 2","RELIGIÓN","INFANTILES","INFANTILES 2","CANALES 24/7","CANALES 24/7 2","CINE","CINE 2","SERIES","SERIES 2","INTERNACIONAL","INTERNACIONAL 2","COLOMBIA","CHILE","MEXICO","BRASIL","URUGUAY","DOCUMENTALES","PLUTOTV")
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        title = ""
-        headersState = HEADERS_DISABLED
-        brandColor = 0xFF030810.toInt()
-        searchAffordanceColor = 0xFF00E5FF.toInt()
+
         onItemViewClickedListener = OnItemViewClickedListener { _, item, _, row ->
             if (item is Channel) {
                 val rowAdapter = (row as ListRow).adapter as ArrayObjectAdapter
@@ -39,16 +36,6 @@ class MainFragment : BrowseSupportFragment() {
 
     override fun onViewCreated(view: android.view.View, savedInstanceState: android.os.Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        view.findViewById<android.view.View>(androidx.leanback.R.id.browse_title_group)?.apply {
-            visibility = android.view.View.GONE
-            layoutParams?.height = 0
-        }
-        view.findViewById<android.view.View>(androidx.leanback.R.id.browse_headers_dock)?.apply {
-            visibility = android.view.View.GONE
-            layoutParams?.height = 0
-        }
-        val container = view.findViewById<android.view.ViewGroup>(androidx.leanback.R.id.browse_container_dock)
-        container?.setPadding(0, 0, 0, 0)
         view.setOnKeyListener { _, keyCode, event ->
             when {
                 keyCode == android.view.KeyEvent.KEYCODE_DPAD_LEFT && event.action == android.view.KeyEvent.ACTION_DOWN -> true
@@ -199,7 +186,7 @@ class ChannelPresenter : Presenter() {
         card.setOnFocusChangeListener { v, focused ->
             (v.background as? android.graphics.drawable.GradientDrawable)?.setStroke(
                 if (focused) 3 else 0,
-                if (focused) 0xFF00E5FF.toInt() else 0x00000000
+                if (focused) 0xFFA855F7.toInt() else 0x00000000
             )
             v.animate().scaleX(if (focused) 1.08f else 1f).scaleY(if (focused) 1.08f else 1f)
                 .translationZ(if (focused) 8f else 0f).setDuration(120).start()

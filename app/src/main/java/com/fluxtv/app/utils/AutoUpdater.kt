@@ -53,11 +53,11 @@ object AutoUpdater {
                 addView(TextView(ctx).apply{text="Actual";textSize=11f;setTextColor(Color.GRAY);gravity=android.view.Gravity.CENTER})
                 addView(TextView(ctx).apply{text=current;textSize=20f;setTextColor(Color.WHITE);typeface=android.graphics.Typeface.DEFAULT_BOLD;gravity=android.view.Gravity.CENTER})
             })
-            addView(TextView(ctx).apply{text="→";textSize=20f;setTextColor(Color.parseColor("#00E5FF"));setPadding(40,0,40,0)})
+            addView(TextView(ctx).apply{text="→";textSize=20f;setTextColor(Color.parseColor("#A855F7"));setPadding(40,0,40,0)})
             addView(LinearLayout(ctx).apply {
                 orientation=LinearLayout.VERTICAL; gravity=android.view.Gravity.CENTER
                 addView(TextView(ctx).apply{text="Nueva";textSize=11f;setTextColor(Color.GRAY);gravity=android.view.Gravity.CENTER})
-                addView(TextView(ctx).apply{text=ver.version;textSize=20f;setTextColor(Color.parseColor("#00E5FF"));typeface=android.graphics.Typeface.DEFAULT_BOLD;gravity=android.view.Gravity.CENTER})
+                addView(TextView(ctx).apply{text=ver.version;textSize=20f;setTextColor(Color.parseColor("#A855F7"));typeface=android.graphics.Typeface.DEFAULT_BOLD;gravity=android.view.Gravity.CENTER})
             })
         })
         if (ver.changelog.isNotEmpty()) layout.addView(TextView(ctx).apply{text=ver.changelog;textSize=12f;setTextColor(Color.LTGRAY);gravity=android.view.Gravity.CENTER;setPadding(0,20,0,0)})
@@ -68,8 +68,8 @@ object AutoUpdater {
         val btnLater = Button(ctx).apply{text="Más tarde";setTextColor(Color.WHITE);setBackgroundColor(Color.parseColor("#333333"));layoutParams=LinearLayout.LayoutParams(0,LinearLayout.LayoutParams.WRAP_CONTENT,1f).apply{marginEnd=16};isFocusable=true
             setOnClickListener{dialog.dismiss()}
             setOnFocusChangeListener{v,focused-> v.setBackgroundColor(if(focused) Color.parseColor("#555555") else Color.parseColor("#333333")) }}
-        val btnUpdate = Button(ctx).apply{text="ACTUALIZAR";setTextColor(Color.BLACK);setBackgroundColor(Color.parseColor("#00E5FF"));layoutParams=LinearLayout.LayoutParams(0,LinearLayout.LayoutParams.WRAP_CONTENT,1f);isFocusable=true
-            setOnFocusChangeListener{v,focused-> v.setBackgroundColor(if(focused) Color.parseColor("#80FFFF") else Color.parseColor("#00E5FF")) }
+        val btnUpdate = Button(ctx).apply{text="ACTUALIZAR";setTextColor(Color.BLACK);setBackgroundColor(Color.parseColor("#A855F7"));layoutParams=LinearLayout.LayoutParams(0,LinearLayout.LayoutParams.WRAP_CONTENT,1f);isFocusable=true
+            setOnFocusChangeListener{v,focused-> v.setBackgroundColor(if(focused) Color.parseColor("#80FFFF") else Color.parseColor("#A855F7")) }
             setOnClickListener{isEnabled=false;btnLater.isEnabled=false;progress.visibility=android.view.View.VISIBLE;tvProg.visibility=android.view.View.VISIBLE
                 download(ctx,ver.apkUrl,ver.version,progress,tvProg){dialog.dismiss()}}}
         if(!ver.forceUpdate) btnRow.addView(btnLater); btnRow.addView(btnUpdate)

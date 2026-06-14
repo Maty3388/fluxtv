@@ -18,7 +18,7 @@
 
         <TextView android:id="@+id/tvNumber"
             android:layout_width="wrap_content" android:layout_height="wrap_content"
-            android:textColor="#00E5FF" android:textSize="80sp"
+            android:textColor="#A855F7" android:textSize="80sp"
             android:textStyle="bold" android:lineSpacingExtra="-10dp"/>
 
         <TextView android:id="@+id/tvName"
@@ -34,11 +34,11 @@
         <LinearLayout android:layout_width="wrap_content" android:layout_height="wrap_content"
             android:orientation="horizontal">
             <View android:layout_width="10dp" android:layout_height="10dp"
-                android:background="#00E5FF" android:layout_margin="5dp"/>
+                android:background="#A855F7" android:layout_margin="5dp"/>
             <View android:layout_width="10dp" android:layout_height="10dp"
-                android:background="#00E5FF" android:layout_margin="5dp"/>
+                android:background="#A855F7" android:layout_margin="5dp"/>
             <View android:layout_width="10dp" android:layout_height="10dp"
-                android:background="#00E5FF" android:layout_margin="5dp"/>
+                android:background="#A855F7" android:layout_margin="5dp"/>
             <View android:layout_width="10dp" android:layout_height="10dp"
                 android:background="#333333" android:layout_margin="5dp"/>
             <View android:layout_width="10dp" android:layout_height="10dp"
@@ -64,7 +64,7 @@
                 android:textColor="#FFFFFF" android:textSize="18sp" android:textStyle="bold"/>
             <TextView android:id="@+id/tvControlCategory"
                 android:layout_width="wrap_content" android:layout_height="wrap_content"
-                android:textColor="#00E5FF" android:textSize="13sp" android:layout_marginTop="2dp"/>
+                android:textColor="#A855F7" android:textSize="13sp" android:layout_marginTop="2dp"/>
         </LinearLayout>
 
         <LinearLayout android:layout_width="wrap_content" android:layout_height="wrap_content"
