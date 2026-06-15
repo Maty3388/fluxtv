@@ -194,7 +194,7 @@ class PlayerActivity : AppCompatActivity() {
                 HlsMediaSource.Factory(dsf).createMediaSource(MediaItem.fromUri(url))
             url.contains(".mpd") -> {
                 val dashFactory = DashMediaSource.Factory(DefaultDataSource.Factory(this))
-                buildClearKeySessionManager(ch.drmKeys)?.let { dashFactory.setDrmSessionManagerProvider { it } }
+                buildClearKeySessionManager(ch.drmKeys)?.let { drmMgr -> dashFactory.setDrmSessionManagerProvider { drmMgr } }
                 dashFactory.createMediaSource(MediaItem.fromUri(url))
             }
             url.startsWith("rtsp://") ->
