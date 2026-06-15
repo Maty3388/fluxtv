@@ -55,7 +55,9 @@ object ApiService {
             val ch = arr.getJSONObject(it)
             Channel(ch.optString("_id"), ch.optString("name"), ch.optString("category"),
                 ch.optString("logo"), ch.optString("stream_url"), ch.optInt("number", 999),
-                drmKeys = ch.optString("drm_keys"))
+                drmKeys = ch.optString("drm_keys"),
+                drmType = ch.optString("drm_type"),
+                drmLicense = ch.optString("drm_license"))
         }
     }
 
@@ -84,7 +86,9 @@ object ApiService {
             val ch = arr.getJSONObject(it)
             Channel(ch.optString("_id"), ch.optString("name"), ch.optString("category"),
                 ch.optString("logo"), ch.optString("stream_url"), ch.optInt("number", 999),
-                drmKeys = ch.optString("drm_keys"))
+                drmKeys = ch.optString("drm_keys"),
+                drmType = ch.optString("drm_type"),
+                drmLicense = ch.optString("drm_license"))
         }
     }
 
