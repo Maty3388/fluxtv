@@ -51,7 +51,7 @@ class MainActivity : AppCompatActivity() {
             .commit()
 
         // Mostrar datos usuario
-        binding.tvUserEmail.text = Prefs.getEmail(this)
+        binding.tvUserEmail.text = "👤 " + Prefs.getEmail(this)
         val subEnd = Prefs.getSubEnd(this)
         if (subEnd.isNotEmpty()) binding.tvVencimiento.text = subEnd
 
@@ -118,8 +118,6 @@ class MainActivity : AppCompatActivity() {
         binding.btnAdultos.setOnClickListener { selectItem(3); mainFragment?.filterCategory("ADULTOS") }
         binding.btnBuscar.setOnClickListener { startActivity(Intent(this, SearchActivity::class.java)) }
         binding.btnFavoritos.setOnClickListener { selectItem(5); mainFragment?.loadFavorites() }
-        binding.btnHistorial.setOnClickListener { startActivity(Intent(this, HistorialActivity::class.java)) }
-        binding.btnMisListas.setOnClickListener { startActivity(Intent(this, MisListasActivity::class.java)) }
         binding.btnClearCache.setOnClickListener {
             cacheDir.deleteRecursively()
             Toast.makeText(this, "Caché borrado", Toast.LENGTH_SHORT).show()
@@ -136,7 +134,6 @@ class MainActivity : AppCompatActivity() {
     private fun setupNavigation() {
         val items = listOf(binding.btnTv, binding.btnPeliculas, binding.btnSeries,
             binding.btnAdultos, binding.btnBuscar, binding.btnFavoritos,
-            binding.btnHistorial, binding.btnMisListas,
             binding.btnClearCache, binding.btnLogout)
 
         items.forEach { btn ->

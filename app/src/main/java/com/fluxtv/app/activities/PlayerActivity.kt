@@ -18,6 +18,11 @@ import androidx.media3.exoplayer.source.ProgressiveMediaSource
 import androidx.media3.exoplayer.dash.DashMediaSource
 import androidx.media3.exoplayer.rtsp.RtspMediaSource
 import androidx.media3.datasource.DefaultDataSource
+import androidx.media3.common.C
+import androidx.media3.exoplayer.drm.DefaultDrmSessionManager
+import androidx.media3.exoplayer.drm.FrameworkMediaDrm
+import androidx.media3.exoplayer.drm.LocalMediaDrmCallback
+import android.util.Base64
 import com.bumptech.glide.Glide
 import com.fluxtv.app.databinding.ActivityPlayerBinding
 import com.fluxtv.app.models.Channel
@@ -123,6 +128,34 @@ class PlayerActivity : AppCompatActivity() {
         })
     }
 
+
+    // Convierte HEX a Base64Url sin padding (formato requerido por ClearKey)
+    private fun hexToBase64Url(hex: String): String {
+        val clean = hex.trim().replace("-", "")
+        val bytes = ByteArray(clean.length / 2)
+        for (i in bytes.indices) {
+            bytes[i] = ((Character.digit(clean[i * 2], 16) shl 4) + Character.digit(clean[i * 2 + 1], 16)).toByte()
+        }
+        return Base64.encodeToString(bytes, Base64.URL_SAFE or Base64.NO_PADDING or Base64.NO_WRAP)
+    }
+
+    // drmKeys formato esperado: "kid1:key1,kid2:key2" (hex)
+    private fun buildClearKeySessionManager(drmKeys: String): DefaultDrmSessionManager? {
+        if (drmKeys.isBlank()) return null
+        val keysJson = drmKeys.split(",").mapNotNull { pair ->
+            val parts = pair.trim().split(":")
+            if (parts.size != 2) return@mapNotNull null
+            val kid = hexToBase64Url(parts[0])
+            val k = hexToBase64Url(parts[1])
+            """{"kty":"oct","kid":"$kid","k":"$k"}"""
+        }
+        if (keysJson.isEmpty()) return null
+        val license = """{"keys":[${keysJson.joinToString(",")}],"type":"temporary"}"""
+        return DefaultDrmSessionManager.Builder()
+            .setUuidAndExoMediaDrmProvider(C.CLEARKEY_UUID, FrameworkMediaDrm.DEFAULT_PROVIDER)
+            .build(LocalMediaDrmCallback(license.toByteArray()))
+    }
+
     private fun getUrls(ch: Channel): List<String> {
         return ch.streamUrl.split("|").map { it.trim() }.filter { it.isNotEmpty() }
     }
@@ -159,8 +192,11 @@ class PlayerActivity : AppCompatActivity() {
         val src = when {
             url.contains(".m3u8") || url.contains(".ts") ->
                 HlsMediaSource.Factory(dsf).createMediaSource(MediaItem.fromUri(url))
-            url.contains(".mpd") ->
-                DashMediaSource.Factory(DefaultDataSource.Factory(this)).createMediaSource(MediaItem.fromUri(url))
+            url.contains(".mpd") -> {
+                val dashFactory = DashMediaSource.Factory(DefaultDataSource.Factory(this))
+                buildClearKeySessionManager(ch.drmKeys)?.let { dashFactory.setDrmSessionManagerProvider { it } }
+                dashFactory.createMediaSource(MediaItem.fromUri(url))
+            }
             url.startsWith("rtsp://") ->
                 RtspMediaSource.Factory().createMediaSource(MediaItem.fromUri(url))
             else -> ProgressiveMediaSource.Factory(dsf).createMediaSource(MediaItem.fromUri(url))
