@@ -18,16 +18,6 @@ object Prefs {
         return id
     }
 
-    fun getDeviceId(ctx: Context): String {
-        val prefs = ctx.getSharedPreferences(NAME, android.content.Context.MODE_PRIVATE)
-        var id = prefs.getString("device_id", "") ?: ""
-        if (id.isEmpty()) {
-            id = java.util.UUID.randomUUID().toString()
-            prefs.edit().putString("device_id", id).apply()
-        }
-        return id
-    }
-
     fun getDaysLeft(ctx: Context): Long {
         val s = getSubEnd(ctx).ifEmpty { return -1 }
         return try {
