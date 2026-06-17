@@ -22,7 +22,7 @@ class SplashActivity : AppCompatActivity() {
                 ApiService.token = token
                 try {
                     val ver = withContext(Dispatchers.IO) { ApiService.getVersion() }
-                    if (ver != null) AutoUpdater.check(this@SplashActivity, "1.1.0", ver)
+                    if (ver != null) AutoUpdater.check(this@SplashActivity, BuildConfig.VERSION_NAME, ver)
                 } catch (_: Exception) {}
                 if (Prefs.isProfileSelected(this@SplashActivity))
                     startActivity(Intent(this@SplashActivity, MainActivity::class.java))
