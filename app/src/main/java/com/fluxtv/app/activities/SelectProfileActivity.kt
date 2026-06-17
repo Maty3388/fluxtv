@@ -12,20 +12,19 @@ import com.fluxtv.app.utils.Prefs
 
 class SelectProfileActivity : AppCompatActivity() {
     private lateinit var binding: ActivitySelectProfileBinding
-    private lateinit var api: ApiService
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivitySelectProfileBinding.inflate(layoutInflater)
         setContentView(binding.root)
-        api = ApiService(Prefs.getToken(this))
+        ApiService.token = Prefs.getToken(this)
         loadProfiles()
     }
 
     private fun loadProfiles() {
         Thread {
             try {
-                val data = api.getProfile()
+                val data = ApiService.getProfile()
                 val profiles = data.getJSONArray("profiles")
                 runOnUiThread { renderProfiles(profiles) }
             } catch (e: Exception) {
@@ -102,7 +101,7 @@ class SelectProfileActivity : AppCompatActivity() {
         val deviceId = Prefs.getDeviceId(this)
         Thread {
             try {
-                val res = api.selectProfile(profileId, deviceId)
+                val res = ApiService.selectProfile(profileId, deviceId)
                 val success = res.optBoolean("success", false)
                 val locked = res.optBoolean("profile_locked", false)
                 runOnUiThread {
