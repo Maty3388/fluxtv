@@ -150,6 +150,16 @@ object ApiService {
         return org.json.JSONObject(res.body?.string() ?: "{}")
     }
 
+    fun getProfile(): org.json.JSONObject {
+        val req = okhttp3.Request.Builder()
+            .url("$BASE/profile")
+            .header("Authorization", "Bearer $token")
+            .get()
+            .build()
+        val res = client.newCall(req).execute()
+        return org.json.JSONObject(res.body?.string() ?: "{}")
+    }
+
     fun getVersion(): AppVersion? = try {
         val res = client.newCall(Request.Builder().url("$BASE/fluxtv/version").build()).execute()
         val json = JSONObject(res.body?.string() ?: return null)

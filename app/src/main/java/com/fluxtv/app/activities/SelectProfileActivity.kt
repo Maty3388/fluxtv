@@ -7,24 +7,46 @@ import android.view.KeyEvent
 import android.widget.*
 import androidx.appcompat.app.AppCompatActivity
 import com.fluxtv.app.databinding.ActivitySelectProfileBinding
+import com.fluxtv.app.services.ApiService
 import com.fluxtv.app.utils.Prefs
 
 class SelectProfileActivity : AppCompatActivity() {
     private lateinit var binding: ActivitySelectProfileBinding
-    private val profiles = listOf(
-        Pair("😜", "Perfil 1"),
-        Pair("🙂", "Perfil 2"),
-        Pair("😎", "Perfil 3")
-    )
+    private lateinit var api: ApiService
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivitySelectProfileBinding.inflate(layoutInflater)
         setContentView(binding.root)
+        api = ApiService(Prefs.getToken(this))
+        loadProfiles()
+    }
 
+    private fun loadProfiles() {
+        Thread {
+            try {
+                val data = api.getProfile()
+                val profiles = data.getJSONArray("profiles")
+                runOnUiThread { renderProfiles(profiles) }
+            } catch (e: Exception) {
+                runOnUiThread {
+                    Toast.makeText(this, "Error cargando perfiles", Toast.LENGTH_SHORT).show()
+                }
+            }
+        }.start()
+    }
+
+    private fun renderProfiles(profiles: org.json.JSONArray) {
+        binding.profilesContainer.removeAllViews()
         val dp = resources.displayMetrics.density
+        val avatars = listOf("😜", "🙂", "😎", "🎮", "🌟")
 
-        profiles.forEachIndexed { idx, (avatar, name) ->
+        for (i in 0 until profiles.length()) {
+            val profile = profiles.getJSONObject(i)
+            val profileId = profile.getInt("id")
+            val profileName = profile.optString("name", "Perfil ${i + 1}")
+            val avatar = avatars.getOrElse(i) { "👤" }
+
             val card = LinearLayout(this).apply {
                 orientation = LinearLayout.VERTICAL
                 gravity = android.view.Gravity.CENTER
@@ -43,7 +65,7 @@ class SelectProfileActivity : AppCompatActivity() {
             }
 
             val tvName = TextView(this).apply {
-                text = name; textSize = 14f
+                text = profileName; textSize = 14f
                 setTextColor(Color.WHITE)
                 gravity = android.view.Gravity.CENTER
                 layoutParams = LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT).apply {
@@ -61,23 +83,49 @@ class SelectProfileActivity : AppCompatActivity() {
                 else v.animate().scaleX(1f).scaleY(1f).setDuration(120).start()
             }
 
-            card.setOnClickListener {
-                Prefs.saveProfileSelected(this)
-                startActivity(Intent(this, MainActivity::class.java))
-                finish()
-            }
+            val onClick = { onProfileSelected(profileId) }
 
+            card.setOnClickListener { onClick() }
             card.setOnKeyListener { _, keyCode, event ->
-                if (event.action == KeyEvent.ACTION_DOWN && keyCode == KeyEvent.KEYCODE_DPAD_CENTER || keyCode == KeyEvent.KEYCODE_ENTER) {
-                    Prefs.saveProfileSelected(this)
-                    startActivity(Intent(this, MainActivity::class.java))
-                    finish(); true
+                if (event.action == KeyEvent.ACTION_DOWN &&
+                    (keyCode == KeyEvent.KEYCODE_DPAD_CENTER || keyCode == KeyEvent.KEYCODE_ENTER)) {
+                    onClick(); true
                 } else false
             }
 
             binding.profilesContainer.addView(card)
-            if (idx == 0) card.requestFocus()
+            if (i == 0) card.requestFocus()
         }
+    }
+
+    private fun onProfileSelected(profileId: Int) {
+        val deviceId = Prefs.getDeviceId(this)
+        Thread {
+            try {
+                val res = api.selectProfile(profileId, deviceId)
+                val success = res.optBoolean("success", false)
+                val locked = res.optBoolean("profile_locked", false)
+                runOnUiThread {
+                    when {
+                        success -> {
+                            Prefs.saveProfileSelected(this)
+                            startActivity(Intent(this, MainActivity::class.java))
+                            finish()
+                        }
+                        locked -> {
+                            Toast.makeText(this, "Este perfil esta en uso en otro dispositivo", Toast.LENGTH_LONG).show()
+                        }
+                        else -> {
+                            Toast.makeText(this, "Error al seleccionar perfil", Toast.LENGTH_SHORT).show()
+                        }
+                    }
+                }
+            } catch (e: Exception) {
+                runOnUiThread {
+                    Toast.makeText(this, "Error de conexion", Toast.LENGTH_SHORT).show()
+                }
+            }
+        }.start()
     }
 
     override fun onKeyDown(keyCode: Int, event: KeyEvent?): Boolean {
