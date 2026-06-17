@@ -24,6 +24,18 @@ class SplashActivity : AppCompatActivity() {
                     val ver = withContext(Dispatchers.IO) { ApiService.getVersion() }
                     if (ver != null) AutoUpdater.check(this@SplashActivity, BuildConfig.VERSION_NAME, ver)
                 } catch (_: Exception) {}
+                // Chequear vencimiento proximo
+                val days = Prefs.getDaysLeft(this@SplashActivity)
+                if (days in 0..7) {
+                    runOnUiThread {
+                        androidx.appcompat.app.AlertDialog.Builder(this@SplashActivity)
+                            .setTitle("⚠️ Suscripción próxima a vencer")
+                            .setMessage("Tu suscripción vence en $days día(s). Contactá con soporte para renovar.")
+                            .setPositiveButton("Entendido") { d, _ -> d.dismiss() }
+                            .setCancelable(true)
+                            .show()
+                    }
+                }
                 if (Prefs.isProfileSelected(this@SplashActivity))
                     startActivity(Intent(this@SplashActivity, MainActivity::class.java))
                 else

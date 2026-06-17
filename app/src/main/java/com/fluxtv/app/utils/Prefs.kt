@@ -8,6 +8,34 @@ object Prefs {
     fun getEmail(ctx: Context) = ctx.getSharedPreferences(NAME, Context.MODE_PRIVATE).getString("email", "") ?: ""
     fun saveSubEnd(ctx: Context, s: String) = ctx.getSharedPreferences(NAME, Context.MODE_PRIVATE).edit().putString("sub_end", s).apply()
     fun getSubEnd(ctx: Context) = ctx.getSharedPreferences(NAME, Context.MODE_PRIVATE).getString("sub_end", "") ?: ""
+    fun getDeviceId(ctx: Context): String {
+        val prefs = ctx.getSharedPreferences(NAME, android.content.Context.MODE_PRIVATE)
+        var id = prefs.getString("device_id", "") ?: ""
+        if (id.isEmpty()) {
+            id = java.util.UUID.randomUUID().toString()
+            prefs.edit().putString("device_id", id).apply()
+        }
+        return id
+    }
+
+    fun getDeviceId(ctx: Context): String {
+        val prefs = ctx.getSharedPreferences(NAME, android.content.Context.MODE_PRIVATE)
+        var id = prefs.getString("device_id", "") ?: ""
+        if (id.isEmpty()) {
+            id = java.util.UUID.randomUUID().toString()
+            prefs.edit().putString("device_id", id).apply()
+        }
+        return id
+    }
+
+    fun getDaysLeft(ctx: Context): Long {
+        val s = getSubEnd(ctx).ifEmpty { return -1 }
+        return try {
+            val sdf = java.text.SimpleDateFormat("yyyy-MM-dd", java.util.Locale.getDefault())
+            val diff = sdf.parse(s)!!.time - System.currentTimeMillis()
+            diff / (1000 * 60 * 60 * 24)
+        } catch(e: Exception) { -1 }
+    }
     fun saveProfileSelected(ctx: Context) = ctx.getSharedPreferences(NAME, Context.MODE_PRIVATE).edit().putBoolean("profile_selected", true).apply()
     fun isProfileSelected(ctx: Context) = ctx.getSharedPreferences(NAME, Context.MODE_PRIVATE).getBoolean("profile_selected", false)
     fun isLoggedIn(ctx: Context) = getToken(ctx).isNotEmpty()

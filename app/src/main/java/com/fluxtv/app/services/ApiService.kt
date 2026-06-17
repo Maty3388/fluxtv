@@ -137,6 +137,19 @@ object ApiService {
         }
     }
 
+    fun selectProfile(profileId: Int, deviceId: String): org.json.JSONObject {
+        val body = org.json.JSONObject()
+        body.put("profileId", profileId)
+        body.put("deviceId", deviceId)
+        val req = okhttp3.Request.Builder()
+            .url("$BASE/profile/select")
+            .header("Authorization", "Bearer $token")
+            .post(body.toString().toRequestBody("application/json".toMediaType()))
+            .build()
+        val res = client.newCall(req).execute()
+        return org.json.JSONObject(res.body?.string() ?: "{}")
+    }
+
     fun getVersion(): AppVersion? = try {
         val res = client.newCall(Request.Builder().url("$BASE/fluxtv/version").build()).execute()
         val json = JSONObject(res.body?.string() ?: return null)
