@@ -42,3 +42,13 @@ jobs:
           name: FluxTV v${{ steps.ver.outputs.VERSION }}
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Update version endpoint
+        run: |
+          TOKEN=$(curl -s -X POST http://149.104.92.205:25461/admin/login \
+            -H "Content-Type: application/json" \
+            -d '{"email":"${{ secrets.API_ADMIN_EMAIL }}","password":"${{ secrets.API_ADMIN_PASS }}"}' | python3 -c "import sys,json; print(json.load(sys.stdin)['token'])")
+          curl -s -X PUT http://149.104.92.205:25461/fluxtv/version \
+            -H "Content-Type: application/json" \
+            -H "Authorization: Bearer $TOKEN" \
+            -d '{"version":"${{ steps.ver.outputs.VERSION }}","apkUrl":"https://github.com/Maty3388/fluxtv/releases/latest/download/app-release.apk","forceUpdate":false,"changelog":""}'
