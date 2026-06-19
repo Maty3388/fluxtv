@@ -103,7 +103,7 @@ class MainActivity : AppCompatActivity() {
             .setItems(options) { _, which ->
                 when (which) {
                     0 -> startActivity(Intent(this, AccountActivity::class.java))
-                    1 -> { mainFragment?.filterCategory("ADULTOS"); highlightMobileNav(R.id.navInicio) }
+                    1 -> { showPinDialog { mainFragment?.filterCategory("ADULTOS"); highlightMobileNav(R.id.navInicio) } }
                     2 -> { mainFragment?.loadFavorites(); highlightMobileNav(R.id.navInicio) }
                     3 -> startActivity(Intent(this, HistorialActivity::class.java))
                     4 -> startActivity(Intent(this, MisListasActivity::class.java))
@@ -121,7 +121,7 @@ class MainActivity : AppCompatActivity() {
         binding.btnTv.setOnClickListener { selectItem(0); mainFragment?.filterCategory(null) }
         binding.btnPeliculas.setOnClickListener { selectItem(1); startActivity(Intent(this, VodActivity::class.java).apply { putExtra(VodActivity.EXTRA_TYPE, VodActivity.TYPE_MOVIES) }) }
         binding.btnSeries.setOnClickListener { selectItem(2); startActivity(Intent(this, VodActivity::class.java).apply { putExtra(VodActivity.EXTRA_TYPE, VodActivity.TYPE_SERIES) }) }
-        binding.btnAdultos.setOnClickListener { selectItem(3); mainFragment?.filterCategory("ADULTOS") }
+        binding.btnAdultos.setOnClickListener { selectItem(3); showPinDialog { mainFragment?.filterCategory("ADULTOS") } }
         binding.btnBuscar.setOnClickListener { startActivity(Intent(this, SearchActivity::class.java)) }
         binding.btnFavoritos.setOnClickListener { selectItem(5); mainFragment?.loadFavorites() }
         binding.btnClearCache.setOnClickListener {
@@ -205,6 +205,87 @@ class MainActivity : AppCompatActivity() {
             btn.setBackgroundColor(if (active) getColor(R.color.surface2) else getColor(R.color.surface))
         }
         selectedItem = idx
+    }
+
+    private fun showPinDialog(onSuccess: () -> Unit) {
+        val dp = resources.displayMetrics.density
+        val layout = android.widget.LinearLayout(this).apply {
+            orientation = android.widget.LinearLayout.VERTICAL
+            setPadding((24*dp).toInt(), (24*dp).toInt(), (24*dp).toInt(), (8*dp).toInt())
+        }
+        val title = android.widget.TextView(this).apply {
+            text = "🔒 Control Parental"
+            textSize = 16f
+            setTextColor(android.graphics.Color.WHITE)
+            typeface = android.graphics.Typeface.DEFAULT_BOLD
+            gravity = android.view.Gravity.CENTER
+            setPadding(0, 0, 0, (16*dp).toInt())
+        }
+        val input = android.widget.EditText(this).apply {
+            hint = "Ingresá el PIN"
+            inputType = android.text.InputType.TYPE_CLASS_NUMBER or android.text.InputType.TYPE_NUMBER_VARIATION_PASSWORD
+            gravity = android.view.Gravity.CENTER
+            textSize = 24f
+            setTextColor(android.graphics.Color.WHITE)
+            setHintTextColor(android.graphics.Color.GRAY)
+            background = android.graphics.drawable.GradientDrawable().apply {
+                setColor(0xFF1A1A2E.toInt())
+                cornerRadius = 8*dp
+                setStroke(1, 0xFF00E5FF.toInt())
+            }
+            setPadding((16*dp).toInt(), (12*dp).toInt(), (16*dp).toInt(), (12*dp).toInt())
+        }
+        val tvError = android.widget.TextView(this).apply {
+            text = ""
+            textSize = 12f
+            setTextColor(android.graphics.Color.RED)
+            gravity = android.view.Gravity.CENTER
+            setPadding(0, (8*dp).toInt(), 0, 0)
+        }
+        layout.addView(title)
+        layout.addView(input)
+        layout.addView(tvError)
+
+        val dialog = android.app.AlertDialog.Builder(this)
+            .setView(layout)
+            .setPositiveButton("Confirmar", null)
+            .setNegativeButton("Cancelar", null)
+            .create()
+        dialog.setOnShowListener {
+            dialog.window?.setBackgroundDrawable(android.graphics.drawable.ColorDrawable(0xFF0A1825.toInt()))
+            dialog.getButton(android.app.AlertDialog.BUTTON_POSITIVE).setOnClickListener {
+                val pin = input.text.toString()
+                if (pin.length < 4) { tvError.text = "El PIN debe tener al menos 4 dígitos"; return@setOnClickListener }
+                dialog.getButton(android.app.AlertDialog.BUTTON_POSITIVE).isEnabled = false
+                Thread {
+                    try {
+                        val res = ApiService.verifyParentalPin(pin)
+                        val success = res.optBoolean("success", false)
+                        val error = res.optString("error", "")
+                        runOnUiThread {
+                            if (success) {
+                                dialog.dismiss()
+                                onSuccess()
+                            } else {
+                                dialog.getButton(android.app.AlertDialog.BUTTON_POSITIVE).isEnabled = true
+                                tvError.text = when (error) {
+                                    "PIN no configurado" -> "PIN no configurado. Contactá al administrador."
+                                    else -> "PIN incorrecto"
+                                }
+                                input.text.clear()
+                            }
+                        }
+                    } catch (e: Exception) {
+                        runOnUiThread {
+                            dialog.getButton(android.app.AlertDialog.BUTTON_POSITIVE).isEnabled = true
+                            tvError.text = "Error de conexión"
+                        }
+                    }
+                }.start()
+            }
+        }
+        dialog.show()
+        input.requestFocus()
     }
 
     private fun checkUpdate() {

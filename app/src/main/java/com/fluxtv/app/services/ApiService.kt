@@ -150,6 +150,18 @@ object ApiService {
         return org.json.JSONObject(res.body?.string() ?: "{}")
     }
 
+    fun verifyParentalPin(pin: String): org.json.JSONObject {
+        val body = org.json.JSONObject()
+        body.put("pin", pin)
+        val req = okhttp3.Request.Builder()
+            .url("$BASE/parental/verify")
+            .header("Authorization", "Bearer $token")
+            .post(body.toString().toRequestBody("application/json".toMediaType()))
+            .build()
+        val res = client.newCall(req).execute()
+        return org.json.JSONObject(res.body?.string() ?: "{}")
+    }
+
     fun getProfile(): org.json.JSONObject {
         val req = okhttp3.Request.Builder()
             .url("$BASE/profile")
