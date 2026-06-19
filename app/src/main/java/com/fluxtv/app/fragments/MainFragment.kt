@@ -121,91 +121,150 @@ class MainFragment : RowsSupportFragment() {
 }
 
 class ChannelPresenter : Presenter() {
-    private val catColors = mapOf(
-        "MUNDIAL 2026" to 0xFF1A4A1A.toInt(),
-        "EVENTOS" to 0xFF4A1A00.toInt(),
-        "ARGENTINA" to 0xFF00204A.toInt(),
-        "ARGENTINA INTERIOR" to 0xFF002040.toInt(),
-        "ARGENTINA 2" to 0xFF00183A.toInt(),
-        "DEPORTES" to 0xFF4A0000.toInt(),
-        "DEPORTES 2" to 0xFF3A0000.toInt(),
-        "NOTICIAS" to 0xFF1A1A4A.toInt(),
-        "NOTICIAS 2" to 0xFF15154A.toInt(),
-        "MÚSICA" to 0xFF3A004A.toInt(),
-        "MÚSICA 2" to 0xFF30003A.toInt(),
-        "INFANTILES" to 0xFF4A3A00.toInt(),
-        "CINE" to 0xFF2A0040.toInt(),
-        "CINE 2" to 0xFF200030.toInt(),
-        "SERIES" to 0xFF004A3A.toInt(),
-        "CANALES 24/7" to 0xFF004040.toInt(),
-        "INTERNACIONAL" to 0xFF1A3A4A.toInt(),
+    private val catGradients = mapOf(
+        "MUNDIAL 2026"        to Pair(0xFF1B6B1B.toInt(), 0xFF0A3A0A.toInt()),
+        "EVENTOS"             to Pair(0xFFB8620A.toInt(), 0xFF6B3500.toInt()),
+        "ARGENTINA"           to Pair(0xFF1565C0.toInt(), 0xFF0A3A7A.toInt()),
+        "ARGENTINA INTERIOR"  to Pair(0xFF1255A0.toInt(), 0xFF082E68.toInt()),
+        "ARGENTINA 2"         to Pair(0xFF0F4590.toInt(), 0xFF062460.toInt()),
+        "DEPORTES"            to Pair(0xFFB71C1C.toInt(), 0xFF6A0000.toInt()),
+        "DEPORTES 2"          to Pair(0xFF9A1515.toInt(), 0xFF560000.toInt()),
+        "NOTICIAS"            to Pair(0xFF283593.toInt(), 0xFF0D1660.toInt()),
+        "NOTICIAS 2"          to Pair(0xFF1E2880.toInt(), 0xFF080E50.toInt()),
+        "MÚSICA"              to Pair(0xFF6A1B9A.toInt(), 0xFF380060.toInt()),
+        "MÚSICA 2"            to Pair(0xFF581580.toInt(), 0xFF2A0050.toInt()),
+        "INFANTILES"          to Pair(0xFFE65100.toInt(), 0xFF8B3000.toInt()),
+        "INFANTILES 2"        to Pair(0xFFD04800.toInt(), 0xFF7A2500.toInt()),
+        "CINE"                to Pair(0xFF4A148C.toInt(), 0xFF1A0050.toInt()),
+        "CINE 2"              to Pair(0xFF3A0F7A.toInt(), 0xFF120040.toInt()),
+        "SERIES"              to Pair(0xFF00695C.toInt(), 0xFF003830.toInt()),
+        "SERIES 2"            to Pair(0xFF005548.toInt(), 0xFF002820.toInt()),
+        "CANALES 24/7"        to Pair(0xFF00838F.toInt(), 0xFF004550.toInt()),
+        "CANALES 24/7 2"      to Pair(0xFF006878.toInt(), 0xFF003040.toInt()),
+        "INTERNACIONAL"       to Pair(0xFF1565A0.toInt(), 0xFF083060.toInt()),
+        "INTERNACIONAL 2"     to Pair(0xFF104A80.toInt(), 0xFF062040.toInt()),
+        "COLOMBIA"            to Pair(0xFFB8860A.toInt(), 0xFF6B4A00.toInt()),
+        "CHILE"               to Pair(0xFF8B0000.toInt(), 0xFF4A0000.toInt()),
+        "MEXICO"              to Pair(0xFF1B6B1B.toInt(), 0xFF0A3500.toInt()),
+        "BRASIL"              to Pair(0xFF2E7D32.toInt(), 0xFF0A4A0A.toInt()),
+        "URUGUAY"             to Pair(0xFF1A5FA0.toInt(), 0xFF082E68.toInt()),
+        "DOCUMENTALES"        to Pair(0xFF5D4037.toInt(), 0xFF2E1A0A.toInt()),
+        "PLUTOTV"             to Pair(0xFF37474F.toInt(), 0xFF1A2530.toInt()),
     )
 
     override fun onCreateViewHolder(parent: android.view.ViewGroup): ViewHolder {
         val ctx = parent.context
         val dp = ctx.resources.displayMetrics.density
+        val W = (160*dp).toInt()
+        val H = (130*dp).toInt()
+
         val card = android.widget.FrameLayout(ctx).apply {
-            layoutParams = android.view.ViewGroup.LayoutParams((150*dp).toInt(), (115*dp).toInt()).also {
-                (it as? android.view.ViewGroup.MarginLayoutParams)?.setMargins((4*dp).toInt(),(4*dp).toInt(),(4*dp).toInt(),(4*dp).toInt())
+            layoutParams = android.view.ViewGroup.MarginLayoutParams(W, H).apply {
+                setMargins((5*dp).toInt(), (5*dp).toInt(), (5*dp).toInt(), (5*dp).toInt())
             }
             isFocusable = true; isFocusableInTouchMode = true
             background = android.graphics.drawable.GradientDrawable().apply {
-                cornerRadius = 14*dp
-                setColor(0xFF060E1A.toInt())
+                cornerRadius = 12*dp
+                setColor(0xFF0D1B2A.toInt())
             }
-            tag = "card"
+            elevation = 4*dp
         }
+
         val logo = android.widget.ImageView(ctx).apply {
-            layoutParams = android.widget.FrameLayout.LayoutParams((100*dp).toInt(), (72*dp).toInt()).apply {
+            layoutParams = android.widget.FrameLayout.LayoutParams(
+                (130*dp).toInt(), (85*dp).toInt()).apply {
                 gravity = android.view.Gravity.CENTER_HORIZONTAL or android.view.Gravity.TOP
-                topMargin = (8*dp).toInt()
+                topMargin = (6*dp).toInt()
             }
             scaleType = android.widget.ImageView.ScaleType.CENTER_INSIDE
             tag = "logo"
         }
-        val nameOverlay = android.widget.LinearLayout(ctx).apply {
+
+        val nameBar = android.widget.FrameLayout(ctx).apply {
             layoutParams = android.widget.FrameLayout.LayoutParams(
-                android.view.ViewGroup.LayoutParams.MATCH_PARENT, (34*dp).toInt()).apply {
+                android.view.ViewGroup.LayoutParams.MATCH_PARENT, (36*dp).toInt()).apply {
                 gravity = android.view.Gravity.BOTTOM
             }
-            setBackgroundColor(0xCC1F0F2E.toInt())
-            setPadding((8*dp).toInt(), 0, (8*dp).toInt(), 0)
-            gravity = android.view.Gravity.CENTER_VERTICAL
             background = android.graphics.drawable.GradientDrawable().apply {
-                cornerRadii = floatArrayOf(0f,0f,0f,0f,14*dp,14*dp,14*dp,14*dp)
-                setColor(0xCC1F0F2E.toInt())
+                cornerRadii = floatArrayOf(0f,0f,0f,0f,12*dp,12*dp,12*dp,12*dp)
+                setColor(0xCC000000.toInt())
             }
+            tag = "namebar"
         }
+
         val name = android.widget.TextView(ctx).apply {
-            layoutParams = android.widget.LinearLayout.LayoutParams(
+            layoutParams = android.widget.FrameLayout.LayoutParams(
                 android.view.ViewGroup.LayoutParams.MATCH_PARENT,
-                android.view.ViewGroup.LayoutParams.WRAP_CONTENT)
+                android.view.ViewGroup.LayoutParams.MATCH_PARENT).apply {
+                marginStart = (8*dp).toInt()
+                marginEnd = (40*dp).toInt()
+            }
             setTextColor(0xFFFFFFFF.toInt()); textSize = 10f
             typeface = android.graphics.Typeface.DEFAULT_BOLD
-            maxLines = 1; ellipsize = android.text.TextUtils.TruncateAt.END; tag = "name"
+            maxLines = 1; ellipsize = android.text.TextUtils.TruncateAt.END
+            gravity = android.view.Gravity.CENTER_VERTICAL
+            tag = "name"
         }
-        nameOverlay.addView(name); card.addView(logo); card.addView(nameOverlay)
+
+        val liveBadge = android.widget.TextView(ctx).apply {
+            layoutParams = android.widget.FrameLayout.LayoutParams(
+                android.view.ViewGroup.LayoutParams.WRAP_CONTENT,
+                android.view.ViewGroup.LayoutParams.WRAP_CONTENT).apply {
+                gravity = android.view.Gravity.CENTER_VERTICAL or android.view.Gravity.END
+                marginEnd = (4*dp).toInt()
+            }
+            text = "● EN VIVO"
+            textSize = 7f
+            setTextColor(0xFFFF4444.toInt())
+            typeface = android.graphics.Typeface.DEFAULT_BOLD
+            tag = "live"
+            // Animación pulso
+            val anim = android.view.animation.AlphaAnimation(1f, 0.2f).apply {
+                duration = 800; repeatMode = android.view.animation.Animation.REVERSE
+                repeatCount = android.view.animation.Animation.INFINITE
+            }
+            startAnimation(anim)
+        }
+
+        nameBar.addView(name)
+        nameBar.addView(liveBadge)
+        card.addView(logo)
+        card.addView(nameBar)
         return ViewHolder(card)
     }
 
     override fun onBindViewHolder(vh: ViewHolder, item: Any) {
         val ch = item as Channel
         val card = vh.view as android.widget.FrameLayout
+        val ctx = card.context
+        val dp = ctx.resources.displayMetrics.density
+
         card.findViewWithTag<android.widget.TextView>("name")?.text = ch.name
-        // Color de fondo por categoría
-        val bgColor = catColors[ch.category] ?: 0xFF060E1A.toInt()
-        (card.background as? android.graphics.drawable.GradientDrawable)?.setColor(bgColor)
+
+        val (colorTop, colorBot) = catGradients[ch.category] ?: Pair(0xFF0D1B2A.toInt(), 0xFF060E1A.toInt())
+        card.background = android.graphics.drawable.GradientDrawable(
+            android.graphics.drawable.GradientDrawable.Orientation.TOP_BOTTOM,
+            intArrayOf(colorTop, colorBot)
+        ).apply { cornerRadius = 12*dp }
+
         val logo = card.findViewWithTag<android.widget.ImageView>("logo")
-        if (ch.logoUrl.isNotEmpty()) Glide.with(card).load(ch.logoUrl).into(logo!!)
-        else logo?.setImageDrawable(null)
-        // Efecto foco
+        if (ch.logoUrl.isNotEmpty()) {
+            com.bumptech.glide.Glide.with(card).load(ch.logoUrl).into(logo!!)
+        } else {
+            logo?.setImageDrawable(null)
+        }
+
         card.setOnFocusChangeListener { v, focused ->
-            (v.background as? android.graphics.drawable.GradientDrawable)?.setStroke(
-                if (focused) 3 else 0,
-                if (focused) 0xFFA855F7.toInt() else 0x00000000
-            )
+            val (ct, cb) = catGradients[ch.category] ?: Pair(0xFF0D1B2A.toInt(), 0xFF060E1A.toInt())
+            v.background = android.graphics.drawable.GradientDrawable(
+                android.graphics.drawable.GradientDrawable.Orientation.TOP_BOTTOM,
+                intArrayOf(ct, cb)
+            ).apply {
+                cornerRadius = 12*dp
+                if (focused) setStroke((3*dp).toInt(), 0xFFFFA500.toInt())
+            }
             v.animate().scaleX(if (focused) 1.08f else 1f).scaleY(if (focused) 1.08f else 1f)
-                .translationZ(if (focused) 8f else 0f).setDuration(120).start()
+                .translationZ(if (focused) 10f else 0f).setDuration(120).start()
         }
     }
 
