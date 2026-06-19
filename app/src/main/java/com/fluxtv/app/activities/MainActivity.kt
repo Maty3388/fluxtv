@@ -13,6 +13,7 @@ import com.fluxtv.app.R
 import com.fluxtv.app.databinding.ActivityMainBinding
 import com.fluxtv.app.fragments.MainFragment
 import com.fluxtv.app.services.ApiService
+import com.facebook.shimmer.ShimmerFrameLayout
 import com.fluxtv.app.utils.AutoUpdater
 import com.fluxtv.app.utils.Prefs
 import kotlinx.coroutines.*
@@ -46,9 +47,14 @@ class MainActivity : AppCompatActivity() {
         setContentView(binding.root)
 
         mainFragment = MainFragment()
+        mainFragment!!.onChannelsLoaded = {
+            binding.shimmerLayout.stopShimmer()
+            binding.shimmerLayout.visibility = View.GONE
+        }
         supportFragmentManager.beginTransaction()
             .replace(R.id.mainContainer, mainFragment!!)
             .commit()
+        binding.shimmerLayout.startShimmer()
 
         // Mostrar datos usuario
         binding.tvUserEmail.text = "👤 " + Prefs.getEmail(this)

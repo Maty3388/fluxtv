@@ -15,6 +15,7 @@ import kotlinx.coroutines.*
 class MainFragment : RowsSupportFragment() {
     private val scope = CoroutineScope(Dispatchers.Main)
     private var allChannels = listOf<Channel>()
+    var onChannelsLoaded: (() -> Unit)? = null
     private val catOrder = listOf("MUNDIAL 2026","EVENTOS","ARGENTINA","ARGENTINA INTERIOR","ARGENTINA 2","DEPORTES","DEPORTES 2","NOTICIAS","NOTICIAS 2","MÚSICA","MÚSICA 2","RELIGIÓN","INFANTILES","INFANTILES 2","CANALES 24/7","CANALES 24/7 2","CINE","CINE 2","SERIES","SERIES 2","INTERNACIONAL","INTERNACIONAL 2","COLOMBIA","CHILE","MEXICO","BRASIL","URUGUAY","DOCUMENTALES","PLUTOTV")
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -90,6 +91,9 @@ class MainFragment : RowsSupportFragment() {
                 allChannels = fresh
                 val featured = allChannels.filter { it.category == "MUNDIAL 2026" || it.category == "EVENTOS" }
                 buildRows(allChannels, featured)
+                onChannelsLoaded?.invoke()
+            } else if (allChannels.isNotEmpty()) {
+                onChannelsLoaded?.invoke()
             }
         }
     }

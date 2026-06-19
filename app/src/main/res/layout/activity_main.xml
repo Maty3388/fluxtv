@@ -189,7 +189,60 @@
         </LinearLayout>
 
         <!-- Fragment canales -->
-        <FrameLayout android:id="@+id/mainContainer"
-            android:layout_width="match_parent" android:layout_height="match_parent"/>
+        <FrameLayout android:layout_width="match_parent" android:layout_height="match_parent">
+
+            <FrameLayout android:id="@+id/mainContainer"
+                android:layout_width="match_parent" android:layout_height="match_parent"/>
+
+            <com.facebook.shimmer.ShimmerFrameLayout
+                android:id="@+id/shimmerLayout"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:visibility="visible">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:orientation="vertical"
+                    android:padding="16dp">
+
+                    <View android:layout_width="200dp" android:layout_height="20dp"
+                        android:layout_marginBottom="16dp"
+                        android:background="#1AFFFFFF"/>
+
+                    <LinearLayout android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal">
+                        <View android:layout_width="150dp" android:layout_height="115dp"
+                            android:layout_marginEnd="8dp" android:background="#1AFFFFFF"/>
+                        <View android:layout_width="150dp" android:layout_height="115dp"
+                            android:layout_marginEnd="8dp" android:background="#1AFFFFFF"/>
+                        <View android:layout_width="150dp" android:layout_height="115dp"
+                            android:layout_marginEnd="8dp" android:background="#1AFFFFFF"/>
+                        <View android:layout_width="150dp" android:layout_height="115dp"
+                            android:background="#1AFFFFFF"/>
+                    </LinearLayout>
+
+                    <View android:layout_width="160dp" android:layout_height="20dp"
+                        android:layout_marginTop="24dp" android:layout_marginBottom="16dp"
+                        android:background="#1AFFFFFF"/>
+
+                    <LinearLayout android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal">
+                        <View android:layout_width="150dp" android:layout_height="115dp"
+                            android:layout_marginEnd="8dp" android:background="#1AFFFFFF"/>
+                        <View android:layout_width="150dp" android:layout_height="115dp"
+                            android:layout_marginEnd="8dp" android:background="#1AFFFFFF"/>
+                        <View android:layout_width="150dp" android:layout_height="115dp"
+                            android:layout_marginEnd="8dp" android:background="#1AFFFFFF"/>
+                        <View android:layout_width="150dp" android:layout_height="115dp"
+                            android:background="#1AFFFFFF"/>
+                    </LinearLayout>
+
+                </LinearLayout>
+            </com.facebook.shimmer.ShimmerFrameLayout>
+
+        </FrameLayout>
     </LinearLayout>
 </LinearLayout>
