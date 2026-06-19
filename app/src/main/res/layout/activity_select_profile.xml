@@ -13,8 +13,35 @@
         android:text="¿Quién está mirando?" android:textColor="@color/text_secondary"
         android:textSize="14sp" android:layout_marginBottom="48dp"/>
 
+    <ProgressBar
+        android:id="@+id/loadingIndicator"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:visibility="visible"
+        android:layout_marginBottom="32dp"/>
+
     <LinearLayout android:id="@+id/profilesContainer"
         android:layout_width="wrap_content" android:layout_height="wrap_content"
-        android:orientation="horizontal" android:gravity="center"/>
+        android:orientation="horizontal" android:gravity="center"
+        android:visibility="gone"/>
+
+    <LinearLayout
+        android:id="@+id/navGuide"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:gravity="center"
+        android:layout_marginTop="48dp"
+        android:visibility="gone">
+
+        <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
+            android:text="◀ ▶  navegar" android:textColor="@color/text_secondary"
+            android:textSize="12sp" android:layout_marginEnd="24dp"/>
+
+        <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
+            android:text="OK  seleccionar" android:textColor="@color/text_secondary"
+            android:textSize="12sp"/>
+
+    </LinearLayout>
 
 </LinearLayout>

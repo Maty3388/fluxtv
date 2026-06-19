@@ -4,6 +4,7 @@ import android.content.Intent
 import android.graphics.Color
 import android.os.Bundle
 import android.view.KeyEvent
+import android.view.View
 import android.widget.*
 import androidx.appcompat.app.AppCompatActivity
 import com.fluxtv.app.databinding.ActivitySelectProfileBinding
@@ -22,13 +23,22 @@ class SelectProfileActivity : AppCompatActivity() {
     }
 
     private fun loadProfiles() {
+        binding.loadingIndicator.visibility = View.VISIBLE
+        binding.profilesContainer.visibility = View.GONE
+        binding.navGuide.visibility = View.GONE
         Thread {
             try {
                 val data = ApiService.getProfile()
                 val profiles = data.getJSONArray("profiles")
-                runOnUiThread { renderProfiles(profiles) }
+                runOnUiThread {
+                    binding.loadingIndicator.visibility = View.GONE
+                    binding.profilesContainer.visibility = View.VISIBLE
+                    binding.navGuide.visibility = View.VISIBLE
+                    renderProfiles(profiles)
+                }
             } catch (e: Exception) {
                 runOnUiThread {
+                    binding.loadingIndicator.visibility = View.GONE
                     Toast.makeText(this, "Error cargando perfiles", Toast.LENGTH_SHORT).show()
                 }
             }
