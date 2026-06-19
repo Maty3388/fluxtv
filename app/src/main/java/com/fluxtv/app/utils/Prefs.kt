@@ -27,9 +27,14 @@ object Prefs {
         } catch(e: Exception) { -1 }
     }
     fun saveProfileSelected(ctx: Context) = ctx.getSharedPreferences(NAME, Context.MODE_PRIVATE).edit().putBoolean("profile_selected", true).apply()
+    fun clearProfileSelected(ctx: Context) = ctx.getSharedPreferences(NAME, Context.MODE_PRIVATE).edit().putBoolean("profile_selected", false).apply()
     fun isProfileSelected(ctx: Context) = ctx.getSharedPreferences(NAME, Context.MODE_PRIVATE).getBoolean("profile_selected", false)
     fun isLoggedIn(ctx: Context) = getToken(ctx).isNotEmpty()
-    fun logout(ctx: Context) = ctx.getSharedPreferences(NAME, Context.MODE_PRIVATE).edit().clear().apply()
+    fun logout(ctx: Context) {
+        val deviceId = getDeviceId(ctx)
+        ctx.getSharedPreferences(NAME, Context.MODE_PRIVATE).edit().clear().apply()
+        ctx.getSharedPreferences(NAME, Context.MODE_PRIVATE).edit().putString("device_id", deviceId).apply()
+    }
 
     // Continuar viendo: guarda posicion en ms por id de contenido VOD
     fun saveProgress(ctx: Context, id: String, positionMs: Long, durationMs: Long) {

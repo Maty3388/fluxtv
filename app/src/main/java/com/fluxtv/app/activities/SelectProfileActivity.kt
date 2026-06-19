@@ -40,6 +40,10 @@ class SelectProfileActivity : AppCompatActivity() {
                 runOnUiThread {
                     binding.loadingIndicator.visibility = View.GONE
                     Toast.makeText(this, "Error cargando perfiles", Toast.LENGTH_SHORT).show()
+                    // Si falla, ir directo al home
+                    Prefs.saveProfileSelected(this)
+                    startActivity(android.content.Intent(this, MainActivity::class.java))
+                    finish()
                 }
             }
         }.start()
