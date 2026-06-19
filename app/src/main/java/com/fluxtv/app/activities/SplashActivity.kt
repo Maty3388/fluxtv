@@ -14,6 +14,7 @@ class SplashActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        setContentView(com.fluxtv.app.R.layout.activity_splash)
         scope.launch {
             try {
             delay(1200)
