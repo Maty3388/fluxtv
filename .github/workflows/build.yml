@@ -30,6 +30,13 @@ jobs:
       - name: Build APK
         run: ./gradlew assembleRelease
 
+      - name: Upload APK artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: app-release
+          path: app/build/outputs/apk/release/app-release.apk
+          retention-days: 1
+
       - name: Get version
         id: ver
         run: echo "VERSION=$(grep versionName app/build.gradle | grep -v '//' | head -1 | sed 's/.*versionName[[:space:]]*"//;s/".*//')" >> $GITHUB_OUTPUT
