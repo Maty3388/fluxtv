@@ -45,7 +45,11 @@ class LoginActivity : AppCompatActivity() {
                 startActivity(Intent(this@LoginActivity, SelectProfileActivity::class.java))
                 finish()
             } else {
-                binding.tvError.text = "Credenciales incorrectas"
+                binding.tvError.text = when {
+                    ApiService.loginError.contains("vencida", ignoreCase = true) -> "Tu acceso de prueba ha vencido"
+                    ApiService.loginError.contains("bloqueado", ignoreCase = true) || ApiService.loginError.contains("blocked", ignoreCase = true) -> "Tu cuenta ha sido bloqueada"
+                    else -> "Credenciales incorrectas"
+                }
                 binding.tvError.visibility = View.VISIBLE
             }
         }

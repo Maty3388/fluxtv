@@ -61,10 +61,12 @@ object ApiService {
         }
     }
 
+    var loginError = ""
     fun login(email: String, password: String): String? {
         val body = """{"email":"$email","password":"$password"}""".toRequestBody("application/json".toMediaType())
         val res = client.newCall(Request.Builder().url("$BASE/auth/login").post(body).build()).execute()
         val json = JSONObject(res.body?.string() ?: return null)
+        loginError = json.optString("error", "")
         subEnd = json.optJSONObject("user")?.optString("subscription_end") ?: ""
         return json.optString("token").takeIf { it.isNotEmpty() }
     }
