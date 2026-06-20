@@ -83,7 +83,7 @@ class PlayerActivity : AppCompatActivity() {
 
     private fun initPlayer() {
         val loadControl = DefaultLoadControl.Builder()
-            .setBufferDurationsMs(15000, 60000, 2000, 5000).build()
+            .setBufferDurationsMs(30000, 120000, 5000, 10000).build()
         player = ExoPlayer.Builder(this).setLoadControl(loadControl).build()
         player?.setVideoTextureView(binding.textureView)
         player?.addListener(object : Player.Listener {
