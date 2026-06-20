@@ -52,13 +52,11 @@ class SelectProfileActivity : AppCompatActivity() {
     private fun renderProfiles(profiles: org.json.JSONArray) {
         binding.profilesContainer.removeAllViews()
         val dp = resources.displayMetrics.density
-        val avatars = listOf("😜", "🙂", "😎", "🎮", "🌟")
-
         for (i in 0 until profiles.length()) {
             val profile = profiles.getJSONObject(i)
             val profileId = profile.getInt("id")
             val profileName = profile.optString("name", "Perfil ${i + 1}")
-            val avatar = avatars.getOrElse(i) { "👤" }
+            val avatar = profile.optString("avatar", "👤")
 
             val card = LinearLayout(this).apply {
                 orientation = LinearLayout.VERTICAL

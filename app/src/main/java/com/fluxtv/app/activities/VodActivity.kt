@@ -5,6 +5,7 @@ import android.view.KeyEvent
 import androidx.appcompat.app.AppCompatActivity
 import com.fluxtv.app.R
 import com.fluxtv.app.databinding.ActivityVodBinding
+import com.facebook.shimmer.ShimmerFrameLayout
 import com.fluxtv.app.fragments.VodFragment
 
 class VodActivity : AppCompatActivity() {
@@ -26,6 +27,11 @@ class VodActivity : AppCompatActivity() {
         binding.btnBack.setOnClickListener { finish() }
 
         val fragment = VodFragment()
+        fragment.onLoaded = {
+            binding.shimmerVod.stopShimmer()
+            binding.shimmerVod.visibility = android.view.View.GONE
+        }
+        binding.shimmerVod.startShimmer()
         fragment.onCategoriesLoaded = { categories ->
             runOnUiThread {
                 binding.filterContainer.removeAllViews()

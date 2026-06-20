@@ -39,6 +39,12 @@
         <View android:layout_width="match_parent" android:layout_height="1dp"
             android:background="@color/border" android:layout_marginBottom="16dp"/>
 
+        <Button android:id="@+id/btnPin"
+            android:layout_width="match_parent" android:layout_height="48dp"
+            android:text="🔒 Configurar PIN Parental" android:textColor="@color/primary"
+            android:backgroundTint="@color/surface2" android:layout_marginBottom="8dp"
+            android:focusable="true"/>
+
         <Button android:id="@+id/btnClose"
             android:layout_width="match_parent" android:layout_height="48dp"
             android:text="Cerrar" android:textColor="@color/text_primary"

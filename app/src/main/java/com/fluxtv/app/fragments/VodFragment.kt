@@ -35,6 +35,8 @@ class VodFragment : RowsSupportFragment() {
         }
     }
 
+    var onLoaded: (() -> Unit)? = null
+
     fun load(vodType: String) {
         type = vodType
         scope.launch {
@@ -89,6 +91,7 @@ class VodFragment : RowsSupportFragment() {
                 onCategoriesLoaded?.invoke(categoryIndices)
             }
             adapter = rowsAdapter
+            onLoaded?.invoke()
         }
     }
 
