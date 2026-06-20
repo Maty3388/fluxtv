@@ -111,7 +111,7 @@ class MainFragment : RowsSupportFragment() {
                      grouped.filter { it.key !in catOrder }.map { it.key to it.value }
         sorted.forEach { (cat, chs) ->
             val adapter = ArrayObjectAdapter(ChannelPresenter())
-            chs.forEach { adapter.add(it) }
+            chs.sortedBy { it.number }.forEach { adapter.add(it) }
             rowsAdapter.add(ListRow(HeaderItem(cat), adapter))
         }
         adapter = rowsAdapter
