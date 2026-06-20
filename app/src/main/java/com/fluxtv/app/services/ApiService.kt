@@ -152,6 +152,18 @@ object ApiService {
         return org.json.JSONObject(res.body?.string() ?: "{}")
     }
 
+    fun setParentalPin(pin: String): org.json.JSONObject {
+        val body = org.json.JSONObject()
+        body.put("pin", pin)
+        val req = okhttp3.Request.Builder()
+            .url("$BASE/parental/pin")
+            .header("Authorization", "Bearer $token")
+            .put(body.toString().toRequestBody("application/json".toMediaType()))
+            .build()
+        val res = client.newCall(req).execute()
+        return org.json.JSONObject(res.body?.string() ?: "{}")
+    }
+
     fun verifyParentalPin(pin: String): org.json.JSONObject {
         val body = org.json.JSONObject()
         body.put("pin", pin)

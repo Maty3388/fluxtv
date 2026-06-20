@@ -82,15 +82,7 @@ class AccountActivity : AppCompatActivity() {
                 dialog.getButton(android.app.AlertDialog.BUTTON_POSITIVE).isEnabled = false
                 Thread {
                     try {
-                        val body = org.json.JSONObject()
-                        body.put("pin", pin)
-                        val req = okhttp3.Request.Builder()
-                            .url("http://149.104.92.205:25461/parental/pin")
-                            .header("Authorization", "Bearer ${ApiService.token}")
-                            .put(body.toString().toRequestBody("application/json".toMediaType()))
-                            .build()
-                        val res = ApiService.client.newCall(req).execute()
-                        val json = org.json.JSONObject(res.body?.string() ?: "{}")
+                        val json = ApiService.setParentalPin(pin)
                         runOnUiThread {
                             if (json.optBoolean("success", false)) {
                                 dialog.dismiss()
