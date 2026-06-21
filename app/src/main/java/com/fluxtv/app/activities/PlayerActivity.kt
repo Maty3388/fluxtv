@@ -42,6 +42,7 @@ class PlayerActivity : AppCompatActivity() {
     private var networkMonitor: com.fluxtv.app.utils.NetworkMonitor? = null
     private var wasDisconnected = false
     private var isRetrying = false
+    private var wasReady = false
 
     companion object {
         const val EXTRA_CHANNELS = "channels"
@@ -90,7 +91,7 @@ class PlayerActivity : AppCompatActivity() {
         player?.addListener(object : Player.Listener {
             override fun onPlaybackStateChanged(state: Int) {
                 when (state) {
-                    Player.STATE_READY -> { showLoading(false); retries = 0; urlIdx = 0; loadTimer?.cancel(); isRetrying = false }
+                    Player.STATE_READY -> { showLoading(false); retries = 0; urlIdx = 0; loadTimer?.cancel(); isRetrying = false; wasReady = true }
                     Player.STATE_BUFFERING -> { showLoading(true); if (retries == 0) startLoadTimer() }
                     Player.STATE_ENDED -> nextChannel()
                     else -> {}
@@ -163,6 +164,7 @@ class PlayerActivity : AppCompatActivity() {
 
     private fun loadChannel(i: Int) {
         loadTimer?.cancel()
+        wasReady = false
         if (channels.isEmpty()) return
         val ch = channels[i]; idx = i; retries = 0; urlIdx = 0
         showLoading(true); hideControls()
