@@ -80,12 +80,13 @@ object ApiService {
         parseChannels(bodyStr)
     } catch (_: Exception) { getCachedChannels() }
 
-    fun getFavorites(): List<Channel> = try {
+    fun getFavorites(): List<Channel> { return try {
         val res = client.newCall(Request.Builder().url("$BASE/favorites")
             .header("Authorization", "Bearer $token").build()).execute()
-        val json = JSONObject(res.body?.string() ?: return emptyList())
+        val bodyStr = res.body?.string() ?: return emptyList()
+        val json = JSONObject(bodyStr)
         val arr = json.optJSONArray("channels") ?: return emptyList()
-        return (0 until arr.length()).map {
+        (0 until arr.length()).map {
             val ch = arr.getJSONObject(it)
             Channel(ch.optString("_id"), ch.optString("name"), ch.optString("category"),
                 ch.optString("logo"), ch.optString("stream_url"), ch.optInt("number", 999),
