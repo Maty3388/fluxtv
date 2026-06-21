@@ -42,7 +42,6 @@ class PlayerActivity : AppCompatActivity() {
     private var networkMonitor: com.fluxtv.app.utils.NetworkMonitor? = null
     private var wasDisconnected = false
     private var isRetrying = false
-    private var isRetrying = false
 
     companion object {
         const val EXTRA_CHANNELS = "channels"
@@ -208,7 +207,6 @@ class PlayerActivity : AppCompatActivity() {
         if (ch.id.isNotEmpty()) {
             val savedPos = com.fluxtv.app.utils.Prefs.getProgress(this, ch.id)
             if (savedPos > 0 && !ch.isLive) {
-                player?.removeListener(seekListener)
                 player?.addListener(object : Player.Listener {
                     override fun onPlaybackStateChanged(state: Int) {
                         if (state == Player.STATE_READY) {
