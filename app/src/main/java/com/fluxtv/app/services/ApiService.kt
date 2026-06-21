@@ -42,7 +42,6 @@ object ApiService {
         appContext?.getSharedPreferences(CACHE_NAME, android.content.Context.MODE_PRIVATE)
             ?.getString(key, null)
 
-    // Devuelve la lista cacheada de canales inmediatamente (puede estar vacia si no hay cache)
     fun getCachedChannels(): List<Channel> {
         val cached = getCache("channels") ?: return emptyList()
         return parseChannels(cached)
@@ -72,28 +71,32 @@ object ApiService {
         return json.optString("token").takeIf { it.isNotEmpty() }
     }
 
-    fun getChannels(): List<Channel> = try {
-        val res = client.newCall(Request.Builder().url("$BASE/channels?limit=5000")
-            .header("Authorization", "Bearer $token").build()).execute()
-        val bodyStr = res.body?.string() ?: return getCachedChannels()
-        saveCache("channels", bodyStr)
-        parseChannels(bodyStr)
-    } catch (_: Exception) { getCachedChannels() }
+    fun getChannels(): List<Channel> {
+        return try {
+            val res = client.newCall(Request.Builder().url("$BASE/channels?limit=5000")
+                .header("Authorization", "Bearer $token").build()).execute()
+            val bodyStr = res.body?.string() ?: return getCachedChannels()
+            saveCache("channels", bodyStr)
+            parseChannels(bodyStr)
+        } catch (_: Exception) { getCachedChannels() }
+    }
 
-    fun getFavorites(): List<Channel> { return try {
-        val res = client.newCall(Request.Builder().url("$BASE/favorites")
-            .header("Authorization", "Bearer $token").build()).execute()
-        val bodyStr = res.body?.string() ?: return emptyList()
-        val json = JSONObject(bodyStr)
-        val arr = json.optJSONArray("channels") ?: return emptyList()
-        (0 until arr.length()).map {
-            val ch = arr.getJSONObject(it)
-            Channel(ch.optString("_id"), ch.optString("name"), ch.optString("category"),
-                ch.optString("logo"), ch.optString("stream_url"), ch.optInt("number", 999),
-                drmKeys = ch.optString("drm_keys"),
-                drmType = ch.optString("drm_type"),
-                drmLicense = ch.optString("drm_license"))
-        }
+    fun getFavorites(): List<Channel> {
+        return try {
+            val res = client.newCall(Request.Builder().url("$BASE/favorites")
+                .header("Authorization", "Bearer $token").build()).execute()
+            val bodyStr = res.body?.string() ?: return emptyList()
+            val json = JSONObject(bodyStr)
+            val arr = json.optJSONArray("channels") ?: return emptyList()
+            (0 until arr.length()).map {
+                val ch = arr.getJSONObject(it)
+                Channel(ch.optString("_id"), ch.optString("name"), ch.optString("category"),
+                    ch.optString("logo"), ch.optString("stream_url"), ch.optInt("number", 999),
+                    drmKeys = ch.optString("drm_keys"),
+                    drmType = ch.optString("drm_type"),
+                    drmLicense = ch.optString("drm_license"))
+            }
+        } catch (_: Exception) { emptyList() }
     }
 
     fun addFavorite(channelId: String) {
@@ -107,38 +110,44 @@ object ApiService {
             .header("Authorization", "Bearer $token").delete().build()).execute()
     }
 
-    fun getMovies(featured: Boolean = false): List<com.fluxtv.app.models.Movie> = try {
-        val url = if (featured) "$BASE/movies?featured=true" else "$BASE/movies?limit=200"
-        val res = client.newCall(Request.Builder().url(url)
-            .header("Authorization", "Bearer $token").build()).execute()
-        val json = org.json.JSONObject(res.body?.string() ?: return emptyList())
-        val arr = json.optJSONArray("movies") ?: return emptyList()
-        return (0 until arr.length()).map {
-            val m = arr.getJSONObject(it)
-            com.fluxtv.app.models.Movie(m.optString("_id"), m.optString("title"), m.optString("category"),
-                m.optString("posterUrl"), m.optString("backdropUrl"), m.optString("stream_url"),
-                m.optString("description"), m.optString("rating"), m.optString("year"),
-                m.optBoolean("featured"))
-        }
+    fun getMovies(featured: Boolean = false): List<com.fluxtv.app.models.Movie> {
+        return try {
+            val url = if (featured) "$BASE/movies?featured=true" else "$BASE/movies?limit=200"
+            val res = client.newCall(Request.Builder().url(url)
+                .header("Authorization", "Bearer $token").build()).execute()
+            val bodyStr = res.body?.string() ?: return emptyList()
+            val json = org.json.JSONObject(bodyStr)
+            val arr = json.optJSONArray("movies") ?: return emptyList()
+            (0 until arr.length()).map {
+                val m = arr.getJSONObject(it)
+                com.fluxtv.app.models.Movie(m.optString("_id"), m.optString("title"), m.optString("category"),
+                    m.optString("posterUrl"), m.optString("backdropUrl"), m.optString("stream_url"),
+                    m.optString("description"), m.optString("rating"), m.optString("year"),
+                    m.optBoolean("featured"))
+            }
+        } catch (_: Exception) { emptyList() }
     }
 
-    fun getSeries(featured: Boolean = false): List<com.fluxtv.app.models.Serie> = try {
-        val url = if (featured) "$BASE/series?featured=true" else "$BASE/series"
-        val res = client.newCall(Request.Builder().url(url)
-            .header("Authorization", "Bearer $token").build()).execute()
-        val json = org.json.JSONObject(res.body?.string() ?: return emptyList())
-        val arr = json.optJSONArray("series") ?: return emptyList()
-        return (0 until arr.length()).map {
-            val s = arr.getJSONObject(it)
-            val epArr = s.optJSONArray("episodes")
-            val episodes = if (epArr != null) (0 until epArr.length()).map { j ->
-                val e = epArr.getJSONObject(j)
-                com.fluxtv.app.models.Episode(e.optString("title"), e.optInt("season"), e.optInt("episode"), e.optString("streamUrl"))
-            } else emptyList()
-            com.fluxtv.app.models.Serie(s.optString("_id"), s.optString("title"), s.optString("category"),
-                s.optString("posterUrl"), s.optString("stream_url").ifEmpty { s.optString("streamUrl") }, s.optString("description"),
-                s.optString("rating"), s.optString("year"), s.optBoolean("featured"), episodes)
-        }
+    fun getSeries(featured: Boolean = false): List<com.fluxtv.app.models.Serie> {
+        return try {
+            val url = if (featured) "$BASE/series?featured=true" else "$BASE/series"
+            val res = client.newCall(Request.Builder().url(url)
+                .header("Authorization", "Bearer $token").build()).execute()
+            val bodyStr = res.body?.string() ?: return emptyList()
+            val json = org.json.JSONObject(bodyStr)
+            val arr = json.optJSONArray("series") ?: return emptyList()
+            (0 until arr.length()).map {
+                val s = arr.getJSONObject(it)
+                val epArr = s.optJSONArray("episodes")
+                val episodes = if (epArr != null) (0 until epArr.length()).map { j ->
+                    val e = epArr.getJSONObject(j)
+                    com.fluxtv.app.models.Episode(e.optString("title"), e.optInt("season"), e.optInt("episode"), e.optString("streamUrl"))
+                } else emptyList()
+                com.fluxtv.app.models.Serie(s.optString("_id"), s.optString("title"), s.optString("category"),
+                    s.optString("posterUrl"), s.optString("stream_url").ifEmpty { s.optString("streamUrl") }, s.optString("description"),
+                    s.optString("rating"), s.optString("year"), s.optBoolean("featured"), episodes)
+            }
+        } catch (_: Exception) { emptyList() }
     }
 
     fun selectProfile(profileId: Int, deviceId: String): org.json.JSONObject {

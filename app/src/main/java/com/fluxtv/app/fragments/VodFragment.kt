@@ -50,7 +50,7 @@ class VodFragment : RowsSupportFragment() {
                     try { ApiService.getMovies() } catch (_: Exception) { emptyList() }
                 }
                 val progressIds = com.fluxtv.app.utils.Prefs.getAllProgressIds(requireContext())
-                val continuing = movies.filter { it.id in progressIds }
+                val continuing = movies.filter { progressIds.contains(it.id) }
                 if (continuing.isNotEmpty()) {
                     val adapter = ArrayObjectAdapter(MoviePresenter())
                     continuing.forEach { adapter.add(it) }
