@@ -90,7 +90,7 @@ class PlayerActivity : AppCompatActivity() {
             override fun onPlaybackStateChanged(state: Int) {
                 when (state) {
                     Player.STATE_READY -> { showLoading(false); retries = 0; urlIdx = 0; loadTimer?.cancel() }
-                    Player.STATE_BUFFERING -> { showLoading(true); startLoadTimer() }
+                    Player.STATE_BUFFERING -> { showLoading(true) }
                     Player.STATE_ENDED -> nextChannel()
                     else -> {}
                 }
@@ -250,7 +250,7 @@ class PlayerActivity : AppCompatActivity() {
 
     private fun startLoadTimer() {
         loadTimer?.cancel()
-        loadTimer = object : CountDownTimer(15000, 15000) {
+        loadTimer = object : CountDownTimer(5000, 5000) {
             override fun onTick(ms: Long) {}
             override fun onFinish() {
                 if (retries < 3) { retries++; scope.launch { delay(500); loadChannel(idx) } }
