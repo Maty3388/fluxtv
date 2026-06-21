@@ -218,12 +218,6 @@ class ChannelPresenter : Presenter() {
             setTextColor(0xFFFF4444.toInt())
             typeface = android.graphics.Typeface.DEFAULT_BOLD
             tag = "live"
-            // Animación pulso
-            val anim = android.view.animation.AlphaAnimation(1f, 0.2f).apply {
-                duration = 800; repeatMode = android.view.animation.Animation.REVERSE
-                repeatCount = android.view.animation.Animation.INFINITE
-            }
-            startAnimation(anim)
         }
 
         nameBar.addView(name)
@@ -254,6 +248,14 @@ class ChannelPresenter : Presenter() {
             logo?.setImageDrawable(null)
         }
 
+        val liveBadge = card.findViewWithTag<android.widget.TextView>("live")
+        liveBadge?.clearAnimation()
+        val anim = android.view.animation.AlphaAnimation(1f, 0.2f).apply {
+            duration = 800; repeatMode = android.view.animation.Animation.REVERSE
+            repeatCount = android.view.animation.Animation.INFINITE
+        }
+        liveBadge?.startAnimation(anim)
+
         card.setOnFocusChangeListener { v, focused ->
             val (ct, cb) = catGradients[ch.category] ?: Pair(0xFF0D1B2A.toInt(), 0xFF060E1A.toInt())
             v.background = android.graphics.drawable.GradientDrawable(
@@ -269,6 +271,8 @@ class ChannelPresenter : Presenter() {
     }
 
     override fun onUnbindViewHolder(vh: ViewHolder) {
-        (vh.view as android.widget.FrameLayout).findViewWithTag<android.widget.ImageView>("logo")?.setImageDrawable(null)
+        val card = vh.view as android.widget.FrameLayout
+        card.findViewWithTag<android.widget.ImageView>("logo")?.setImageDrawable(null)
+        card.findViewWithTag<android.widget.TextView>("live")?.clearAnimation()
     }
 }

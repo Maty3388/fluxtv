@@ -10,9 +10,11 @@ import androidx.appcompat.app.AppCompatActivity
 import com.fluxtv.app.databinding.ActivitySelectProfileBinding
 import com.fluxtv.app.services.ApiService
 import com.fluxtv.app.utils.Prefs
+import kotlinx.coroutines.*
 
 class SelectProfileActivity : AppCompatActivity() {
     private lateinit var binding: ActivitySelectProfileBinding
+    private val scope = CoroutineScope(Dispatchers.Main)
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -26,27 +28,22 @@ class SelectProfileActivity : AppCompatActivity() {
         binding.loadingIndicator.visibility = View.VISIBLE
         binding.profilesContainer.visibility = View.GONE
         binding.navGuide.visibility = View.GONE
-        Thread {
+        scope.launch {
             try {
-                val data = ApiService.getProfile()
+                val data = withContext(Dispatchers.IO) { ApiService.getProfile() }
                 val profiles = data.getJSONArray("profiles")
-                runOnUiThread {
-                    binding.loadingIndicator.visibility = View.GONE
-                    binding.profilesContainer.visibility = View.VISIBLE
-                    binding.navGuide.visibility = View.VISIBLE
-                    renderProfiles(profiles)
-                }
+                binding.loadingIndicator.visibility = View.GONE
+                binding.profilesContainer.visibility = View.VISIBLE
+                binding.navGuide.visibility = View.VISIBLE
+                renderProfiles(profiles)
             } catch (e: Exception) {
-                runOnUiThread {
-                    binding.loadingIndicator.visibility = View.GONE
-                    Toast.makeText(this, "Error cargando perfiles", Toast.LENGTH_SHORT).show()
-                    // Si falla, ir directo al home
-                    Prefs.saveProfileSelected(this)
-                    startActivity(android.content.Intent(this, MainActivity::class.java))
-                    finish()
-                }
+                binding.loadingIndicator.visibility = View.GONE
+                Toast.makeText(this@SelectProfileActivity, "Error cargando perfiles", Toast.LENGTH_SHORT).show()
+                Prefs.saveProfileSelected(this@SelectProfileActivity)
+                startActivity(android.content.Intent(this@SelectProfileActivity, MainActivity::class.java))
+                finish()
             }
-        }.start()
+        }
     }
 
     private fun renderProfiles(profiles: org.json.JSONArray) {
@@ -111,36 +108,29 @@ class SelectProfileActivity : AppCompatActivity() {
 
     private fun onProfileSelected(profileId: Int) {
         val deviceId = Prefs.getDeviceId(this)
-        Thread {
+        scope.launch {
             try {
-                val res = ApiService.selectProfile(profileId, deviceId)
+                val res = withContext(Dispatchers.IO) { ApiService.selectProfile(profileId, deviceId) }
                 val success = res.optBoolean("success", false)
                 val locked = res.optBoolean("profile_locked", false)
-                runOnUiThread {
-                    when {
-                        success -> {
-                            Prefs.saveProfileSelected(this)
-                            startActivity(Intent(this, MainActivity::class.java))
-                            finish()
-                        }
-                        locked -> {
-                            Toast.makeText(this, "Este perfil esta en uso en otro dispositivo", Toast.LENGTH_LONG).show()
-                        }
-                        else -> {
-                            Toast.makeText(this, "Error al seleccionar perfil", Toast.LENGTH_SHORT).show()
-                        }
+                when {
+                    success -> {
+                        Prefs.saveProfileSelected(this@SelectProfileActivity)
+                        startActivity(Intent(this@SelectProfileActivity, MainActivity::class.java))
+                        finish()
                     }
+                    locked -> Toast.makeText(this@SelectProfileActivity, "Este perfil esta en uso en otro dispositivo", Toast.LENGTH_LONG).show()
+                    else -> Toast.makeText(this@SelectProfileActivity, "Error al seleccionar perfil", Toast.LENGTH_SHORT).show()
                 }
             } catch (e: Exception) {
-                runOnUiThread {
-                    Toast.makeText(this, "Error de conexion", Toast.LENGTH_SHORT).show()
-                }
+                Toast.makeText(this@SelectProfileActivity, "Error de conexion", Toast.LENGTH_SHORT).show()
             }
-        }.start()
+        }
     }
 
     override fun onKeyDown(keyCode: Int, event: KeyEvent?): Boolean {
         if (keyCode == KeyEvent.KEYCODE_BACK) { finish(); return true }
         return super.onKeyDown(keyCode, event)
     }
+    override fun onDestroy() { super.onDestroy(); scope.cancel() }
 }

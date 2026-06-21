@@ -13,7 +13,7 @@ class SettingsActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         binding = ActivitySettingsBinding.inflate(layoutInflater)
         setContentView(binding.root)
-        binding.tvAppVersion.text = "Versión 1.0.0"
+        binding.tvAppVersion.text = "Versión ${com.fluxtv.app.BuildConfig.VERSION_NAME}"
         binding.btnLogout.setOnClickListener {
             Prefs.logout(this)
             startActivity(Intent(this, LoginActivity::class.java))

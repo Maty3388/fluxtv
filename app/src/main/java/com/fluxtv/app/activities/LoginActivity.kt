@@ -22,9 +22,14 @@ class LoginActivity : AppCompatActivity() {
 
     private fun doLogin() {
         val email = binding.etEmail.text.toString().trim()
-        val pass = binding.etPassword.text.toString().trim()
-        if (email.isEmpty() || pass.isEmpty()) {
+        val password = binding.etPassword.text.toString().trim()
+        if (email.isEmpty() || password.isEmpty()) {
             binding.tvError.text = "Completá todos los campos"
+            binding.tvError.visibility = View.VISIBLE
+            return
+        }
+        if (!android.util.Patterns.EMAIL_ADDRESS.matcher(email).matches()) {
+            binding.tvError.text = "Ingresá un email válido"
             binding.tvError.visibility = View.VISIBLE
             return
         }
@@ -33,8 +38,9 @@ class LoginActivity : AppCompatActivity() {
         binding.tvError.visibility = View.GONE
         scope.launch {
             val token = withContext(Dispatchers.IO) {
-                try { ApiService.login(email, pass) } catch (_: Exception) { null }
+                try { ApiService.login(email, password) } catch (_: Exception) { null }
             }
+            if (isDestroyed) return@launch
             binding.progressBar.visibility = View.GONE
             binding.btnLogin.isEnabled = true
             if (token != null) {

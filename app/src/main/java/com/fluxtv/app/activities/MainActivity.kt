@@ -107,7 +107,7 @@ class MainActivity : AppCompatActivity() {
                     2 -> { mainFragment?.loadFavorites(); highlightMobileNav(R.id.navInicio) }
                     3 -> startActivity(Intent(this, HistorialActivity::class.java))
                     4 -> startActivity(Intent(this, MisListasActivity::class.java))
-                    5 -> { cacheDir.deleteRecursively(); Toast.makeText(this, "Caché borrado", Toast.LENGTH_SHORT).show() }
+                    5 -> { cacheDir.listFiles()?.forEach { it.deleteRecursively() }; Toast.makeText(this, "Caché borrado", Toast.LENGTH_SHORT).show() }
                     6 -> {
                         Prefs.logout(this)
                         startActivity(Intent(this, LoginActivity::class.java))
@@ -125,7 +125,7 @@ class MainActivity : AppCompatActivity() {
         binding.btnBuscar.setOnClickListener { startActivity(Intent(this, SearchActivity::class.java)) }
         binding.btnFavoritos.setOnClickListener { selectItem(5); mainFragment?.loadFavorites() }
         binding.btnClearCache.setOnClickListener {
-            cacheDir.deleteRecursively()
+            cacheDir.listFiles()?.forEach { it.deleteRecursively() }
             Toast.makeText(this, "Caché borrado", Toast.LENGTH_SHORT).show()
         }
         binding.btnLogout.setOnClickListener {
@@ -184,18 +184,6 @@ class MainActivity : AppCompatActivity() {
     private fun selectItem(idx: Int) {
         val items = listOf(binding.btnTv, binding.btnPeliculas, binding.btnSeries,
             binding.btnAdultos, binding.btnBuscar, binding.btnFavoritos)
-        items.forEach { btn ->
-            btn.setOnFocusChangeListener { v, focused ->
-                v.setBackgroundColor(if (focused) getColor(R.color.surface2) else android.graphics.Color.TRANSPARENT)
-                val tv = (v as? android.view.ViewGroup)?.getChildAt(1) as? android.widget.TextView
-                val iv = (v as? android.view.ViewGroup)?.getChildAt(0) as? android.widget.ImageView
-                tv?.setTextColor(if (focused) getColor(R.color.primary) else getColor(R.color.text_primary))
-                iv?.setColorFilter(if (focused) getColor(R.color.primary) else getColor(R.color.text_secondary))
-                if (focused) v.animate().translationX(4f).setDuration(100).start()
-                else v.animate().translationX(0f).setDuration(100).start()
-            }
-        }
-
         items.forEachIndexed { i, btn ->
             val tv = btn.getChildAt(1) as? android.widget.TextView
             val iv = btn.getChildAt(0) as? android.widget.ImageView
@@ -257,31 +245,27 @@ class MainActivity : AppCompatActivity() {
                 val pin = input.text.toString()
                 if (pin.length < 4) { tvError.text = "El PIN debe tener al menos 4 dígitos"; return@setOnClickListener }
                 dialog.getButton(android.app.AlertDialog.BUTTON_POSITIVE).isEnabled = false
-                Thread {
+                scope.launch {
                     try {
-                        val res = ApiService.verifyParentalPin(pin)
+                        val res = withContext(Dispatchers.IO) { ApiService.verifyParentalPin(pin) }
                         val success = res.optBoolean("success", false)
                         val error = res.optString("error", "")
-                        runOnUiThread {
-                            if (success) {
-                                dialog.dismiss()
-                                onSuccess()
-                            } else {
-                                dialog.getButton(android.app.AlertDialog.BUTTON_POSITIVE).isEnabled = true
-                                tvError.text = when (error) {
-                                    "PIN no configurado" -> "PIN no configurado. Contactá al administrador."
-                                    else -> "PIN incorrecto"
-                                }
-                                input.text.clear()
+                        if (success) {
+                            dialog.dismiss()
+                            onSuccess()
+                        } else {
+                            dialog.getButton(android.app.AlertDialog.BUTTON_POSITIVE).isEnabled = true
+                            tvError.text = when (error) {
+                                "PIN no configurado" -> "PIN no configurado. Contactá al administrador."
+                                else -> "PIN incorrecto"
                             }
+                            input.text.clear()
                         }
                     } catch (e: Exception) {
-                        runOnUiThread {
-                            dialog.getButton(android.app.AlertDialog.BUTTON_POSITIVE).isEnabled = true
-                            tvError.text = "Error de conexión"
-                        }
+                        dialog.getButton(android.app.AlertDialog.BUTTON_POSITIVE).isEnabled = true
+                        tvError.text = "Error de conexión"
                     }
-                }.start()
+                }
             }
         }
         dialog.show()

@@ -62,8 +62,8 @@ class VodActivity : AppCompatActivity() {
 
         supportFragmentManager.beginTransaction()
             .replace(R.id.rvVod, fragment)
+            .runOnCommit { fragment.load(type) }
             .commit()
-        fragment.load(type)
     }
 
     override fun onKeyDown(keyCode: Int, event: KeyEvent?): Boolean {

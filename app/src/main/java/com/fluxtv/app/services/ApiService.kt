@@ -63,7 +63,8 @@ object ApiService {
 
     var loginError = ""
     fun login(email: String, password: String): String? {
-        val body = """{"email":"$email","password":"$password"}""".toRequestBody("application/json".toMediaType())
+        val bodyJson = JSONObject().put("email", email).put("password", password).toString()
+        val body = bodyJson.toRequestBody("application/json".toMediaType())
         val res = client.newCall(Request.Builder().url("$BASE/auth/login").post(body).build()).execute()
         val json = JSONObject(res.body?.string() ?: return null)
         loginError = json.optString("error", "")
@@ -71,15 +72,15 @@ object ApiService {
         return json.optString("token").takeIf { it.isNotEmpty() }
     }
 
-    fun getChannels(): List<Channel> {
+    fun getChannels(): List<Channel> = try {
         val res = client.newCall(Request.Builder().url("$BASE/channels?limit=5000")
             .header("Authorization", "Bearer $token").build()).execute()
         val bodyStr = res.body?.string() ?: return getCachedChannels()
         saveCache("channels", bodyStr)
-        return parseChannels(bodyStr)
-    }
+        parseChannels(bodyStr)
+    } catch (_: Exception) { getCachedChannels() }
 
-    fun getFavorites(): List<Channel> {
+    fun getFavorites(): List<Channel> = try {
         val res = client.newCall(Request.Builder().url("$BASE/favorites")
             .header("Authorization", "Bearer $token").build()).execute()
         val json = JSONObject(res.body?.string() ?: return emptyList())
@@ -105,7 +106,7 @@ object ApiService {
             .header("Authorization", "Bearer $token").delete().build()).execute()
     }
 
-    fun getMovies(featured: Boolean = false): List<com.fluxtv.app.models.Movie> {
+    fun getMovies(featured: Boolean = false): List<com.fluxtv.app.models.Movie> = try {
         val url = if (featured) "$BASE/movies?featured=true" else "$BASE/movies?limit=200"
         val res = client.newCall(Request.Builder().url(url)
             .header("Authorization", "Bearer $token").build()).execute()
@@ -120,7 +121,7 @@ object ApiService {
         }
     }
 
-    fun getSeries(featured: Boolean = false): List<com.fluxtv.app.models.Serie> {
+    fun getSeries(featured: Boolean = false): List<com.fluxtv.app.models.Serie> = try {
         val url = if (featured) "$BASE/series?featured=true" else "$BASE/series"
         val res = client.newCall(Request.Builder().url(url)
             .header("Authorization", "Bearer $token").build()).execute()

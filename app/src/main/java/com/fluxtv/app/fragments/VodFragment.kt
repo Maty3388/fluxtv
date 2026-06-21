@@ -40,6 +40,7 @@ class VodFragment : RowsSupportFragment() {
     fun load(vodType: String) {
         type = vodType
         scope.launch {
+            if (!isAdded) return@launch
             val rowsAdapter = ArrayObjectAdapter(ListRowPresenter(FocusHighlight.ZOOM_FACTOR_SMALL).apply {
                 shadowEnabled = false; selectEffectEnabled = false
             })
@@ -90,6 +91,7 @@ class VodFragment : RowsSupportFragment() {
                 }
                 onCategoriesLoaded?.invoke(categoryIndices)
             }
+            if (!isAdded) return@launch
             adapter = rowsAdapter
             onLoaded?.invoke()
         }
@@ -136,6 +138,7 @@ class MoviePresenter : Presenter() {
         val card = vh.view as android.widget.FrameLayout
         card.findViewWithTag<android.widget.TextView>("name")?.text = m.title
         val poster = card.findViewWithTag<android.widget.ImageView>("poster")
+        poster?.setImageDrawable(null)
         if (m.posterUrl.isNotEmpty()) Glide.with(card).load(m.posterUrl).into(poster!!)
     }
 
@@ -182,6 +185,7 @@ class SeriePresenter : Presenter() {
         val card = vh.view as android.widget.FrameLayout
         card.findViewWithTag<android.widget.TextView>("name")?.text = s.title
         val poster = card.findViewWithTag<android.widget.ImageView>("poster")
+        poster?.setImageDrawable(null)
         if (s.posterUrl.isNotEmpty()) Glide.with(card).load(s.posterUrl).into(poster!!)
     }
 

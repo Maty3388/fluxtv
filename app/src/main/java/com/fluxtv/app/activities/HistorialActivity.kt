@@ -31,13 +31,13 @@ class HistorialActivity : AppCompatActivity() {
             WatchHistory.clear(this)
             loadHistory()
         }
+        binding.rvList.layoutManager = GridLayoutManager(this, 6)
         loadHistory()
     }
 
     private fun loadHistory() {
         val items = WatchHistory.getAll(this)
         binding.tvEmpty.visibility = if (items.isEmpty()) View.VISIBLE else View.GONE
-        binding.rvList.layoutManager = GridLayoutManager(this, 6)
         binding.rvList.adapter = HistoryAdapter(items) { entry ->
             val ch = Channel(entry.id, entry.name, entry.category, entry.posterUrl, entry.streamUrl)
             startActivity(Intent(this, PlayerActivity::class.java).apply {

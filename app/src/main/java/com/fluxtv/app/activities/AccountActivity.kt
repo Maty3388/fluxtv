@@ -8,9 +8,11 @@ import androidx.appcompat.app.AppCompatActivity
 import com.fluxtv.app.databinding.ActivityAccountBinding
 import com.fluxtv.app.services.ApiService
 import com.fluxtv.app.utils.Prefs
+import kotlinx.coroutines.*
 
 class AccountActivity : AppCompatActivity() {
     private lateinit var binding: ActivityAccountBinding
+    private val scope = CoroutineScope(Dispatchers.Main)
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -80,25 +82,21 @@ class AccountActivity : AppCompatActivity() {
                 val pin = input.text.toString()
                 if (pin.length < 4) { tvError.text = "El PIN debe tener al menos 4 dígitos"; return@setOnClickListener }
                 dialog.getButton(android.app.AlertDialog.BUTTON_POSITIVE).isEnabled = false
-                Thread {
+                scope.launch {
                     try {
-                        val json = ApiService.setParentalPin(pin)
-                        runOnUiThread {
-                            if (json.optBoolean("success", false)) {
-                                dialog.dismiss()
-                                Toast.makeText(this, "PIN configurado correctamente", Toast.LENGTH_SHORT).show()
-                            } else {
-                                dialog.getButton(android.app.AlertDialog.BUTTON_POSITIVE).isEnabled = true
-                                tvError.text = json.optString("error", "Error al guardar")
-                            }
+                        val json = withContext(Dispatchers.IO) { ApiService.setParentalPin(pin) }
+                        if (json.optBoolean("success", false)) {
+                            dialog.dismiss()
+                            Toast.makeText(this@AccountActivity, "PIN configurado correctamente", Toast.LENGTH_SHORT).show()
+                        } else {
+                            dialog.getButton(android.app.AlertDialog.BUTTON_POSITIVE).isEnabled = true
+                            tvError.text = json.optString("error", "Error al guardar")
                         }
                     } catch (e: Exception) {
-                        runOnUiThread {
-                            dialog.getButton(android.app.AlertDialog.BUTTON_POSITIVE).isEnabled = true
-                            tvError.text = "Error de conexión"
-                        }
+                        dialog.getButton(android.app.AlertDialog.BUTTON_POSITIVE).isEnabled = true
+                        tvError.text = "Error de conexión"
                     }
-                }.start()
+                }
             }
         }
         dialog.show()
@@ -109,4 +107,5 @@ class AccountActivity : AppCompatActivity() {
         if (keyCode == KeyEvent.KEYCODE_BACK) { finish(); return true }
         return super.onKeyDown(keyCode, event)
     }
+    override fun onDestroy() { super.onDestroy(); scope.cancel() }
 }

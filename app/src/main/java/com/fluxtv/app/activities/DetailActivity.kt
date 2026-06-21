@@ -33,8 +33,8 @@ class DetailActivity : AppCompatActivity() {
 
         binding.btnBack.setOnClickListener { finish() }
 
-        val movie = intent.getSerializableExtra(EXTRA_MOVIE) as? Movie
-        val serie = intent.getSerializableExtra(EXTRA_SERIE) as? Serie
+        val movie = if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.TIRAMISU) intent.getSerializableExtra(EXTRA_MOVIE, Movie::class.java) else @Suppress("DEPRECATION") intent.getSerializableExtra(EXTRA_MOVIE) as? Movie
+        val serie = if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.TIRAMISU) intent.getSerializableExtra(EXTRA_SERIE, Serie::class.java) else @Suppress("DEPRECATION") intent.getSerializableExtra(EXTRA_SERIE) as? Serie
 
         if (movie != null) {
             binding.tvTitle.text = movie.title
@@ -60,12 +60,12 @@ class DetailActivity : AppCompatActivity() {
             }
 
             if (serie.episodes.isNotEmpty()) {
+                val episodeChannels = serie.episodes.map {
+                    Channel(serie.id + "_s${it.season}e${it.episode}", it.title, serie.category, serie.posterUrl, it.streamUrl)
+                }
                 binding.rvEpisodes.visibility = View.VISIBLE
                 binding.rvEpisodes.layoutManager = LinearLayoutManager(this)
-                binding.rvEpisodes.adapter = EpisodeAdapter(serie.episodes) { ep, position ->
-                    val episodeChannels = serie.episodes.map {
-                        Channel(serie.id + "_s${it.season}e${it.episode}", it.title, serie.category, serie.posterUrl, it.streamUrl)
-                    }
+                binding.rvEpisodes.adapter = EpisodeAdapter(serie.episodes) { _, position ->
                     startActivity(Intent(this, PlayerActivity::class.java).apply {
                         putExtra(PlayerActivity.EXTRA_CHANNELS, ArrayList(episodeChannels))
                         putExtra(PlayerActivity.EXTRA_INDEX, position)
@@ -73,9 +73,6 @@ class DetailActivity : AppCompatActivity() {
                 }
                 binding.btnPlay.text = "▶ EPISODIO 1"
                 binding.btnPlay.setOnClickListener {
-                    val episodeChannels = serie.episodes.map {
-                        Channel(serie.id + "_s${it.season}e${it.episode}", it.title, serie.category, serie.posterUrl, it.streamUrl)
-                    }
                     startActivity(Intent(this, PlayerActivity::class.java).apply {
                         putExtra(PlayerActivity.EXTRA_CHANNELS, ArrayList(episodeChannels))
                         putExtra(PlayerActivity.EXTRA_INDEX, 0)

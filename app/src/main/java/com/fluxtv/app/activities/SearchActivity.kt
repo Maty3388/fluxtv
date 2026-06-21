@@ -39,9 +39,10 @@ class SearchActivity : AppCompatActivity() {
             search(binding.etSearch.text.toString()); true
         }
 
+        binding.rvResults.layoutManager = LinearLayoutManager(this)
         scope.launch {
             allChannels = withContext(Dispatchers.IO) {
-                try { ApiService.getChannels() } catch (_: Exception) { emptyList() }
+                try { ApiService.getChannels() } catch (_: Exception) { ApiService.getCachedChannels() }
             }
             binding.tvResults.text = "${allChannels.size} canales disponibles"
             binding.etSearch.requestFocus()
@@ -56,7 +57,6 @@ class SearchActivity : AppCompatActivity() {
         }
         val results = allChannels.filter { it.name.contains(query, ignoreCase = true) }
         binding.tvResults.text = "${results.size} resultados para \"$query\""
-        binding.rvResults.layoutManager = LinearLayoutManager(this)
         binding.rvResults.adapter = SearchAdapter(results) { ch, idx ->
             startActivity(Intent(this, PlayerActivity::class.java).apply {
                 putExtra(PlayerActivity.EXTRA_CHANNELS, ArrayList(results))

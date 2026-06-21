@@ -31,6 +31,8 @@ class MisListasActivity : AppCompatActivity() {
 
         binding.btnBack.setOnClickListener { finish() }
         binding.btnNew.setOnClickListener { showCreateDialog() }
+        binding.rvListas.layoutManager = LinearLayoutManager(this)
+        binding.rvItems.layoutManager = GridLayoutManager(this, 6)
         loadLists()
     }
 
@@ -56,7 +58,6 @@ class MisListasActivity : AppCompatActivity() {
 
     private fun loadLists() {
         val names = MisListas.getListNames(this)
-        binding.rvListas.layoutManager = LinearLayoutManager(this)
         binding.rvListas.adapter = ListaAdapter(names,
             onClick = { name -> selectedList = name; loadItems(name) },
             onDelete = { name ->
@@ -81,7 +82,6 @@ class MisListasActivity : AppCompatActivity() {
         } else {
             binding.tvEmpty.visibility = View.GONE
             binding.rvItems.visibility = View.VISIBLE
-            binding.rvItems.layoutManager = GridLayoutManager(this, 6)
             binding.rvItems.adapter = ListaItemAdapter(items,
                 onClick = { item ->
                     val ch = Channel(item.id, item.name, item.category, item.posterUrl, item.streamUrl)
@@ -138,6 +138,7 @@ class ListaItemAdapter(private val items: List<ListItem>, private val onClick: (
         val item = items[position]
         holder.tvTitle.text = item.name
         holder.tvYear.text = "Quitar ✕"
+        holder.ivPoster.setImageDrawable(null)
         if (item.posterUrl.isNotEmpty()) Glide.with(holder.ivPoster).load(item.posterUrl).into(holder.ivPoster)
         holder.itemView.setOnClickListener { onClick(item) }
         holder.tvYear.setOnClickListener { onRemove(item) }
