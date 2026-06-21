@@ -41,6 +41,8 @@ class PlayerActivity : AppCompatActivity() {
     private var urlIdx = 0 // índice de URL múltiple
     private var networkMonitor: com.fluxtv.app.utils.NetworkMonitor? = null
     private var wasDisconnected = false
+    private var isRetrying = false
+    private var isRetrying = false
 
     companion object {
         const val EXTRA_CHANNELS = "channels"
@@ -68,7 +70,7 @@ class PlayerActivity : AppCompatActivity() {
                 }
             }
             onConnected = {
-                if (wasDisconnected) {
+                if (wasDisconnected && !isRetrying) {
                     wasDisconnected = false
                     runOnUiThread {
                         android.widget.Toast.makeText(this@PlayerActivity, "Conexión restaurada", android.widget.Toast.LENGTH_SHORT).show()
@@ -105,7 +107,7 @@ class PlayerActivity : AppCompatActivity() {
                 } else if (retries < 5) {
                     val backoff = (1000L * (retries + 1)).coerceAtMost(8000L)
                     retries++; urlIdx = 0
-                    scope.launch { delay(backoff); loadChannel(idx) }
+                    if (!isRetrying) { isRetrying = true; scope.launch { delay(backoff); loadChannel(idx); isRetrying = false } }
                 } else {
                     // Ultimo intento: refrescar datos del canal desde la API (token/url puede haber cambiado)
                     scope.launch {
@@ -206,6 +208,7 @@ class PlayerActivity : AppCompatActivity() {
         if (ch.id.isNotEmpty()) {
             val savedPos = com.fluxtv.app.utils.Prefs.getProgress(this, ch.id)
             if (savedPos > 0 && !ch.isLive) {
+                player?.removeListener(seekListener)
                 player?.addListener(object : Player.Listener {
                     override fun onPlaybackStateChanged(state: Int) {
                         if (state == Player.STATE_READY) {
