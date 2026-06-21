@@ -90,7 +90,7 @@ class PlayerActivity : AppCompatActivity() {
             override fun onPlaybackStateChanged(state: Int) {
                 when (state) {
                     Player.STATE_READY -> { showLoading(false); retries = 0; urlIdx = 0; loadTimer?.cancel() }
-                    Player.STATE_BUFFERING -> { showLoading(true) }
+                    Player.STATE_BUFFERING -> { showLoading(true); startLoadTimer() }
                     Player.STATE_ENDED -> nextChannel()
                     else -> {}
                 }
@@ -161,6 +161,7 @@ class PlayerActivity : AppCompatActivity() {
     }
 
     private fun loadChannel(i: Int) {
+        loadTimer?.cancel()
         if (channels.isEmpty()) return
         val ch = channels[i]; idx = i; retries = 0; urlIdx = 0
         showLoading(true); hideControls()
@@ -193,7 +194,7 @@ class PlayerActivity : AppCompatActivity() {
             url.contains(".m3u8") || url.contains(".ts") ->
                 HlsMediaSource.Factory(dsf).createMediaSource(MediaItem.fromUri(url))
             url.contains(".mpd") -> {
-                val dashFactory = DashMediaSource.Factory(DefaultDataSource.Factory(this))
+                val dashFactory = DashMediaSource.Factory(dsf)
                 buildClearKeySessionManager(ch.drmKeys)?.let { drmMgr -> dashFactory.setDrmSessionManagerProvider { drmMgr } }
                 dashFactory.createMediaSource(MediaItem.fromUri(url))
             }
@@ -204,7 +205,7 @@ class PlayerActivity : AppCompatActivity() {
         player?.stop(); player?.setMediaSource(src); player?.prepare(); player?.play()
         if (ch.id.isNotEmpty()) {
             val savedPos = com.fluxtv.app.utils.Prefs.getProgress(this, ch.id)
-            if (savedPos > 0) {
+            if (savedPos > 0 && !ch.isLive) {
                 player?.addListener(object : Player.Listener {
                     override fun onPlaybackStateChanged(state: Int) {
                         if (state == Player.STATE_READY) {
@@ -250,7 +251,7 @@ class PlayerActivity : AppCompatActivity() {
 
     private fun startLoadTimer() {
         loadTimer?.cancel()
-        loadTimer = object : CountDownTimer(5000, 5000) {
+        loadTimer = object : CountDownTimer(15000, 15000) {
             override fun onTick(ms: Long) {}
             override fun onFinish() {
                 if (retries < 3) { retries++; scope.launch { delay(500); loadChannel(idx) } }
