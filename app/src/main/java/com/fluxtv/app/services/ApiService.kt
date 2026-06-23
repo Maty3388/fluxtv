@@ -150,6 +150,22 @@ object ApiService {
         } catch (_: Exception) { emptyList() }
     }
 
+    fun startWatching(channelId: String, channelName: String) {
+        try {
+            val body = org.json.JSONObject()
+            body.put("channelId", channelId)
+            body.put("channelName", channelName)
+            val rb = okhttp3.RequestBody.create("application/json".toMediaType(), body.toString())
+            client.newCall(Request.Builder().url("$BASE/watching").header("Authorization", "Bearer $token").post(rb).build()).execute().close()
+        } catch (_: Exception) {}
+    }
+
+    fun stopWatching() {
+        try {
+            client.newCall(Request.Builder().url("$BASE/watching").header("Authorization", "Bearer $token").delete().build()).execute().close()
+        } catch (_: Exception) {}
+    }
+
     fun selectProfile(profileId: Int, deviceId: String): org.json.JSONObject {
         val body = org.json.JSONObject()
         body.put("profileId", profileId)

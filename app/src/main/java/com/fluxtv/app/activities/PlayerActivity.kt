@@ -171,6 +171,9 @@ class PlayerActivity : AppCompatActivity() {
         updateZapOverlay(ch, i)
         val urls = getUrls(ch)
         if (urls.isNotEmpty()) playUrl(urls[0])
+        scope.launch(kotlinx.coroutines.Dispatchers.IO) {
+            try { com.fluxtv.app.services.ApiService.startWatching(ch.id, ch.name) } catch (_: Exception) {}
+        }
 
         // Registrar en historial
         if (ch.id.isNotEmpty()) {
@@ -356,6 +359,7 @@ class PlayerActivity : AppCompatActivity() {
                 com.fluxtv.app.utils.Prefs.saveProgress(this, ch.id, pos, dur)
             }
         } catch (_: Exception) {}
+        try { com.fluxtv.app.services.ApiService.stopWatching() } catch (_: Exception) {}
         loadTimer?.cancel(); controlsTimer?.cancel(); scope.cancel(); player?.release(); networkMonitor?.stop()
     }
 }
