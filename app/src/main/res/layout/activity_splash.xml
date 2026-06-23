@@ -4,28 +4,35 @@
     android:background="@color/background" android:orientation="vertical"
     android:gravity="center">
 
-    <TextView
-        android:layout_width="wrap_content" android:layout_height="wrap_content"
-        android:text="F" android:textSize="72sp" android:textStyle="bold"
-        android:textColor="@color/primary"
-        android:background="@color/surface"
-        android:paddingHorizontal="32dp" android:paddingVertical="16dp"
-        android:layout_marginBottom="24dp"/>
+    <ImageView
+        android:id="@+id/splashLetter"
+        android:layout_width="140dp" android:layout_height="140dp"
+        android:src="@drawable/ic_f_animated"
+        android:layout_marginBottom="28dp"
+        android:alpha="0"/>
 
     <TextView
+        android:id="@+id/splashTitle"
         android:layout_width="wrap_content" android:layout_height="wrap_content"
         android:text="FLUX TV" android:textSize="32sp" android:textStyle="bold"
-        android:textColor="@color/text_primary" android:letterSpacing="0.2"
-        android:layout_marginBottom="8dp"/>
+        android:textColor="@color/text_primary" android:letterSpacing="0.3"
+        android:layout_marginBottom="8dp"
+        android:alpha="0"
+        android:translationY="30dp"/>
 
     <TextView
+        android:id="@+id/splashSubtitle"
         android:layout_width="wrap_content" android:layout_height="wrap_content"
         android:text="Tu entretenimiento en un solo lugar"
         android:textSize="13sp" android:textColor="@color/text_secondary"
-        android:layout_marginBottom="64dp"/>
+        android:layout_marginBottom="64dp"
+        android:alpha="0"
+        android:translationY="20dp"/>
 
     <ProgressBar
+        android:id="@+id/splashProgress"
         android:layout_width="wrap_content" android:layout_height="wrap_content"
-        android:indeterminateTint="@color/primary"/>
+        android:indeterminateTint="@color/primary"
+        android:alpha="0"/>
 
 </LinearLayout>

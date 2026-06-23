@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="120dp" android:height="140dp"
+    android:viewportWidth="120" android:viewportHeight="140">
+
+    <!-- Trazo vertical (palo izquierdo de la F) -->
+    <path
+        android:name="stroke_vertical"
+        android:pathData="M30,10 L30,130"
+        android:strokeColor="#C9A84C"
+        android:strokeWidth="12"
+        android:strokeLineCap="round"
+        android:fillColor="@android:color/transparent"
+        android:trimPathEnd="0"/>
+
+    <!-- Trazo horizontal superior -->
+    <path
+        android:name="stroke_top"
+        android:pathData="M30,10 L100,10"
+        android:strokeColor="#C9A84C"
+        android:strokeWidth="12"
+        android:strokeLineCap="round"
+        android:fillColor="@android:color/transparent"
+        android:trimPathEnd="0"/>
+
+    <!-- Trazo horizontal medio -->
+    <path
+        android:name="stroke_mid"
+        android:pathData="M30,70 L85,70"
+        android:strokeColor="#C9A84C"
+        android:strokeWidth="12"
+        android:strokeLineCap="round"
+        android:fillColor="@android:color/transparent"
+        android:trimPathEnd="0"/>
+</vector>

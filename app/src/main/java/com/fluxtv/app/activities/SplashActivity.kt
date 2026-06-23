@@ -15,6 +15,20 @@ class SplashActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(com.fluxtv.app.R.layout.activity_splash)
+
+        val letter   = findViewById<android.widget.ImageView>(com.fluxtv.app.R.id.splashLetter)
+        val title    = findViewById<android.widget.TextView>(com.fluxtv.app.R.id.splashTitle)
+        val subtitle = findViewById<android.widget.TextView>(com.fluxtv.app.R.id.splashSubtitle)
+        val progress = findViewById<android.widget.ProgressBar>(com.fluxtv.app.R.id.splashProgress)
+
+        letter.animate().alpha(1f).setDuration(200).withEndAction {
+            val avd = letter.drawable as? android.graphics.drawable.AnimatedVectorDrawable
+            avd?.start()
+        }.start()
+        title.animate().alpha(1f).translationY(0f).setDuration(400).setStartDelay(900).start()
+        subtitle.animate().alpha(1f).translationY(0f).setDuration(400).setStartDelay(1100).start()
+        progress.animate().alpha(1f).setDuration(300).setStartDelay(1300).start()
+
         scope.launch {
             try {
             delay(1200)

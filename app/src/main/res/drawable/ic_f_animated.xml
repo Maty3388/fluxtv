@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<animated-vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:drawable="@drawable/ic_f_path">
+
+    <target
+        android:name="stroke_vertical"
+        android:animation="@animator/draw_stroke_1"/>
+
+    <target
+        android:name="stroke_top"
+        android:animation="@animator/draw_stroke_2"/>
+
+    <target
+        android:name="stroke_mid"
+        android:animation="@animator/draw_stroke_3"/>
+</animated-vector>
