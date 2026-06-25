@@ -68,6 +68,12 @@ class MainFragment : RowsSupportFragment() {
         buildRows(filtered)
     }
 
+    fun getCategories(): List<String> {
+        return allChannels.filter { it.category != "ADULTOS" }
+            .map { it.category }.distinct()
+            .sortedBy { catOrder.indexOf(it).let { i -> if (i < 0) 999 else i } }
+    }
+
     fun filterCategories(cats: List<String>) {
         buildRows(allChannels.filter { it.category in cats })
     }

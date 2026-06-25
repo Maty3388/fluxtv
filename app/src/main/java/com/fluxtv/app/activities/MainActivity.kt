@@ -1,315 +1,245 @@
 package com.fluxtv.app.activities
 
 import android.content.Intent
+import android.graphics.Typeface
 import android.os.Bundle
-import android.view.KeyEvent
-import android.view.View
-import android.widget.Toast
-import androidx.recyclerview.widget.RecyclerView
-import androidx.activity.OnBackPressedCallback
+import android.view.Gravity
+import android.view.ViewGroup
+import android.widget.*
 import androidx.appcompat.app.AppCompatActivity
-import com.fluxtv.app.BuildConfig
 import com.fluxtv.app.R
-import com.fluxtv.app.databinding.ActivityMainBinding
 import com.fluxtv.app.fragments.MainFragment
-import com.fluxtv.app.services.ApiService
-import com.facebook.shimmer.ShimmerFrameLayout
-import com.fluxtv.app.utils.AutoUpdater
 import com.fluxtv.app.utils.Prefs
+import com.fluxtv.app.services.ApiService
 import kotlinx.coroutines.*
 
 class MainActivity : AppCompatActivity() {
-    private lateinit var binding: ActivityMainBinding
-    private var mainFragment: MainFragment? = null
-    private val scope = CoroutineScope(Dispatchers.Main)
-    private var selectedItem = 0
 
-    private var isMobile = false
+    private lateinit var mainFragment: MainFragment
+    private lateinit var tabsContainer: LinearLayout
+    private lateinit var categoriesContainer: LinearLayout
+    private var currentTab = 0
+    private val scope = CoroutineScope(Dispatchers.Main)
+
+    // Tabs: 0=Television, 1=Películas, 2=Series
+    private val tabs = listOf("Televisión", "Películas", "Series")
+    private var allCategories = listOf<String>()
+    private var selectedCategory = "All"
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        com.fluxtv.app.services.ApiService.appContext = applicationContext
-        isMobile = !com.fluxtv.app.utils.DeviceUtils.isTV(this)
+        setContentView(R.layout.activity_main)
 
-        if (isMobile) {
-            setContentView(R.layout.activity_main_mobile)
-            mainFragment = MainFragment()
-            supportFragmentManager.beginTransaction()
-                .replace(R.id.mainContainer, mainFragment!!)
-                .commit()
-            setupMobileNav()
-            highlightMobileNav(R.id.navInicio)
-            checkUpdate()
-            return
-        }
+        // Setup info usuario
+        val email = Prefs.getEmail(this)
+        val exp = Prefs.getSubEnd(this)
+        findViewById<TextView>(R.id.tvUserEmail)?.text = "👤 $email"
+        findViewById<TextView>(R.id.tvVencimiento)?.text = "Vence: $exp"
 
-        binding = ActivityMainBinding.inflate(layoutInflater)
-        setContentView(binding.root)
+        tabsContainer = findViewById(R.id.tabsContainer)
+        categoriesContainer = findViewById(R.id.categoriesContainer)
 
+        // Setup fragment
         mainFragment = MainFragment()
-        mainFragment!!.onChannelsLoaded = {
-            binding.shimmerLayout.stopShimmer()
-            binding.shimmerLayout.visibility = View.GONE
-        }
+        mainFragment.onChannelsLoaded = { buildCategories() }
         supportFragmentManager.beginTransaction()
-            .replace(R.id.mainContainer, mainFragment!!)
+            .replace(R.id.mainContainer, mainFragment)
             .commit()
-        binding.shimmerLayout.startShimmer()
 
-        // Mostrar datos usuario
-        binding.tvUserEmail.text = "👤 " + Prefs.getEmail(this)
-        val subEnd = Prefs.getSubEnd(this)
-        if (subEnd.isNotEmpty()) binding.tvVencimiento.text = subEnd
+        setupTabs()
+        setupBottomNav()
+        setupSearch()
 
-        setupSidebar()
-        setupNavigation()
-        checkUpdate()
+        // Refresh button
+        findViewById<ImageView>(R.id.btnRefresh)?.setOnClickListener {
+            mainFragment.loadChannels()
+        }
     }
 
-    private fun setupMobileNav() {
-        findViewById<View>(R.id.navInicio).setOnClickListener {
-            mainFragment?.filterCategory(null)
+    private fun setupTabs() {
+        tabsContainer.removeAllViews()
+        tabs.forEachIndexed { i, label ->
+            val tab = TextView(this).apply {
+                text = label
+                textSize = 13f
+                setPadding(32, 0, 32, 0)
+                gravity = Gravity.CENTER
+                typeface = if (i == currentTab) Typeface.DEFAULT_BOLD else Typeface.DEFAULT
+                setTextColor(if (i == currentTab) getColor(R.color.primary) else getColor(R.color.text_secondary))
+                layoutParams = LinearLayout.LayoutParams(
+                    ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.MATCH_PARENT)
+                if (i == currentTab) {
+                    setBackgroundResource(android.R.color.transparent)
+                    // Underline via compound drawable
+                }
+                setOnClickListener { selectTab(i) }
+            }
+            tabsContainer.addView(tab)
+
+            // Separador
+            if (i < tabs.size - 1) {
+                val sep = View(this).apply {
+                    layoutParams = LinearLayout.LayoutParams(1, ViewGroup.LayoutParams.MATCH_PARENT).apply {
+                        setMargins(0, 8, 0, 8)
+                    }
+                    setBackgroundColor(getColor(R.color.border))
+                }
+                tabsContainer.addView(sep)
+            }
+        }
+    }
+
+    private fun selectTab(i: Int) {
+        currentTab = i
+        setupTabs()
+        selectedCategory = "All"
+        when (i) {
+            0 -> { // Televisión
+                mainFragment.filterCategory(null)
+                buildCategories()
+                findViewById<HorizontalScrollView>(R.id.categoriesScroll)?.visibility = android.view.View.VISIBLE
+            }
+            1 -> { // Películas
+                startActivity(Intent(this, VodActivity::class.java).apply { putExtra("type", "movies") })
+                currentTab = 0; setupTabs()
+            }
+            2 -> { // Series
+                startActivity(Intent(this, VodActivity::class.java).apply { putExtra("type", "series") })
+                currentTab = 0; setupTabs()
+            }
+        }
+    }
+
+    private fun buildCategories() {
+        val cats = mainFragment.getCategories()
+        allCategories = cats
+        categoriesContainer.removeAllViews()
+        val allList = listOf("All") + cats
+        allList.forEach { cat ->
+            val chip = TextView(this).apply {
+                text = if (cat == "All") "✓ All" else cat
+                textSize = 11f
+                setPadding(24, 6, 24, 6)
+                val sel = cat == selectedCategory
+                setTextColor(if (sel) getColor(R.color.background) else getColor(R.color.text_secondary))
+                background = android.graphics.drawable.GradientDrawable().apply {
+                    cornerRadius = 40f
+                    setColor(if (sel) getColor(R.color.primary) else getColor(R.color.surface))
+                    if (!sel) setStroke(1, getColor(R.color.border))
+                }
+                val lp = LinearLayout.LayoutParams(
+                    ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT).apply {
+                    setMargins(4, 4, 4, 4)
+                }
+                layoutParams = lp
+                setOnClickListener {
+                    selectedCategory = cat
+                    buildCategories()
+                    if (cat == "All") mainFragment.filterCategory(null)
+                    else mainFragment.filterCategory(cat)
+                }
+            }
+            categoriesContainer.addView(chip)
+        }
+    }
+
+    private fun setupBottomNav() {
+        findViewById<LinearLayout>(R.id.navInicio)?.setOnClickListener {
             highlightMobileNav(R.id.navInicio)
+            mainFragment.filterCategory(null)
+            selectedCategory = "All"
+            buildCategories()
+            currentTab = 0; setupTabs()
         }
-        findViewById<View>(R.id.navPeliculas).setOnClickListener {
-            startActivity(Intent(this, VodActivity::class.java).apply { putExtra(VodActivity.EXTRA_TYPE, VodActivity.TYPE_MOVIES) })
+        findViewById<LinearLayout>(R.id.navMisListas)?.setOnClickListener {
+            highlightMobileNav(R.id.navMisListas)
+            startActivity(Intent(this, MisListasActivity::class.java))
         }
-        findViewById<View>(R.id.navSeries).setOnClickListener {
-            startActivity(Intent(this, VodActivity::class.java).apply { putExtra(VodActivity.EXTRA_TYPE, VodActivity.TYPE_SERIES) })
-        }
-        findViewById<View>(R.id.navBuscar).setOnClickListener {
+        findViewById<LinearLayout>(R.id.navExplorar)?.setOnClickListener {
+            highlightMobileNav(R.id.navExplorar)
             startActivity(Intent(this, SearchActivity::class.java))
         }
-        findViewById<View>(R.id.navMas).setOnClickListener { showMoreMenu() }
-        findViewById<View>(R.id.btnMoreMobile).setOnClickListener { showMoreMenu() }
-    }
-
-    private fun highlightMobileNav(activeId: Int) {
-        val navIds = listOf(R.id.navInicio, R.id.navPeliculas, R.id.navSeries, R.id.navBuscar, R.id.navMas)
-        navIds.forEach { id ->
-            val layout = findViewById<android.widget.LinearLayout>(id)
-            val icon = layout.getChildAt(0) as? android.widget.ImageView
-            val label = layout.getChildAt(1) as? android.widget.TextView
-            val active = id == activeId
-            icon?.setColorFilter(if (active) getColor(R.color.primary) else getColor(R.color.text_secondary))
-            label?.setTextColor(if (active) getColor(R.color.primary) else getColor(R.color.text_secondary))
+        findViewById<LinearLayout>(R.id.navCuenta)?.setOnClickListener {
+            highlightMobileNav(R.id.navCuenta)
+            showAccountMenu()
         }
     }
 
-    private fun showMoreMenu() {
-        val options = arrayOf("👤 Mi Cuenta", "🔥 Adultos", "⭐ Favoritos", "🕒 Historial", "📑 Mis Listas", "🗑️ Borrar Caché", "🚪 Cerrar Sesión")
+    fun highlightMobileNav(activeId: Int) {
+        val navIds = listOf(R.id.navInicio, R.id.navMisListas, R.id.navExplorar, R.id.navCuenta)
+        navIds.forEach { id ->
+            val nav = findViewById<LinearLayout>(id) ?: return@forEach
+            val active = id == activeId
+            val iv = nav.getChildAt(0) as? ImageView
+            val tv = nav.getChildAt(1) as? TextView
+            iv?.setColorFilter(getColor(if (active) R.color.primary else R.color.text_secondary))
+            tv?.setTextColor(getColor(if (active) R.color.primary else R.color.text_secondary))
+        }
+    }
+
+    private fun setupSearch() {
+        findViewById<ImageView>(R.id.btnBuscar)?.setOnClickListener {
+            startActivity(Intent(this, SearchActivity::class.java))
+        }
+    }
+
+    private fun showAccountMenu() {
+        val options = arrayOf("👤 Mi Cuenta", "🔥 Adultos", "⭐ Favoritos", "🕒 Historial", "🗑️ Borrar Caché", "🚪 Cerrar Sesión")
         android.app.AlertDialog.Builder(this)
-            .setTitle("Más opciones")
             .setItems(options) { _, which ->
                 when (which) {
                     0 -> startActivity(Intent(this, AccountActivity::class.java))
-                    1 -> { showPinDialog { mainFragment?.filterCategory("ADULTOS"); highlightMobileNav(R.id.navInicio) } }
-                    2 -> { mainFragment?.loadFavorites(); highlightMobileNav(R.id.navInicio) }
+                    1 -> showPinDialog { mainFragment.filterCategory("ADULTOS"); highlightMobileNav(R.id.navInicio) }
+                    2 -> { mainFragment.loadFavorites(); highlightMobileNav(R.id.navInicio) }
                     3 -> startActivity(Intent(this, HistorialActivity::class.java))
-                    4 -> startActivity(Intent(this, MisListasActivity::class.java))
-                    5 -> { cacheDir.listFiles()?.forEach { it.deleteRecursively() }; Toast.makeText(this, "Caché borrado", Toast.LENGTH_SHORT).show() }
-                    6 -> {
-                        Prefs.logout(this)
-                        startActivity(Intent(this, LoginActivity::class.java))
-                        finishAffinity()
-                    }
+                    4 -> { Toast.makeText(this, "Caché borrado", Toast.LENGTH_SHORT).show() }
+                    5 -> { Prefs.saveToken(this, ""); Prefs.clearProfileSelected(this); startActivity(Intent(this, LoginActivity::class.java)); finish() }
                 }
             }.show()
     }
 
-    private fun setupSidebar() {
-        binding.btnTv.setOnClickListener { selectItem(0); mainFragment?.filterCategory(null) }
-        binding.btnPeliculas.setOnClickListener { selectItem(1); startActivity(Intent(this, VodActivity::class.java).apply { putExtra(VodActivity.EXTRA_TYPE, VodActivity.TYPE_MOVIES) }) }
-        binding.btnSeries.setOnClickListener { selectItem(2); startActivity(Intent(this, VodActivity::class.java).apply { putExtra(VodActivity.EXTRA_TYPE, VodActivity.TYPE_SERIES) }) }
-        binding.btnAdultos.setOnClickListener { selectItem(3); showPinDialog { mainFragment?.filterCategory("ADULTOS") } }
-        binding.btnBuscar.setOnClickListener { startActivity(Intent(this, SearchActivity::class.java)) }
-        binding.btnFavoritos.setOnClickListener { selectItem(5); mainFragment?.loadFavorites() }
-        binding.btnClearCache.setOnClickListener {
-            cacheDir.listFiles()?.forEach { it.deleteRecursively() }
-            Toast.makeText(this, "Caché borrado", Toast.LENGTH_SHORT).show()
-        }
-        binding.btnLogout.setOnClickListener {
-            Prefs.logout(this)
-            startActivity(Intent(this, LoginActivity::class.java))
-            finishAffinity()
-        }
-        binding.btnMiCuenta.setOnClickListener { startActivity(Intent(this, AccountActivity::class.java)) }
-        selectItem(0)
-    }
-
-    private fun setupNavigation() {
-        val items = listOf(binding.btnTv, binding.btnPeliculas, binding.btnSeries,
-            binding.btnAdultos, binding.btnBuscar, binding.btnFavoritos,
-            binding.btnClearCache, binding.btnLogout)
-
-        items.forEach { btn ->
-            btn.setOnFocusChangeListener { v, focused ->
-                v.setBackgroundColor(if (focused) getColor(R.color.surface2) else android.graphics.Color.TRANSPARENT)
-                val tv = (v as? android.view.ViewGroup)?.getChildAt(1) as? android.widget.TextView
-                val iv = (v as? android.view.ViewGroup)?.getChildAt(0) as? android.widget.ImageView
-                tv?.setTextColor(if (focused) getColor(R.color.primary) else getColor(R.color.text_primary))
-                iv?.setColorFilter(if (focused) getColor(R.color.primary) else getColor(R.color.text_secondary))
-                if (focused) v.animate().translationX(4f).setDuration(100).start()
-                else v.animate().translationX(0f).setDuration(100).start()
-            }
-        }
-
-        items.forEachIndexed { i, btn ->
-            btn.setOnKeyListener { _, keyCode, event ->
-                if (event.action == KeyEvent.ACTION_DOWN) {
-                    when (keyCode) {
-                        KeyEvent.KEYCODE_DPAD_DOWN -> { items.getOrNull(i+1)?.requestFocus(); true }
-                        KeyEvent.KEYCODE_DPAD_UP -> { items.getOrNull(i-1)?.requestFocus() ?: binding.btnMiCuenta.requestFocus(); true }
-                        KeyEvent.KEYCODE_DPAD_RIGHT -> { binding.mainContainer.requestFocus(); true }
-                        else -> false
-                    }
-                } else false
-            }
-        }
-
-        onBackPressedDispatcher.addCallback(this, object : OnBackPressedCallback(true) {
-            override fun handleOnBackPressed() {
-                if (isViewInSidebar(currentFocus)) {
-                    android.app.AlertDialog.Builder(this@MainActivity)
-                        .setTitle("Salir").setMessage("¿Querés salir de Flux TV?")
-                        .setPositiveButton("Salir") { _,_ -> finish() }
-                        .setNegativeButton("Cancelar", null).show()
-                } else {
-                    binding.btnTv.requestFocus()
-                }
-            }
-        })
-    }
-
-    private fun selectItem(idx: Int) {
-        val items = listOf(binding.btnTv, binding.btnPeliculas, binding.btnSeries,
-            binding.btnAdultos, binding.btnBuscar, binding.btnFavoritos)
-        items.forEachIndexed { i, btn ->
-            val tv = btn.getChildAt(1) as? android.widget.TextView
-            val iv = btn.getChildAt(0) as? android.widget.ImageView
-            val active = i == idx
-            tv?.setTextColor(if (active) getColor(R.color.primary) else getColor(R.color.text_primary))
-            iv?.setColorFilter(if (active) getColor(R.color.primary) else getColor(R.color.text_secondary))
-            btn.setBackgroundColor(if (active) getColor(R.color.surface2) else getColor(R.color.surface))
-        }
-        selectedItem = idx
-    }
-
     private fun showPinDialog(onSuccess: () -> Unit) {
-        val dp = resources.displayMetrics.density
-        val layout = android.widget.LinearLayout(this).apply {
+        val ctx = this
+        val dialog = android.app.Dialog(ctx, android.R.style.Theme_Material_Dialog)
+        dialog.setContentView(android.widget.LinearLayout(ctx).apply {
             orientation = android.widget.LinearLayout.VERTICAL
-            setPadding((24*dp).toInt(), (24*dp).toInt(), (24*dp).toInt(), (8*dp).toInt())
-        }
-        val title = android.widget.TextView(this).apply {
-            text = "🔒 Control Parental"
-            textSize = 16f
-            setTextColor(android.graphics.Color.WHITE)
-            typeface = android.graphics.Typeface.DEFAULT_BOLD
-            gravity = android.view.Gravity.CENTER
-            setPadding(0, 0, 0, (16*dp).toInt())
-        }
-        val input = android.widget.EditText(this).apply {
-            hint = "Ingresá el PIN"
-            inputType = android.text.InputType.TYPE_CLASS_NUMBER or android.text.InputType.TYPE_NUMBER_VARIATION_PASSWORD
-            gravity = android.view.Gravity.CENTER
-            textSize = 24f
-            setTextColor(android.graphics.Color.WHITE)
-            setHintTextColor(android.graphics.Color.GRAY)
-            background = android.graphics.drawable.GradientDrawable().apply {
-                setColor(0xFF1A1A2E.toInt())
-                cornerRadius = 8*dp
-                setStroke(1, 0xFF00E5FF.toInt())
+            setPadding(48, 48, 48, 32)
+            setBackgroundColor(getColor(R.color.surface))
+            val title = android.widget.TextView(ctx).apply {
+                text = "🔒 Control Parental"; textSize = 16f; typeface = Typeface.DEFAULT_BOLD
+                setTextColor(getColor(R.color.text_primary)); gravity = Gravity.CENTER
+                layoutParams = LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT).apply { bottomMargin = 24 }
             }
-            setPadding((16*dp).toInt(), (12*dp).toInt(), (16*dp).toInt(), (12*dp).toInt())
-        }
-        val tvError = android.widget.TextView(this).apply {
-            text = ""
-            textSize = 12f
-            setTextColor(android.graphics.Color.RED)
-            gravity = android.view.Gravity.CENTER
-            setPadding(0, (8*dp).toInt(), 0, 0)
-        }
-        layout.addView(title)
-        layout.addView(input)
-        layout.addView(tvError)
-
-        val dialog = android.app.AlertDialog.Builder(this)
-            .setView(layout)
-            .setPositiveButton("Confirmar", null)
-            .setNegativeButton("Cancelar", null)
-            .create()
-        dialog.setOnShowListener {
-            dialog.window?.setBackgroundDrawable(android.graphics.drawable.ColorDrawable(0xFF0A1825.toInt()))
-            dialog.getButton(android.app.AlertDialog.BUTTON_POSITIVE).setOnClickListener {
-                val pin = input.text.toString()
-                if (pin.length < 4) { tvError.text = "El PIN debe tener al menos 4 dígitos"; return@setOnClickListener }
-                dialog.getButton(android.app.AlertDialog.BUTTON_POSITIVE).isEnabled = false
-                scope.launch {
-                    try {
+            val input = android.widget.EditText(ctx).apply {
+                hint = "PIN de 4 dígitos"; inputType = android.text.InputType.TYPE_CLASS_NUMBER or android.text.InputType.TYPE_NUMBER_VARIATION_PASSWORD
+                setTextColor(getColor(R.color.text_primary)); setHintTextColor(getColor(R.color.text_hint))
+                textSize = 18f; gravity = Gravity.CENTER; maxLines = 1
+                layoutParams = LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT).apply { bottomMargin = 8 }
+            }
+            val tvError = android.widget.TextView(ctx).apply {
+                setTextColor(getColor(R.color.error)); textSize = 12f; visibility = android.view.View.GONE
+                layoutParams = LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT).apply { bottomMargin = 16 }
+            }
+            val btnOk = android.widget.Button(ctx).apply {
+                text = "VERIFICAR"
+                setBackgroundColor(getColor(R.color.primary))
+                setTextColor(getColor(R.color.background))
+                setOnClickListener {
+                    val pin = input.text.toString()
+                    if (pin.length < 4) { tvError.text = "El PIN debe tener al menos 4 dígitos"; tvError.visibility = android.view.View.VISIBLE; return@setOnClickListener }
+                    scope.launch {
                         val res = withContext(Dispatchers.IO) { ApiService.verifyParentalPin(pin) }
-                        val success = res.optBoolean("success", false)
-                        val error = res.optString("error", "")
-                        if (success) {
-                            dialog.dismiss()
-                            onSuccess()
-                        } else {
-                            dialog.getButton(android.app.AlertDialog.BUTTON_POSITIVE).isEnabled = true
-                            tvError.text = when (error) {
-                                "PIN no configurado" -> "PIN no configurado. Contactá al administrador."
-                                else -> "PIN incorrecto"
-                            }
-                            input.text.clear()
-                        }
-                    } catch (e: Exception) {
-                        dialog.getButton(android.app.AlertDialog.BUTTON_POSITIVE).isEnabled = true
-                        tvError.text = "Error de conexión"
+                        if (res.optBoolean("success")) { dialog.dismiss(); onSuccess() }
+                        else { tvError.text = res.optString("error", "PIN incorrecto"); tvError.visibility = android.view.View.VISIBLE }
                     }
                 }
             }
-        }
+            addView(title); addView(input); addView(tvError); addView(btnOk)
+        })
+        dialog.window?.setLayout(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT)
         dialog.show()
-        input.requestFocus()
     }
 
-    private fun checkUpdate() {
-        scope.launch {
-            try {
-                val ver = withContext(Dispatchers.IO) { ApiService.getVersion() }
-                if (ver != null) AutoUpdater.check(this@MainActivity, BuildConfig.VERSION_NAME, ver)
-            } catch (_: Exception) {}
-        }
-    }
-
-    override fun dispatchKeyEvent(event: KeyEvent): Boolean {
-        if (isMobile) return super.dispatchKeyEvent(event)
-        if (event.action == KeyEvent.ACTION_DOWN &&
-            event.keyCode == KeyEvent.KEYCODE_DPAD_LEFT) {
-            val focused = currentFocus
-            if (!isViewInSidebar(focused)) {
-                // Verificar si está en posición 0 de un RecyclerView
-                val parent = focused?.parent
-                if (parent is androidx.recyclerview.widget.RecyclerView) {
-                    val pos = parent.getChildAdapterPosition(focused)
-                    if (pos == 0 || pos == RecyclerView.NO_POSITION) return true
-                } else {
-                    // En Leanback headers u otros views, bloquear escape al sidebar
-                    return true
-                }
-            }
-        }
-        return super.dispatchKeyEvent(event)
-    }
-
-    private fun isViewInSidebar(view: View?): Boolean {
-        if (view == null || isMobile) return false
-        var parent = view.parent
-        while (parent != null) {
-            if (parent === binding.sidebar) return true
-            parent = (parent as? View)?.parent
-        }
-        return false
-    }
-
+    override fun onResume() { super.onResume(); highlightMobileNav(R.id.navInicio) }
     override fun onDestroy() { super.onDestroy(); scope.cancel() }
 }
