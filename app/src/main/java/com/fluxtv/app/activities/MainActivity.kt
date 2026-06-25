@@ -4,6 +4,7 @@ import android.content.Intent
 import android.graphics.Typeface
 import android.os.Bundle
 import android.view.Gravity
+import android.view.View
 import android.view.ViewGroup
 import android.widget.*
 import androidx.appcompat.app.AppCompatActivity
@@ -28,7 +29,9 @@ class MainActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_main)
+        val isTV = com.fluxtv.app.utils.DeviceUtils.isTV(this)
+        setContentView(if (isTV) R.layout.activity_main_tv else R.layout.activity_main_mobile)
+        if (isTV) { setupTV(); return }
 
         // Setup info usuario
         val email = Prefs.getEmail(this)
@@ -238,6 +241,30 @@ class MainActivity : AppCompatActivity() {
         })
         dialog.window?.setLayout(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT)
         dialog.show()
+    }
+
+    private fun setupTV() {
+        // Layout TV: usar sidebar original
+        val email = com.fluxtv.app.utils.Prefs.getEmail(this)
+        val exp = com.fluxtv.app.utils.Prefs.getSubEnd(this)
+        findViewById<android.widget.TextView>(R.id.tvUserEmail)?.text = "👤 $email"
+        findViewById<android.widget.TextView>(R.id.tvVencimiento)?.text = exp
+
+        mainFragment = MainFragment()
+        supportFragmentManager.beginTransaction()
+            .replace(R.id.mainContainer, mainFragment)
+            .commit()
+
+        // Botones sidebar TV
+        findViewById<android.widget.LinearLayout>(R.id.btnTv)?.setOnClickListener { mainFragment.filterCategory(null) }
+        findViewById<android.widget.LinearLayout>(R.id.btnPeliculas)?.setOnClickListener { startActivity(android.content.Intent(this, VodActivity::class.java).apply { putExtra("type", "movies") }) }
+        findViewById<android.widget.LinearLayout>(R.id.btnSeries)?.setOnClickListener { startActivity(android.content.Intent(this, VodActivity::class.java).apply { putExtra("type", "series") }) }
+        findViewById<android.widget.LinearLayout>(R.id.btnAdultos)?.setOnClickListener { showPinDialog { mainFragment.filterCategory("ADULTOS") } }
+        findViewById<android.widget.LinearLayout>(R.id.btnBuscar)?.setOnClickListener { startActivity(android.content.Intent(this, SearchActivity::class.java)) }
+        findViewById<android.widget.LinearLayout>(R.id.btnFavoritos)?.setOnClickListener { mainFragment.loadFavorites() }
+        findViewById<android.widget.LinearLayout>(R.id.btnLogout)?.setOnClickListener { com.fluxtv.app.utils.Prefs.saveToken(this, ""); com.fluxtv.app.utils.Prefs.clearProfileSelected(this); startActivity(android.content.Intent(this, LoginActivity::class.java)); finish() }
+        findViewById<android.widget.LinearLayout>(R.id.btnClearCache)?.setOnClickListener { android.widget.Toast.makeText(this, "Caché borrado", android.widget.Toast.LENGTH_SHORT).show() }
+        findViewById<android.widget.LinearLayout>(R.id.btnMiCuenta)?.setOnClickListener { startActivity(android.content.Intent(this, AccountActivity::class.java)) }
     }
 
     override fun onResume() { super.onResume(); highlightMobileNav(R.id.navInicio) }
