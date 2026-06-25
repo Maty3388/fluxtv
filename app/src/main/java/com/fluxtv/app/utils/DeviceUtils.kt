@@ -14,6 +14,12 @@ object DeviceUtils {
         val isUiModeTv = uiModeManager?.currentModeType == Configuration.UI_MODE_TYPE_TELEVISION
         val hasNoTouch = !ctx.packageManager.hasSystemFeature(PackageManager.FEATURE_TOUCHSCREEN)
         val hasLeanback = ctx.packageManager.hasSystemFeature("android.software.leanback")
-        return isUiModeTv || hasNoTouch || hasLeanback
+        val hasLeanbackOnly = ctx.packageManager.hasSystemFeature("android.software.leanback_only")
+        // TV Box: tiene HDMI output o no tiene telefonia
+        val hasNoTelephony = !ctx.packageManager.hasSystemFeature(PackageManager.FEATURE_TELEPHONY)
+        val hasNoBluetooth = !ctx.packageManager.hasSystemFeature(PackageManager.FEATURE_BLUETOOTH)
+        // Si no tiene telefonia Y no tiene touch -> es TV Box
+        val isTvBox = hasNoTelephony && hasNoTouch
+        return isUiModeTv || hasLeanback || hasLeanbackOnly || isTvBox
     }
 }
