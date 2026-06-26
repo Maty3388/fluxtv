@@ -8,6 +8,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.*
 import androidx.appcompat.app.AppCompatActivity
+import com.fluxtv.app.BuildConfig
 import com.fluxtv.app.R
 import com.fluxtv.app.fragments.MainFragment
 import com.fluxtv.app.utils.Prefs
@@ -59,7 +60,7 @@ class MainActivity : AppCompatActivity() {
         setupSearch()
         // Check update
         scope.launch {
-            val ver = withContext(Dispatchers.IO) { try { com.fluxtv.app.services.ApiService.checkVersion() } catch(_:Exception) { null } }
+            val ver = withContext(Dispatchers.IO) { try { com.fluxtv.app.services.ApiService.getVersion() } catch(_:Exception) { null } }
             if (ver != null) com.fluxtv.app.utils.AutoUpdater.check(this@MainActivity, BuildConfig.VERSION_NAME, ver)
         }
 
@@ -289,8 +290,8 @@ class MainActivity : AppCompatActivity() {
         findViewById<android.widget.LinearLayout>(R.id.btnClearCache)?.setOnClickListener { android.widget.Toast.makeText(this, "Caché borrado", android.widget.Toast.LENGTH_SHORT).show() }
         // Check update
         scope.launch {
-            val ver = withContext(Dispatchers.IO) { try { com.fluxtv.app.services.ApiService.checkVersion() } catch(_:Exception) { null } }
-            if (ver != null) com.fluxtv.app.utils.AutoUpdater.check(this@MainActivity, android.os.Build.VERSION.RELEASE.let { BuildConfig.VERSION_NAME }, ver)
+            val ver = withContext(Dispatchers.IO) { try { com.fluxtv.app.services.ApiService.getVersion() } catch(_:Exception) { null } }
+            if (ver != null) com.fluxtv.app.utils.AutoUpdater.check(this@MainActivity, BuildConfig.VERSION_NAME, ver)
         }
         findViewById<android.widget.LinearLayout>(R.id.btnMiCuenta)?.setOnClickListener { startActivity(android.content.Intent(this, AccountActivity::class.java)) }
     }
