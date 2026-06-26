@@ -31,11 +31,11 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         val isTV = com.fluxtv.app.utils.DeviceUtils.isTV(this)
         if (isTV) {
-            requestedOrientation = android.content.pm.ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE
             setContentView(R.layout.activity_main_tv)
             setupTV()
             return
         }
+        requestedOrientation = android.content.pm.ActivityInfo.SCREEN_ORIENTATION_PORTRAIT
         setContentView(R.layout.activity_main_mobile)
 
         // Setup info usuario
