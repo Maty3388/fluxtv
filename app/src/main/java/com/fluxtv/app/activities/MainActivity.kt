@@ -272,7 +272,7 @@ class MainActivity : AppCompatActivity() {
             ids.forEach { id ->
                 val v = findViewById<android.widget.LinearLayout>(id) ?: return@forEach
                 val active = id == activeId
-                v.setBackgroundColor(if (active) getColor(R.color.primary).let { it and 0x33FFFFFF or 0x33000000 } else android.graphics.Color.TRANSPARENT)
+                v.setBackgroundColor(if (active) 0x33FFA500.toInt() else android.graphics.Color.TRANSPARENT)
                 val tv = v.getChildAt(1) as? android.widget.TextView
                 tv?.setTextColor(if (active) getColor(R.color.primary) else getColor(R.color.text_primary))
                 val iv = v.getChildAt(0) as? android.widget.ImageView
