@@ -34,25 +34,25 @@
 
         <activity android:name=".activities.SelectProfileActivity"
             android:exported="false"
-            android:screenOrientation="portrait"/>
+            android:screenOrientation="landscape"/>
 
         <activity android:name=".activities.MainActivity"
             android:exported="false"
-            android:screenOrientation="portrait"/>
+            android:screenOrientation="landscape"/>
 
         <activity android:name=".activities.PlayerActivity"
             android:exported="false"
             android:screenOrientation="landscape"
             android:configChanges="keyboard|keyboardHidden|navigation"/>
 
-        <activity android:name=".activities.HistorialActivity" android:exported="false" android:screenOrientation="portrait"/>
-        <activity android:name=".activities.MisListasActivity" android:exported="false" android:screenOrientation="portrait"/>
+        <activity android:name=".activities.HistorialActivity" android:exported="false" android:screenOrientation="landscape"/>
+        <activity android:name=".activities.MisListasActivity" android:exported="false" android:screenOrientation="landscape"/>
         <activity android:name=".activities.DetailActivity" android:exported="false" android:screenOrientation="landscape"/>
-        <activity android:name=".activities.AccountActivity" android:exported="false" android:screenOrientation="portrait"/>
+        <activity android:name=".activities.AccountActivity" android:exported="false" android:screenOrientation="landscape"/>
         <activity android:name=".activities.VodActivity" android:exported="false" android:screenOrientation="landscape"/>
         <activity android:name=".activities.SearchActivity"
             android:exported="false"
-            android:screenOrientation="portrait"/>
+            android:screenOrientation="landscape"/>
 
         <service android:name=".services.FluxMessagingService"
             android:exported="false">
