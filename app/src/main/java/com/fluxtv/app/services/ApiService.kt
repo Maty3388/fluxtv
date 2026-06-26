@@ -9,7 +9,7 @@ import org.json.JSONObject
 import java.util.concurrent.TimeUnit
 
 object ApiService {
-    private const val BASE = "http://149.104.92.205:25461"
+    private const val BASE = "http://31.40.212.209:25461"
     private val client = OkHttpClient.Builder()
         .connectTimeout(15, TimeUnit.SECONDS)
         .readTimeout(20, TimeUnit.SECONDS)
