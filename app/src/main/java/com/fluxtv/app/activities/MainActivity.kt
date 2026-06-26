@@ -57,6 +57,11 @@ class MainActivity : AppCompatActivity() {
         setupTabs()
         setupBottomNav()
         setupSearch()
+        // Check update
+        scope.launch {
+            val ver = withContext(Dispatchers.IO) { try { com.fluxtv.app.services.ApiService.checkVersion() } catch(_:Exception) { null } }
+            if (ver != null) com.fluxtv.app.utils.AutoUpdater.check(this@MainActivity, BuildConfig.VERSION_NAME, ver)
+        }
 
         // Refresh button
         findViewById<ImageView>(R.id.btnRefresh)?.setOnClickListener {
@@ -261,7 +266,20 @@ class MainActivity : AppCompatActivity() {
             .commit()
 
         // Botones sidebar TV
-        findViewById<android.widget.LinearLayout>(R.id.btnTv)?.setOnClickListener { mainFragment.filterCategory(null) }
+        fun highlightSidebar(activeId: Int) {
+            val ids = listOf(R.id.btnMiCuenta, R.id.btnTv, R.id.btnPeliculas, R.id.btnSeries, R.id.btnAdultos, R.id.btnBuscar, R.id.btnFavoritos)
+            ids.forEach { id ->
+                val v = findViewById<android.widget.LinearLayout>(id) ?: return@forEach
+                val active = id == activeId
+                v.setBackgroundColor(if (active) getColor(R.color.primary).let { it and 0x33FFFFFF or 0x33000000 } else android.graphics.Color.TRANSPARENT)
+                val tv = v.getChildAt(1) as? android.widget.TextView
+                tv?.setTextColor(if (active) getColor(R.color.primary) else getColor(R.color.text_primary))
+                val iv = v.getChildAt(0) as? android.widget.ImageView
+                iv?.setColorFilter(if (active) getColor(R.color.primary) else getColor(R.color.text_secondary))
+            }
+        }
+        highlightSidebar(R.id.btnTv)
+        findViewById<android.widget.LinearLayout>(R.id.btnTv)?.setOnClickListener { mainFragment.filterCategory(null); highlightSidebar(R.id.btnTv) }
         findViewById<android.widget.LinearLayout>(R.id.btnPeliculas)?.setOnClickListener { startActivity(android.content.Intent(this, VodActivity::class.java).apply { putExtra("type", "movies") }) }
         findViewById<android.widget.LinearLayout>(R.id.btnSeries)?.setOnClickListener { startActivity(android.content.Intent(this, VodActivity::class.java).apply { putExtra("type", "series") }) }
         findViewById<android.widget.LinearLayout>(R.id.btnAdultos)?.setOnClickListener { showPinDialog { mainFragment.filterCategory("ADULTOS") } }
@@ -269,6 +287,11 @@ class MainActivity : AppCompatActivity() {
         findViewById<android.widget.LinearLayout>(R.id.btnFavoritos)?.setOnClickListener { mainFragment.loadFavorites() }
         findViewById<android.widget.LinearLayout>(R.id.btnLogout)?.setOnClickListener { com.fluxtv.app.utils.Prefs.saveToken(this, ""); com.fluxtv.app.utils.Prefs.clearProfileSelected(this); startActivity(android.content.Intent(this, LoginActivity::class.java)); finish() }
         findViewById<android.widget.LinearLayout>(R.id.btnClearCache)?.setOnClickListener { android.widget.Toast.makeText(this, "Caché borrado", android.widget.Toast.LENGTH_SHORT).show() }
+        // Check update
+        scope.launch {
+            val ver = withContext(Dispatchers.IO) { try { com.fluxtv.app.services.ApiService.checkVersion() } catch(_:Exception) { null } }
+            if (ver != null) com.fluxtv.app.utils.AutoUpdater.check(this@MainActivity, android.os.Build.VERSION.RELEASE.let { BuildConfig.VERSION_NAME }, ver)
+        }
         findViewById<android.widget.LinearLayout>(R.id.btnMiCuenta)?.setOnClickListener { startActivity(android.content.Intent(this, AccountActivity::class.java)) }
     }
 
