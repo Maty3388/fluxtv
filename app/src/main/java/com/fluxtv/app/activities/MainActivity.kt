@@ -300,7 +300,9 @@ class MainActivity : AppCompatActivity() {
     override fun onBackPressed() {
         val isTV = com.fluxtv.app.utils.DeviceUtils.isTV(this)
         if (isTV) {
-            // En TV el back no sale de la app
+            // En TV el back mueve el foco al sidebar
+            val btnTv = findViewById<android.widget.LinearLayout>(R.id.btnTv)
+            btnTv?.requestFocus()
             return
         }
         super.onBackPressed()
