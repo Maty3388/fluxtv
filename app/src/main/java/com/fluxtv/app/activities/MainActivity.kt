@@ -30,8 +30,13 @@ class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         val isTV = com.fluxtv.app.utils.DeviceUtils.isTV(this)
-        setContentView(if (isTV) R.layout.activity_main_tv else R.layout.activity_main_mobile)
-        if (isTV) { setupTV(); return }
+        if (isTV) {
+            requestedOrientation = android.content.pm.ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE
+            setContentView(R.layout.activity_main_tv)
+            setupTV()
+            return
+        }
+        setContentView(R.layout.activity_main_mobile)
 
         // Setup info usuario
         val email = Prefs.getEmail(this)
