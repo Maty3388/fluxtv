@@ -281,11 +281,12 @@ class MainActivity : AppCompatActivity() {
         }
         highlightSidebar(R.id.btnTv)
         findViewById<android.widget.LinearLayout>(R.id.btnTv)?.setOnClickListener { mainFragment.filterCategory(null); highlightSidebar(R.id.btnTv) }
-        findViewById<android.widget.LinearLayout>(R.id.btnPeliculas)?.setOnClickListener { startActivity(android.content.Intent(this, VodActivity::class.java).apply { putExtra("type", "movies") }) }
-        findViewById<android.widget.LinearLayout>(R.id.btnSeries)?.setOnClickListener { startActivity(android.content.Intent(this, VodActivity::class.java).apply { putExtra("type", "series") }) }
-        findViewById<android.widget.LinearLayout>(R.id.btnAdultos)?.setOnClickListener { showPinDialog { mainFragment.filterCategory("ADULTOS") } }
-        findViewById<android.widget.LinearLayout>(R.id.btnBuscar)?.setOnClickListener { startActivity(android.content.Intent(this, SearchActivity::class.java)) }
-        findViewById<android.widget.LinearLayout>(R.id.btnFavoritos)?.setOnClickListener { mainFragment.loadFavorites() }
+        findViewById<android.widget.LinearLayout>(R.id.btnPeliculas)?.setOnClickListener { highlightSidebar(R.id.btnPeliculas); startActivity(android.content.Intent(this, VodActivity::class.java).apply { putExtra("type", "movies") }) }
+        findViewById<android.widget.LinearLayout>(R.id.btnSeries)?.setOnClickListener { highlightSidebar(R.id.btnSeries); startActivity(android.content.Intent(this, VodActivity::class.java).apply { putExtra("type", "series") }) }
+        findViewById<android.widget.LinearLayout>(R.id.btnAdultos)?.setOnClickListener { highlightSidebar(R.id.btnAdultos); showPinDialog { mainFragment.filterCategory("ADULTOS") } }
+        findViewById<android.widget.LinearLayout>(R.id.btnBuscar)?.setOnClickListener { highlightSidebar(R.id.btnBuscar); startActivity(android.content.Intent(this, SearchActivity::class.java)) }
+        findViewById<android.widget.LinearLayout>(R.id.btnFavoritos)?.setOnClickListener { highlightSidebar(R.id.btnFavoritos); mainFragment.loadFavorites() }
+        findViewById<android.widget.LinearLayout>(R.id.btnMiCuenta)?.setOnClickListener { highlightSidebar(R.id.btnMiCuenta); startActivity(android.content.Intent(this, AccountActivity::class.java)) }
         findViewById<android.widget.LinearLayout>(R.id.btnLogout)?.setOnClickListener { com.fluxtv.app.utils.Prefs.saveToken(this, ""); com.fluxtv.app.utils.Prefs.clearProfileSelected(this); startActivity(android.content.Intent(this, LoginActivity::class.java)); finish() }
         findViewById<android.widget.LinearLayout>(R.id.btnClearCache)?.setOnClickListener { android.widget.Toast.makeText(this, "Caché borrado", android.widget.Toast.LENGTH_SHORT).show() }
         // Check update
@@ -294,6 +295,15 @@ class MainActivity : AppCompatActivity() {
             if (ver != null) com.fluxtv.app.utils.AutoUpdater.check(this@MainActivity, BuildConfig.VERSION_NAME, ver)
         }
         findViewById<android.widget.LinearLayout>(R.id.btnMiCuenta)?.setOnClickListener { startActivity(android.content.Intent(this, AccountActivity::class.java)) }
+    }
+
+    override fun onBackPressed() {
+        val isTV = com.fluxtv.app.utils.DeviceUtils.isTV(this)
+        if (isTV) {
+            // En TV el back no sale de la app
+            return
+        }
+        super.onBackPressed()
     }
 
     override fun onResume() { super.onResume(); highlightMobileNav(R.id.navInicio) }
