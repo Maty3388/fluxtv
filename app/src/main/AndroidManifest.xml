@@ -19,7 +19,7 @@
 
         <activity android:name=".activities.SplashActivity"
             android:exported="true"
-            android:screenOrientation="portrait"
+            android:screenOrientation="landscape"
             android:theme="@style/SplashTheme">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN"/>
@@ -30,7 +30,7 @@
 
         <activity android:name=".activities.LoginActivity"
             android:exported="false"
-            android:screenOrientation="portrait"/>
+            android:screenOrientation="landscape"/>
 
         <activity android:name=".activities.SelectProfileActivity"
             android:exported="false"
