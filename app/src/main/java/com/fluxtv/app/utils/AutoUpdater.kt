@@ -4,16 +4,18 @@ import android.app.Dialog
 import android.content.Context
 import android.content.Intent
 import android.graphics.Color
-import android.graphics.drawable.ColorDrawable
+import android.graphics.drawable.GradientDrawable
 import android.net.Uri
 import android.os.Build
 import android.os.Environment
+import android.view.Gravity
+import android.view.View
 import android.view.Window
+import android.view.WindowManager
 import android.widget.*
 import androidx.core.content.FileProvider
 import com.fluxtv.app.models.AppVersion
 import java.io.File
-import java.net.URL
 
 object AutoUpdater {
     fun check(ctx: Context, current: String, ver: AppVersion) {
@@ -31,69 +33,211 @@ object AutoUpdater {
         return false
     }
 
+    private fun dp(ctx: Context, v: Int) = (v * ctx.resources.displayMetrics.density).toInt()
+
     private fun showDialog(ctx: Context, current: String, ver: AppVersion) {
         val dialog = Dialog(ctx)
         dialog.requestWindowFeature(Window.FEATURE_NO_TITLE)
-        dialog.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
+        dialog.window?.setBackgroundDrawable(android.graphics.drawable.ColorDrawable(Color.TRANSPARENT))
         dialog.setCancelable(!ver.forceUpdate)
-        val layout = LinearLayout(ctx).apply {
+
+        val root = LinearLayout(ctx).apply {
             orientation = LinearLayout.VERTICAL
-            setBackgroundColor(Color.parseColor("#0A1825"))
-            setPadding(60,60,60,60)
+            setPadding(dp(ctx,28), dp(ctx,28), dp(ctx,28), dp(ctx,24))
+            background = GradientDrawable(GradientDrawable.Orientation.TL_BR,
+                intArrayOf(0xFF0D1B2A.toInt(), 0xFF0A1520.toInt())).apply {
+                cornerRadius = dp(ctx,20).toFloat()
+                setStroke(1, 0x4400E5FF.toInt())
+            }
+            elevation = dp(ctx,8).toFloat()
         }
-        layout.addView(TextView(ctx).apply {
-            text="NUEVA VERSIÓN"; textSize=18f; setTextColor(Color.WHITE)
-            typeface=android.graphics.Typeface.DEFAULT_BOLD
-            gravity=android.view.Gravity.CENTER; setPadding(0,0,0,20)
+
+        // Badge FLUX TV
+        val badge = LinearLayout(ctx).apply {
+            orientation = LinearLayout.HORIZONTAL
+            gravity = Gravity.CENTER
+            background = GradientDrawable().apply {
+                cornerRadius = dp(ctx,50).toFloat()
+                setColor(0x1500E5FF.toInt())
+                setStroke(1, 0x3300E5FF.toInt())
+            }
+            setPadding(dp(ctx,16), dp(ctx,6), dp(ctx,16), dp(ctx,6))
+        }
+        badge.addView(TextView(ctx).apply {
+            text = "⚡ FLUX TV"
+            textSize = 13f
+            setTextColor(0xFF00E5FF.toInt())
+            typeface = android.graphics.Typeface.DEFAULT_BOLD
+            letterSpacing = 0.15f
         })
-        layout.addView(LinearLayout(ctx).apply {
-            gravity=android.view.Gravity.CENTER
-            addView(LinearLayout(ctx).apply {
-                orientation=LinearLayout.VERTICAL; gravity=android.view.Gravity.CENTER
-                addView(TextView(ctx).apply{text="Actual";textSize=11f;setTextColor(Color.GRAY);gravity=android.view.Gravity.CENTER})
-                addView(TextView(ctx).apply{text=current;textSize=20f;setTextColor(Color.WHITE);typeface=android.graphics.Typeface.DEFAULT_BOLD;gravity=android.view.Gravity.CENTER})
-            })
-            addView(TextView(ctx).apply{text="→";textSize=20f;setTextColor(Color.parseColor("#A855F7"));setPadding(40,0,40,0)})
-            addView(LinearLayout(ctx).apply {
-                orientation=LinearLayout.VERTICAL; gravity=android.view.Gravity.CENTER
-                addView(TextView(ctx).apply{text="Nueva";textSize=11f;setTextColor(Color.GRAY);gravity=android.view.Gravity.CENTER})
-                addView(TextView(ctx).apply{text=ver.version;textSize=20f;setTextColor(Color.parseColor("#A855F7"));typeface=android.graphics.Typeface.DEFAULT_BOLD;gravity=android.view.Gravity.CENTER})
-            })
+        val badgeWrap = LinearLayout(ctx).apply {
+            gravity = Gravity.CENTER
+            layoutParams = LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT).apply { bottomMargin = dp(ctx,12) }
+        }
+        badgeWrap.addView(badge)
+        root.addView(badgeWrap)
+
+        // Título
+        root.addView(TextView(ctx).apply {
+            text = "Nueva Actualización"
+            textSize = 20f
+            setTextColor(Color.WHITE)
+            typeface = android.graphics.Typeface.DEFAULT_BOLD
+            gravity = Gravity.CENTER
+            layoutParams = LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT).apply { bottomMargin = dp(ctx,4) }
         })
-        if (ver.changelog.isNotEmpty()) layout.addView(TextView(ctx).apply{text=ver.changelog;textSize=12f;setTextColor(Color.LTGRAY);gravity=android.view.Gravity.CENTER;setPadding(0,20,0,0)})
-        val progress = ProgressBar(ctx,null,android.R.attr.progressBarStyleHorizontal).apply{max=100;visibility=android.view.View.GONE;setPadding(0,20,0,0)}
-        val tvProg = TextView(ctx).apply{text="";textSize=12f;setTextColor(Color.GRAY);gravity=android.view.Gravity.CENTER;visibility=android.view.View.GONE}
-        layout.addView(progress); layout.addView(tvProg)
-        val btnRow = LinearLayout(ctx).apply{setPadding(0,32,0,0)}
-        val btnLater = Button(ctx).apply{text="Más tarde";setTextColor(Color.WHITE);setBackgroundColor(Color.parseColor("#333333"));layoutParams=LinearLayout.LayoutParams(0,LinearLayout.LayoutParams.WRAP_CONTENT,1f).apply{marginEnd=16};isFocusable=true
-            setOnClickListener{dialog.dismiss()}
-            setOnFocusChangeListener{v,focused-> v.setBackgroundColor(if(focused) Color.parseColor("#555555") else Color.parseColor("#333333")) }}
-        val btnUpdate = Button(ctx).apply{text="ACTUALIZAR";setTextColor(Color.BLACK);setBackgroundColor(Color.parseColor("#A855F7"));layoutParams=LinearLayout.LayoutParams(0,LinearLayout.LayoutParams.WRAP_CONTENT,1f);isFocusable=true
-            setOnFocusChangeListener{v,focused-> v.setBackgroundColor(if(focused) Color.parseColor("#80FFFF") else Color.parseColor("#A855F7")) }
-            setOnClickListener{isEnabled=false;btnLater.isEnabled=false;progress.visibility=android.view.View.VISIBLE;tvProg.visibility=android.view.View.VISIBLE
-                download(ctx,ver.apkUrl,ver.version,progress,tvProg){dialog.dismiss()}}}
-        if(!ver.forceUpdate) btnRow.addView(btnLater); btnRow.addView(btnUpdate)
-        layout.addView(btnRow); dialog.setContentView(layout); dialog.show()
-        btnUpdate.requestFocus()
+        root.addView(TextView(ctx).apply {
+            text = "Hay una versión más reciente disponible"
+            textSize = 12f
+            setTextColor(0xFF8899AA.toInt())
+            gravity = Gravity.CENTER
+            layoutParams = LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT).apply { bottomMargin = dp(ctx,20) }
+        })
+
+        // Version row
+        val versionRow = LinearLayout(ctx).apply {
+            orientation = LinearLayout.HORIZONTAL
+            gravity = Gravity.CENTER
+            layoutParams = LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT).apply { bottomMargin = dp(ctx,20) }
+        }
+        versionRow.addView(TextView(ctx).apply {
+            text = "v$current"
+            textSize = 13f
+            setTextColor(0xFF8899AA.toInt())
+            typeface = android.graphics.Typeface.DEFAULT_BOLD
+            background = GradientDrawable().apply { cornerRadius = dp(ctx,8).toFloat(); setColor(0x15FFFFFF.toInt()) }
+            setPadding(dp(ctx,14), dp(ctx,6), dp(ctx,14), dp(ctx,6))
+        })
+        versionRow.addView(TextView(ctx).apply {
+            text = " → "
+            textSize = 18f
+            setTextColor(0xFF00E5FF.toInt())
+            setPadding(dp(ctx,8), 0, dp(ctx,8), 0)
+        })
+        versionRow.addView(TextView(ctx).apply {
+            text = "v${ver.version}"
+            textSize = 13f
+            setTextColor(0xFF00E5FF.toInt())
+            typeface = android.graphics.Typeface.DEFAULT_BOLD
+            background = GradientDrawable().apply {
+                cornerRadius = dp(ctx,8).toFloat()
+                setColor(0x2000E5FF.toInt())
+                setStroke(1, 0x4400E5FF.toInt())
+            }
+            setPadding(dp(ctx,14), dp(ctx,6), dp(ctx,14), dp(ctx,6))
+        })
+        root.addView(versionRow)
+
+        // Changelog
+        if (ver.changelog.isNotEmpty()) {
+            val changelogBox = LinearLayout(ctx).apply {
+                orientation = LinearLayout.VERTICAL
+                background = GradientDrawable().apply {
+                    cornerRadius = dp(ctx,12).toFloat()
+                    setColor(0x08FFFFFF.toInt())
+                }
+                setPadding(dp(ctx,16), dp(ctx,12), dp(ctx,16), dp(ctx,12))
+                layoutParams = LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT).apply { bottomMargin = dp(ctx,24) }
+            }
+            // Borde izquierdo cyan
+            val borderWrap = LinearLayout(ctx).apply {
+                orientation = LinearLayout.HORIZONTAL
+                background = GradientDrawable().apply {
+                    cornerRadius = dp(ctx,12).toFloat()
+                    setColor(0x08FFFFFF.toInt())
+                }
+                layoutParams = LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT).apply { bottomMargin = dp(ctx,24) }
+            }
+            val leftBorder = View(ctx).apply {
+                background = GradientDrawable().apply { setColor(0x4400E5FF.toInt()); cornerRadius = dp(ctx,4).toFloat() }
+                layoutParams = LinearLayout.LayoutParams(dp(ctx,3), LinearLayout.LayoutParams.MATCH_PARENT)
+            }
+            val changelogInner = LinearLayout(ctx).apply {
+                orientation = LinearLayout.VERTICAL
+                setPadding(dp(ctx,12), dp(ctx,12), dp(ctx,12), dp(ctx,12))
+                layoutParams = LinearLayout.LayoutParams(0, LinearLayout.LayoutParams.WRAP_CONTENT, 1f)
+            }
+            changelogInner.addView(TextView(ctx).apply {
+                text = "📋 NOVEDADES"
+                textSize = 11f
+                setTextColor(0xFF00E5FF.toInt())
+                typeface = android.graphics.Typeface.DEFAULT_BOLD
+                letterSpacing = 0.1f
+                layoutParams = LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT).apply { bottomMargin = dp(ctx,8) }
+            })
+            changelogInner.addView(TextView(ctx).apply {
+                text = ver.changelog
+                textSize = 12f
+                setTextColor(0xFFCCDDEE.toInt())
+                lineSpacingExtra = dp(ctx,3).toFloat()
+            })
+            borderWrap.addView(leftBorder)
+            borderWrap.addView(changelogInner)
+            root.addView(borderWrap)
+        }
+
+        // Botones
+        val btnRow = LinearLayout(ctx).apply {
+            orientation = LinearLayout.HORIZONTAL
+            layoutParams = LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT).apply { bottomMargin = dp(ctx,12) }
+        }
+
+        val btnLater = TextView(ctx).apply {
+            text = "DESPUÉS"
+            textSize = 13f
+            setTextColor(0xFF8899AA.toInt())
+            typeface = android.graphics.Typeface.DEFAULT_BOLD
+            gravity = Gravity.CENTER
+            background = GradientDrawable().apply { cornerRadius = dp(ctx,12).toFloat(); setColor(Color.TRANSPARENT); setStroke(1, 0x22FFFFFF.toInt()) }
+            layoutParams = LinearLayout.LayoutParams(0, dp(ctx,44), 1f).apply { marginEnd = dp(ctx,10) }
+            isClickable = true
+            isFocusable = true
+            setOnClickListener { dialog.dismiss() }
+        }
+
+        val btnUpdate = TextView(ctx).apply {
+            text = "⬇ ACTUALIZAR"
+            textSize = 13f
+            setTextColor(Color.BLACK)
+            typeface = android.graphics.Typeface.DEFAULT_BOLD
+            gravity = Gravity.CENTER
+            background = GradientDrawable(GradientDrawable.Orientation.LEFT_RIGHT,
+                intArrayOf(0xFF00E5FF.toInt(), 0xFF0088CC.toInt())).apply {
+                cornerRadius = dp(ctx,12).toFloat()
+            }
+            layoutParams = LinearLayout.LayoutParams(0, dp(ctx,44), 2f)
+            isClickable = true
+            isFocusable = true
+            setOnClickListener {
+                dialog.dismiss()
+                downloadAndInstall(ctx, ver.apkUrl)
+            }
+        }
+
+        if (!ver.forceUpdate) btnRow.addView(btnLater)
+        btnRow.addView(btnUpdate)
+        root.addView(btnRow)
+
+        // Footer
+        root.addView(TextView(ctx).apply {
+            text = "La descarga comenzará automáticamente"
+            textSize = 10f
+            setTextColor(0xFF445566.toInt())
+            gravity = Gravity.CENTER
+            layoutParams = LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT)
+        })
+
+        dialog.setContentView(root)
+        dialog.window?.setLayout((ctx.resources.displayMetrics.widthPixels * 0.9).toInt(), WindowManager.LayoutParams.WRAP_CONTENT)
+        dialog.show()
     }
 
-    private fun download(ctx: Context, url: String, ver: String, pb: ProgressBar, tv: TextView, done: ()->Unit) {
-        Thread {
-            try {
-                val file = File(ctx.getExternalFilesDir(Environment.DIRECTORY_DOWNLOADS),"flux-$ver.apk")
-                if(file.exists()) file.delete()
-                val conn = URL(url).openConnection(); conn.connect()
-                val total = conn.contentLength; val inp = conn.getInputStream(); val out = file.outputStream()
-                val buf = ByteArray(8192); var dl=0; var r: Int
-                while(inp.read(buf).also{r=it}!=-1){out.write(buf,0,r);dl+=r;val p=if(total>0)dl*100/total else 0
-                    (ctx as? android.app.Activity)?.runOnUiThread{pb.progress=p;tv.text="$p%"}}
-                out.close();inp.close()
-                (ctx as? android.app.Activity)?.runOnUiThread{done()}
-                val uri = if(Build.VERSION.SDK_INT>=Build.VERSION_CODES.N)
-                    FileProvider.getUriForFile(ctx,"${ctx.packageName}.fileprovider",file)
-                else Uri.fromFile(file)
-                ctx.startActivity(Intent(Intent.ACTION_VIEW).apply{setDataAndType(uri,"application/vnd.android.package-archive");flags=Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_GRANT_READ_URI_PERMISSION})
-            } catch(e: Exception){(ctx as? android.app.Activity)?.runOnUiThread{tv.text="Error: ${e.message}"}}
-        }.start()
+    private fun downloadAndInstall(ctx: Context, url: String) {
+        if (url.isEmpty()) return
+        try {
+            val intent = Intent(Intent.ACTION_VIEW, Uri.parse(url))
+            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+            ctx.startActivity(intent)
+        } catch (_: Exception) {}
     }
 }
