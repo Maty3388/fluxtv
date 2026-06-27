@@ -19,6 +19,7 @@
 
         <!-- Botones icono -->
         <LinearLayout android:id="@+id/btnMiCuenta"
+            android:nextFocusRight="@+id/mainContainer"
             android:layout_width="44dp" android:layout_height="44dp"
             android:gravity="center" android:focusable="true"
             android:background="@drawable/sidebar_icon_selector"
@@ -28,6 +29,7 @@
         </LinearLayout>
 
         <LinearLayout android:id="@+id/btnTv"
+            android:nextFocusRight="@+id/mainContainer"
             android:layout_width="44dp" android:layout_height="44dp"
             android:gravity="center" android:focusable="true"
             android:background="@drawable/sidebar_icon_selector"
@@ -37,6 +39,7 @@
         </LinearLayout>
 
         <LinearLayout android:id="@+id/btnPeliculas"
+            android:nextFocusRight="@+id/mainContainer"
             android:layout_width="44dp" android:layout_height="44dp"
             android:gravity="center" android:focusable="true"
             android:background="@drawable/sidebar_icon_selector"
@@ -46,6 +49,7 @@
         </LinearLayout>
 
         <LinearLayout android:id="@+id/btnSeries"
+            android:nextFocusRight="@+id/mainContainer"
             android:layout_width="44dp" android:layout_height="44dp"
             android:gravity="center" android:focusable="true"
             android:background="@drawable/sidebar_icon_selector"
@@ -55,6 +59,7 @@
         </LinearLayout>
 
         <LinearLayout android:id="@+id/btnBuscar"
+            android:nextFocusRight="@+id/mainContainer"
             android:layout_width="44dp" android:layout_height="44dp"
             android:gravity="center" android:focusable="true"
             android:background="@drawable/sidebar_icon_selector"
@@ -64,6 +69,7 @@
         </LinearLayout>
 
         <LinearLayout android:id="@+id/btnFavoritos"
+            android:nextFocusRight="@+id/mainContainer"
             android:layout_width="44dp" android:layout_height="44dp"
             android:gravity="center" android:focusable="true"
             android:background="@drawable/sidebar_icon_selector"
@@ -73,6 +79,7 @@
         </LinearLayout>
 
         <LinearLayout android:id="@+id/btnAdultos"
+            android:nextFocusRight="@+id/mainContainer"
             android:layout_width="44dp" android:layout_height="44dp"
             android:gravity="center" android:focusable="true"
             android:background="@drawable/sidebar_icon_selector"
