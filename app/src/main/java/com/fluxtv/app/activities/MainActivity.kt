@@ -11,6 +11,7 @@ import androidx.appcompat.app.AppCompatActivity
 import com.fluxtv.app.BuildConfig
 import com.fluxtv.app.R
 import com.fluxtv.app.fragments.MainFragment
+import com.fluxtv.app.fragments.TvMainFragment
 import com.fluxtv.app.utils.Prefs
 import com.fluxtv.app.services.ApiService
 import kotlinx.coroutines.*
@@ -18,6 +19,7 @@ import kotlinx.coroutines.*
 class MainActivity : AppCompatActivity() {
 
     private lateinit var mainFragment: MainFragment
+    private var tvFragment: TvMainFragment? = null
     private lateinit var tabsContainer: LinearLayout
     private lateinit var categoriesContainer: LinearLayout
     private var currentTab = 0
@@ -261,9 +263,9 @@ class MainActivity : AppCompatActivity() {
         findViewById<android.widget.TextView>(R.id.tvUserEmail)?.text = "👤 $email"
         findViewById<android.widget.TextView>(R.id.tvVencimiento)?.text = exp
 
-        mainFragment = MainFragment()
+        tvFragment = TvMainFragment()
         supportFragmentManager.beginTransaction()
-            .replace(R.id.mainContainer, mainFragment)
+            .replace(R.id.mainContainer, tvFragment!!)
             .commit()
 
         // Botones sidebar TV
@@ -285,12 +287,12 @@ class MainActivity : AppCompatActivity() {
             }
         }
         highlightSidebar(R.id.btnTv)
-        findViewById<android.widget.LinearLayout>(R.id.btnTv)?.setOnClickListener { mainFragment.filterCategory(null); highlightSidebar(R.id.btnTv) }
+        findViewById<android.widget.LinearLayout>(R.id.btnTv)?.setOnClickListener { tvFragment?.filterCategory(null); highlightSidebar(R.id.btnTv) }
         findViewById<android.widget.LinearLayout>(R.id.btnPeliculas)?.setOnClickListener { highlightSidebar(R.id.btnPeliculas); startActivity(android.content.Intent(this, VodActivity::class.java).apply { putExtra("type", "movies") }) }
         findViewById<android.widget.LinearLayout>(R.id.btnSeries)?.setOnClickListener { highlightSidebar(R.id.btnSeries); startActivity(android.content.Intent(this, VodActivity::class.java).apply { putExtra("type", "series") }) }
-        findViewById<android.widget.LinearLayout>(R.id.btnAdultos)?.setOnClickListener { highlightSidebar(R.id.btnAdultos); showPinDialog { mainFragment.filterCategory("ADULTOS") } }
+        findViewById<android.widget.LinearLayout>(R.id.btnAdultos)?.setOnClickListener { highlightSidebar(R.id.btnAdultos); showPinDialog { tvFragment?.filterCategory("ADULTOS") } }
         findViewById<android.widget.LinearLayout>(R.id.btnBuscar)?.setOnClickListener { highlightSidebar(R.id.btnBuscar); startActivity(android.content.Intent(this, SearchActivity::class.java)) }
-        findViewById<android.widget.LinearLayout>(R.id.btnFavoritos)?.setOnClickListener { highlightSidebar(R.id.btnFavoritos); mainFragment.loadFavorites() }
+        findViewById<android.widget.LinearLayout>(R.id.btnFavoritos)?.setOnClickListener { highlightSidebar(R.id.btnFavoritos); tvFragment?.loadFavorites() }
         findViewById<android.widget.LinearLayout>(R.id.btnMiCuenta)?.setOnClickListener { highlightSidebar(R.id.btnMiCuenta); startActivity(android.content.Intent(this, AccountActivity::class.java)) }
         findViewById<android.widget.LinearLayout>(R.id.btnLogout)?.setOnClickListener { com.fluxtv.app.utils.Prefs.saveToken(this, ""); com.fluxtv.app.utils.Prefs.clearProfileSelected(this); startActivity(android.content.Intent(this, LoginActivity::class.java)); finish() }
         findViewById<android.widget.LinearLayout>(R.id.btnClearCache)?.setOnClickListener { android.widget.Toast.makeText(this, "Caché borrado", android.widget.Toast.LENGTH_SHORT).show() }
