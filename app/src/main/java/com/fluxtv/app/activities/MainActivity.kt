@@ -286,6 +286,14 @@ class MainActivity : AppCompatActivity() {
                 iv?.setColorFilter(if (active) getColor(R.color.primary) else getColor(R.color.text_secondary))
             }
         }
+        // Focus listeners para highlight con D-pad
+        val sidebarBtns = listOf(R.id.btnMiCuenta, R.id.btnTv, R.id.btnPeliculas, R.id.btnSeries, R.id.btnAdultos, R.id.btnBuscar, R.id.btnFavoritos)
+        sidebarBtns.forEach { id ->
+            findViewById<android.widget.LinearLayout>(id)?.setOnFocusChangeListener { _, focused ->
+                if (focused) highlightSidebar(id)
+            }
+        }
+
         highlightSidebar(R.id.btnTv)
         findViewById<android.widget.LinearLayout>(R.id.btnTv)?.setOnClickListener { tvFragment?.filterCategory(null); highlightSidebar(R.id.btnTv) }
         findViewById<android.widget.LinearLayout>(R.id.btnPeliculas)?.setOnClickListener { highlightSidebar(R.id.btnPeliculas); startActivity(android.content.Intent(this, VodActivity::class.java).apply { putExtra("type", "movies") }) }
