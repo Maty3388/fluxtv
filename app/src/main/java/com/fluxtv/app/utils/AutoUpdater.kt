@@ -275,7 +275,7 @@ object AutoUpdater {
                         if (status == android.app.DownloadManager.STATUS_SUCCESSFUL) {
                             cursor.close()
                             val file = java.io.File(android.os.Environment.getExternalStoragePublicDirectory(android.os.Environment.DIRECTORY_DOWNLOADS), fileName)
-                            val apkUri = androidx.core.content.FileProvider.getUriForFile(ctx, ctx.packageName + ".provider", file)
+                            val apkUri = androidx.core.content.FileProvider.getUriForFile(ctx, ctx.packageName + ".fileprovider", file)
                             val install = Intent(Intent.ACTION_VIEW).apply {
                                 setDataAndType(apkUri, "application/vnd.android.package-archive")
                                 addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
