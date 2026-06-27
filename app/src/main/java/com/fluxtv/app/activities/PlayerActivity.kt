@@ -85,11 +85,19 @@ class PlayerActivity : AppCompatActivity() {
 
     private fun initPlayer() {
         val loadControl = DefaultLoadControl.Builder()
-            .setBufferDurationsMs(10000, 120000, 2500, 5000)
-            .setBackBuffer(30000, true)
+            .setBufferDurationsMs(15000, 180000, 3000, 6000)
+            .setBackBuffer(15000, true)
+            .setPrioritizeTimeOverSizeThresholds(true)
             .build()
+        val trackSelector = androidx.media3.exoplayer.trackselection.DefaultTrackSelector(this).apply {
+            setParameters(buildUponParameters()
+                .setMaxVideoBitrate(2_000_000) // máx 2Mbps
+                .setForceLowestBitrate(false)
+                .build())
+        }
         player = ExoPlayer.Builder(this)
             .setLoadControl(loadControl)
+            .setTrackSelector(trackSelector)
             .build()
         player?.setVideoTextureView(binding.textureView)
         player?.addListener(object : Player.Listener {
