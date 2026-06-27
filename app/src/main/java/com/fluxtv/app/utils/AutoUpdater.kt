@@ -253,19 +253,18 @@ object AutoUpdater {
     private fun downloadAndInstall(ctx: Context, url: String) {
         if (url.isEmpty()) return
         try {
-            val fileName = "fluxtv_update.apk"
-            val file = java.io.File(ctx.getExternalFilesDir(null), fileName)
-            if (file.exists()) file.delete()
             val request = android.app.DownloadManager.Request(Uri.parse(url)).apply {
-                setTitle("FluxTV - Descargando actualización")
-                setDescription("Por favor espere...")
+                setTitle("FluxTV - Actualizando...")
+                setDescription("Descargando nueva versión")
                 setNotificationVisibility(android.app.DownloadManager.Request.VISIBILITY_VISIBLE_NOTIFY_COMPLETED)
-                setDestinationUri(android.net.Uri.fromFile(file))
+                setDestinationInExternalFilesDir(ctx, android.os.Environment.DIRECTORY_DOWNLOADS, "fluxtv_update.apk")
                 setAllowedOverMetered(true)
                 setAllowedOverRoaming(true)
+                setMimeType("application/vnd.android.package-archive")
             }
             val dm = ctx.getSystemService(Context.DOWNLOAD_SERVICE) as android.app.DownloadManager
             val downloadId = dm.enqueue(request)
+            android.widget.Toast.makeText(ctx, "Descargando actualización...", android.widget.Toast.LENGTH_LONG).show()
             val handler = android.os.Handler(android.os.Looper.getMainLooper())
             handler.post(object : Runnable {
                 override fun run() {
@@ -276,6 +275,7 @@ object AutoUpdater {
                         when (status) {
                             android.app.DownloadManager.STATUS_SUCCESSFUL -> {
                                 cursor.close()
+                                val file = java.io.File(ctx.getExternalFilesDir(android.os.Environment.DIRECTORY_DOWNLOADS), "fluxtv_update.apk")
                                 try {
                                     val apkUri = androidx.core.content.FileProvider.getUriForFile(ctx, "${ctx.packageName}.fileprovider", file)
                                     val install = Intent(Intent.ACTION_VIEW).apply {
@@ -284,7 +284,7 @@ object AutoUpdater {
                                         addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
                                     }
                                     ctx.startActivity(install)
-                                } catch (e: Exception) {
+                                } catch (_: Exception) {
                                     val intent = Intent(Intent.ACTION_VIEW, Uri.parse(url))
                                     intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
                                     ctx.startActivity(intent)
@@ -293,9 +293,7 @@ object AutoUpdater {
                             }
                             android.app.DownloadManager.STATUS_FAILED -> {
                                 cursor.close()
-                                val intent = Intent(Intent.ACTION_VIEW, Uri.parse(url))
-                                intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-                                ctx.startActivity(intent)
+                                android.widget.Toast.makeText(ctx, "Error al descargar", android.widget.Toast.LENGTH_SHORT).show()
                                 return
                             }
                         }
@@ -305,11 +303,7 @@ object AutoUpdater {
                 }
             })
         } catch (e: Exception) {
-            try {
-                val intent = Intent(Intent.ACTION_VIEW, Uri.parse(url))
-                intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-                ctx.startActivity(intent)
-            } catch (_: Exception) {}
+            android.widget.Toast.makeText(ctx, "Error: ${e.message}", android.widget.Toast.LENGTH_SHORT).show()
         }
     }
 }
