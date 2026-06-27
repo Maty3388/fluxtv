@@ -85,7 +85,7 @@ class PlayerActivity : AppCompatActivity() {
 
     private fun initPlayer() {
         val loadControl = DefaultLoadControl.Builder()
-            .setBufferDurationsMs(15000, 180000, 3000, 6000)
+            .setBufferDurationsMs(32000, 64000, 1000, 1000)
             .setBackBuffer(15000, true)
             .setPrioritizeTimeOverSizeThresholds(true)
             .build()
