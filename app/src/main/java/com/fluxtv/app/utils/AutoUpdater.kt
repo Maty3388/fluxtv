@@ -169,7 +169,7 @@ object AutoUpdater {
                 text = ver.changelog
                 textSize = 12f
                 setTextColor(0xFFCCDDEE.toInt())
-                lineSpacingExtra = dp(ctx,3).toFloat()
+                setLineSpacing(dp(ctx,3).toFloat(), 1f)
             })
             borderWrap.addView(leftBorder)
             borderWrap.addView(changelogInner)
