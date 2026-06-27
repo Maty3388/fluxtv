@@ -85,7 +85,7 @@ class PlayerActivity : AppCompatActivity() {
 
     private fun initPlayer() {
         val loadControl = DefaultLoadControl.Builder()
-            .setBufferDurationsMs(30000, 120000, 5000, 10000)
+            .setBufferDurationsMs(10000, 120000, 2500, 5000)
             .setBackBuffer(30000, true)
             .build()
         player = ExoPlayer.Builder(this)
