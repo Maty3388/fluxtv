@@ -203,7 +203,16 @@ class PlayerActivity : AppCompatActivity() {
     private fun playUrl(url: String) {
         val ch = channels[idx]
         val headers = mapOf("User-Agent" to "Mozilla/5.0") + ch.headers
-        val dsf = DefaultHttpDataSource.Factory().setConnectTimeoutMs(15000).setReadTimeoutMs(15000).setAllowCrossProtocolRedirects(true)
+        val dsf = DefaultHttpDataSource.Factory()
+                .setConnectTimeoutMs(15000)
+                .setReadTimeoutMs(15000)
+                .setAllowCrossProtocolRedirects(true)
+                .setDefaultRequestProperties(mapOf(
+                    "User-Agent" to getRandomUserAgent(),
+                    "Accept" to "*/*",
+                    "Accept-Language" to "es-AR,es;q=0.9,en;q=0.8",
+                    "Connection" to "keep-alive"
+                ))
             .setDefaultRequestProperties(headers)
             .setAllowCrossProtocolRedirects(true)
             .setConnectTimeoutMs(15000)
@@ -265,6 +274,19 @@ class PlayerActivity : AppCompatActivity() {
     private fun hideControls() {
         binding.layoutControls.visibility = View.GONE
         controlsTimer?.cancel()
+    }
+
+    private fun getRandomUserAgent(): String {
+        val agents = listOf(
+            "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
+            "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/119.0.0.0 Safari/537.36",
+            "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
+            "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:121.0) Gecko/20100101 Firefox/121.0",
+            "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
+            "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36 Edg/120.0.0.0",
+            "Mozilla/5.0 (iPhone; CPU iPhone OS 17_0 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.0 Mobile/15E148 Safari/604.1"
+        )
+        return agents.random()
     }
 
     private fun startLoadTimer() {
