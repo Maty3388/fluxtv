@@ -203,7 +203,7 @@ class PlayerActivity : AppCompatActivity() {
     private fun playUrl(url: String) {
         val ch = channels[idx]
         val headers = mapOf("User-Agent" to "Mozilla/5.0") + ch.headers
-        val dsf = DefaultHttpDataSource.Factory()
+        val dsf = DefaultHttpDataSource.Factory().setConnectTimeoutMs(15000).setReadTimeoutMs(15000).setAllowCrossProtocolRedirects(true)
             .setDefaultRequestProperties(headers)
             .setAllowCrossProtocolRedirects(true)
             .setConnectTimeoutMs(15000)
