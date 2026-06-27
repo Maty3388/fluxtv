@@ -69,7 +69,7 @@ class TvMainFragment : Fragment() {
             val channels = withContext(Dispatchers.IO) {
                 try { ApiService.getChannels() } catch (_: Exception) { emptyList() }
             }
-            val evento = channels.firstOrNull { it.category.contains("Evento", ignoreCase = true) || it.category.contains("PPV", ignoreCase = true) } ?: return@launch
+            val evento = channels.firstOrNull { it.category.contains("MUNDIAL", ignoreCase = true) } ?: channels.firstOrNull { it.category.contains("Evento", ignoreCase = true) || it.category.contains("PPV", ignoreCase = true) } ?: return@launch
             val banner = view.findViewById<android.widget.FrameLayout>(R.id.heroBanner) ?: return@launch
             val ctx = requireContext()
             val dp = ctx.resources.displayMetrics.density
@@ -171,7 +171,7 @@ class TvMainFragment : Fragment() {
                     marginStart = (12*dp).toInt()
                 }
                 setOnClickListener {
-                    val list = channels.filter { it.category.contains("Evento", ignoreCase = true) || it.category.contains("PPV", ignoreCase = true) }
+                    val list = channels.filter { it.category.contains("MUNDIAL", ignoreCase = true) }.ifEmpty { channels.filter { it.category.contains("Evento", ignoreCase = true) || it.category.contains("PPV", ignoreCase = true) } }
                     startActivity(android.content.Intent(requireContext(), com.fluxtv.app.activities.PlayerActivity::class.java).apply {
                         putExtra(com.fluxtv.app.activities.PlayerActivity.EXTRA_CHANNELS, ArrayList(list))
                         putExtra(com.fluxtv.app.activities.PlayerActivity.EXTRA_INDEX, 0)
