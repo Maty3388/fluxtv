@@ -50,6 +50,7 @@ class TvMainFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        setupHeroBanner(view)
         rvCategories = view.findViewById(R.id.rvCategories)
         categoryAdapter = CategoryRowAdapter(emptyList(), catColors) { ch, list ->
             startActivity(Intent(requireContext(), PlayerActivity::class.java).apply {
@@ -61,6 +62,134 @@ class TvMainFragment : Fragment() {
         rvCategories.adapter = categoryAdapter
 
         loadChannels()
+    }
+
+    private fun setupHeroBanner(view: android.view.View) {
+        scope.launch {
+            val channels = withContext(Dispatchers.IO) {
+                try { ApiService.getChannels() } catch (_: Exception) { emptyList() }
+            }
+            val evento = channels.firstOrNull { it.category == "EVENTOS" } ?: return@launch
+            val banner = view.findViewById<android.widget.FrameLayout>(R.id.heroBanner) ?: return@launch
+            val ctx = requireContext()
+            val dp = ctx.resources.displayMetrics.density
+
+            banner.visibility = android.view.View.VISIBLE
+            banner.background = android.graphics.drawable.GradientDrawable(
+                android.graphics.drawable.GradientDrawable.Orientation.LEFT_RIGHT,
+                intArrayOf(0xFF0a2010.toInt(), 0xFF051508.toInt())
+            ).apply { cornerRadius = 14 * dp }
+
+            // Glow border
+            val border = android.view.View(ctx).apply {
+                background = android.graphics.drawable.GradientDrawable().apply {
+                    cornerRadius = 14 * dp
+                    setColor(android.graphics.Color.TRANSPARENT)
+                    setStroke((1 * dp).toInt(), 0x2200FF88.toInt())
+                }
+                layoutParams = android.widget.FrameLayout.LayoutParams(
+                    android.widget.FrameLayout.LayoutParams.MATCH_PARENT,
+                    android.widget.FrameLayout.LayoutParams.MATCH_PARENT)
+            }
+
+            val content = android.widget.LinearLayout(ctx).apply {
+                orientation = android.widget.LinearLayout.HORIZONTAL
+                gravity = android.view.Gravity.CENTER_VERTICAL
+                setPadding((16*dp).toInt(), (12*dp).toInt(), (16*dp).toInt(), (12*dp).toInt())
+                layoutParams = android.widget.FrameLayout.LayoutParams(
+                    android.widget.FrameLayout.LayoutParams.MATCH_PARENT,
+                    android.widget.FrameLayout.LayoutParams.MATCH_PARENT)
+            }
+
+            // Live badge
+            val badgeWrap = android.widget.LinearLayout(ctx).apply {
+                orientation = android.widget.LinearLayout.VERTICAL
+                gravity = android.view.Gravity.CENTER_HORIZONTAL
+                layoutParams = android.widget.LinearLayout.LayoutParams(
+                    android.widget.LinearLayout.LayoutParams.WRAP_CONTENT,
+                    android.widget.LinearLayout.LayoutParams.MATCH_PARENT).apply {
+                    marginEnd = (16*dp).toInt()
+                }
+            }
+            val liveBadge = android.widget.LinearLayout(ctx).apply {
+                orientation = android.widget.LinearLayout.HORIZONTAL
+                gravity = android.view.Gravity.CENTER_VERTICAL
+                background = android.graphics.drawable.GradientDrawable().apply {
+                    cornerRadius = 20*dp; setColor(0x1800FF88.toInt())
+                    setStroke(1, 0x3500FF88.toInt())
+                }
+                setPadding((8*dp).toInt(), (3*dp).toInt(), (10*dp).toInt(), (3*dp).toInt())
+            }
+            val dot = android.view.View(ctx).apply {
+                background = android.graphics.drawable.GradientDrawable().apply {
+                    shape = android.graphics.drawable.GradientDrawable.OVAL
+                    setColor(0xFF00FF88.toInt())
+                }
+                layoutParams = android.widget.LinearLayout.LayoutParams((6*dp).toInt(), (6*dp).toInt()).apply { marginEnd = (5*dp).toInt() }
+            }
+            val liveText = android.widget.TextView(ctx).apply {
+                text = "EN VIVO"; textSize = 9f
+                setTextColor(0xFF00FF88.toInt())
+                typeface = android.graphics.Typeface.DEFAULT_BOLD
+                letterSpacing = 0.1f
+            }
+            liveBadge.addView(dot); liveBadge.addView(liveText)
+            badgeWrap.addView(liveBadge)
+            content.addView(badgeWrap)
+
+            // Info
+            val info = android.widget.LinearLayout(ctx).apply {
+                orientation = android.widget.LinearLayout.VERTICAL
+                layoutParams = android.widget.LinearLayout.LayoutParams(0, android.widget.LinearLayout.LayoutParams.WRAP_CONTENT, 1f)
+            }
+            info.addView(android.widget.TextView(ctx).apply {
+                text = evento.name
+                textSize = 15f; setTextColor(android.graphics.Color.WHITE)
+                typeface = android.graphics.Typeface.DEFAULT_BOLD
+                maxLines = 1; ellipsize = android.text.TextUtils.TruncateAt.END
+            })
+            info.addView(android.widget.TextView(ctx).apply {
+                text = "⚡ Evento en vivo • Toca para ver"
+                textSize = 11f; setTextColor(0xFF88AA88.toInt())
+            })
+            content.addView(info)
+
+            // Botón ver
+            val btn = android.widget.TextView(ctx).apply {
+                text = "▶ VER"
+                textSize = 11f; setTextColor(android.graphics.Color.BLACK)
+                typeface = android.graphics.Typeface.DEFAULT_BOLD
+                gravity = android.view.Gravity.CENTER
+                background = android.graphics.drawable.GradientDrawable().apply {
+                    cornerRadius = 8*dp; setColor(0xFF00FF88.toInt())
+                }
+                setPadding((14*dp).toInt(), (8*dp).toInt(), (14*dp).toInt(), (8*dp).toInt())
+                isFocusable = true; isClickable = true
+                layoutParams = android.widget.LinearLayout.LayoutParams(
+                    android.widget.LinearLayout.LayoutParams.WRAP_CONTENT,
+                    android.widget.LinearLayout.LayoutParams.WRAP_CONTENT).apply {
+                    marginStart = (12*dp).toInt()
+                }
+                setOnClickListener {
+                    val list = channels.filter { it.category == "EVENTOS" }
+                    startActivity(android.content.Intent(requireContext(), com.fluxtv.app.activities.PlayerActivity::class.java).apply {
+                        putExtra(com.fluxtv.app.activities.PlayerActivity.EXTRA_CHANNELS, ArrayList(list))
+                        putExtra(com.fluxtv.app.activities.PlayerActivity.EXTRA_INDEX, 0)
+                    })
+                }
+                setOnFocusChangeListener { _, focused ->
+                    background = android.graphics.drawable.GradientDrawable().apply {
+                        cornerRadius = 8*dp
+                        setColor(if (focused) android.graphics.Color.WHITE else 0xFF00FF88.toInt())
+                    }
+                    setTextColor(android.graphics.Color.BLACK)
+                }
+            }
+            content.addView(btn)
+
+            banner.addView(border)
+            banner.addView(content)
+        }
     }
 
     fun loadChannels() {
