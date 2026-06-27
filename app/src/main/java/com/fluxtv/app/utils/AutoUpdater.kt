@@ -254,17 +254,18 @@ object AutoUpdater {
         if (url.isEmpty()) return
         try {
             val fileName = "fluxtv_update.apk"
+            val file = java.io.File(ctx.getExternalFilesDir(null), fileName)
+            if (file.exists()) file.delete()
             val request = android.app.DownloadManager.Request(Uri.parse(url)).apply {
-                setTitle("FluxTV Update")
-                setDescription("Descargando actualización...")
+                setTitle("FluxTV - Descargando actualización")
+                setDescription("Por favor espere...")
                 setNotificationVisibility(android.app.DownloadManager.Request.VISIBILITY_VISIBLE_NOTIFY_COMPLETED)
-                setDestinationInExternalPublicDir(android.os.Environment.DIRECTORY_DOWNLOADS, fileName)
+                setDestinationUri(android.net.Uri.fromFile(file))
                 setAllowedOverMetered(true)
                 setAllowedOverRoaming(true)
             }
             val dm = ctx.getSystemService(Context.DOWNLOAD_SERVICE) as android.app.DownloadManager
             val downloadId = dm.enqueue(request)
-            // Esperar descarga e instalar
             val handler = android.os.Handler(android.os.Looper.getMainLooper())
             handler.post(object : Runnable {
                 override fun run() {
@@ -272,31 +273,38 @@ object AutoUpdater {
                     val cursor = dm.query(query)
                     if (cursor.moveToFirst()) {
                         val status = cursor.getInt(cursor.getColumnIndexOrThrow(android.app.DownloadManager.COLUMN_STATUS))
-                        if (status == android.app.DownloadManager.STATUS_SUCCESSFUL) {
-                            cursor.close()
-                            val file = java.io.File(android.os.Environment.getExternalStoragePublicDirectory(android.os.Environment.DIRECTORY_DOWNLOADS), fileName)
-                            val apkUri = androidx.core.content.FileProvider.getUriForFile(ctx, ctx.packageName + ".fileprovider", file)
-                            val install = Intent(Intent.ACTION_VIEW).apply {
-                                setDataAndType(apkUri, "application/vnd.android.package-archive")
-                                addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
-                                addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+                        when (status) {
+                            android.app.DownloadManager.STATUS_SUCCESSFUL -> {
+                                cursor.close()
+                                try {
+                                    val apkUri = androidx.core.content.FileProvider.getUriForFile(ctx, "${ctx.packageName}.fileprovider", file)
+                                    val install = Intent(Intent.ACTION_VIEW).apply {
+                                        setDataAndType(apkUri, "application/vnd.android.package-archive")
+                                        addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
+                                        addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+                                    }
+                                    ctx.startActivity(install)
+                                } catch (e: Exception) {
+                                    val intent = Intent(Intent.ACTION_VIEW, Uri.parse(url))
+                                    intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+                                    ctx.startActivity(intent)
+                                }
+                                return
                             }
-                            ctx.startActivity(install)
-                            return
-                        } else if (status == android.app.DownloadManager.STATUS_FAILED) {
-                            cursor.close()
-                            // Fallback al browser
-                            val intent = Intent(Intent.ACTION_VIEW, Uri.parse(url))
-                            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-                            ctx.startActivity(intent)
-                            return
+                            android.app.DownloadManager.STATUS_FAILED -> {
+                                cursor.close()
+                                val intent = Intent(Intent.ACTION_VIEW, Uri.parse(url))
+                                intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+                                ctx.startActivity(intent)
+                                return
+                            }
                         }
                     }
                     cursor.close()
-                    handler.postDelayed(this, 1000)
+                    handler.postDelayed(this, 1500)
                 }
             })
-        } catch (_: Exception) {
+        } catch (e: Exception) {
             try {
                 val intent = Intent(Intent.ACTION_VIEW, Uri.parse(url))
                 intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
