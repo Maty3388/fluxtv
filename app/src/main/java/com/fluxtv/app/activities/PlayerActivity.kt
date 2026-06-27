@@ -104,7 +104,7 @@ class PlayerActivity : AppCompatActivity() {
             override fun onPlaybackStateChanged(state: Int) {
                 when (state) {
                     Player.STATE_READY -> { showLoading(false); retries = 0; urlIdx = 0; loadTimer?.cancel(); isRetrying = false; wasReady = true }
-                    Player.STATE_BUFFERING -> { showLoading(true); if (retries == 0) startLoadTimer() }
+                    Player.STATE_BUFFERING -> { showLoading(true); if (retries == 0 && !wasReady) startLoadTimer() }
                     Player.STATE_ENDED -> nextChannel()
                     else -> {}
                 }
