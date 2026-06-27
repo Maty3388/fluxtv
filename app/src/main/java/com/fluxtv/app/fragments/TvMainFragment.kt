@@ -75,6 +75,8 @@ class TvMainFragment : Fragment() {
             val dp = ctx.resources.displayMetrics.density
 
             banner.visibility = android.view.View.VISIBLE
+            banner.isFocusable = true
+            banner.isFocusableInTouchMode = false
             banner.background = android.graphics.drawable.GradientDrawable(
                 android.graphics.drawable.GradientDrawable.Orientation.LEFT_RIGHT,
                 intArrayOf(0xFF0a2010.toInt(), 0xFF051508.toInt())
