@@ -307,7 +307,13 @@ class MainActivity : AppCompatActivity() {
     override fun onBackPressed() {
         val isTV = com.fluxtv.app.utils.DeviceUtils.isTV(this)
         if (isTV) {
-            // En TV el back mueve el foco al sidebar
+            // Si el foco está en el sidebar, no hacer nada
+            val sidebarIds = listOf(R.id.btnTv, R.id.btnMiCuenta, R.id.btnPeliculas, R.id.btnSeries, R.id.btnBuscar, R.id.btnFavoritos, R.id.btnAdultos, R.id.btnClearCache, R.id.btnLogout)
+            val currentFocus = currentFocus
+            if (currentFocus != null && sidebarIds.any { findViewById<android.view.View>(it) == currentFocus }) {
+                return
+            }
+            // Si el foco está en el contenido, moverlo al sidebar
             val btnTv = findViewById<android.widget.LinearLayout>(R.id.btnTv)
             btnTv?.requestFocus()
             return

@@ -50,12 +50,6 @@ class TvMainFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        // Setup info usuario
-        val email = Prefs.getEmail(requireContext())
-        val venc = Prefs.getSubEnd(requireContext())
-        view.findViewById<TextView>(R.id.tvTopEmail)?.text = email
-        view.findViewById<TextView>(R.id.tvTopVenc)?.text = "Vence: $venc"
-
         rvCategories = view.findViewById(R.id.rvCategories)
         categoryAdapter = CategoryRowAdapter(emptyList(), catColors) { ch, list ->
             startActivity(Intent(requireContext(), PlayerActivity::class.java).apply {

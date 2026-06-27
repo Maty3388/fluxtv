@@ -3,26 +3,6 @@
     android:layout_width="match_parent" android:layout_height="match_parent"
     android:background="@color/background" android:orientation="vertical">
 
-    <!-- Top bar -->
-    <LinearLayout android:layout_width="match_parent" android:layout_height="48dp"
-        android:background="#060C14" android:gravity="center_vertical"
-        android:paddingHorizontal="20dp" android:orientation="horizontal">
-        <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
-            android:text="FLUX" android:textColor="@color/primary"
-            android:textSize="18sp" android:textStyle="bold" android:letterSpacing="0.1"/>
-        <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
-            android:text="TV" android:textColor="#FFA500"
-            android:textSize="18sp" android:textStyle="bold"/>
-        <View android:layout_width="0dp" android:layout_height="1dp" android:layout_weight="1"/>
-        <TextView android:id="@+id/tvTopEmail"
-            android:layout_width="wrap_content" android:layout_height="wrap_content"
-            android:textColor="@color/text_secondary" android:textSize="10sp"
-            android:layout_marginEnd="16dp"/>
-        <TextView android:id="@+id/tvTopVenc"
-            android:layout_width="wrap_content" android:layout_height="wrap_content"
-            android:textColor="@color/primary" android:textSize="10sp"/>
-    </LinearLayout>
-
     <!-- Hero banner -->
     <FrameLayout android:id="@+id/heroBanner"
         android:layout_width="match_parent" android:layout_height="90dp"

@@ -192,6 +192,15 @@ object AutoUpdater {
             layoutParams = LinearLayout.LayoutParams(0, dp(ctx,44), 1f).apply { marginEnd = dp(ctx,10) }
             isClickable = true
             isFocusable = true
+            isFocusableInTouchMode = false
+            setOnFocusChangeListener { _, focused ->
+                background = GradientDrawable().apply {
+                    cornerRadius = dp(ctx,12).toFloat()
+                    setColor(if (focused) 0x22FFFFFF.toInt() else Color.TRANSPARENT)
+                    setStroke(if (focused) 2 else 1, if (focused) 0xFFFFFFFF.toInt() else 0x22FFFFFF.toInt())
+                }
+                setTextColor(if (focused) Color.WHITE else 0xFF8899AA.toInt())
+            }
             setOnClickListener { dialog.dismiss() }
         }
 
@@ -208,6 +217,15 @@ object AutoUpdater {
             layoutParams = LinearLayout.LayoutParams(0, dp(ctx,44), 2f)
             isClickable = true
             isFocusable = true
+            isFocusableInTouchMode = false
+            setOnFocusChangeListener { _, focused ->
+                background = GradientDrawable(GradientDrawable.Orientation.LEFT_RIGHT,
+                    intArrayOf(0xFF00E5FF.toInt(), 0xFF0088CC.toInt())).apply {
+                    cornerRadius = dp(ctx,12).toFloat()
+                    if (focused) setStroke(2, Color.WHITE)
+                }
+                animate().scaleX(if (focused) 1.05f else 1f).scaleY(if (focused) 1.05f else 1f).setDuration(100).start()
+            }
             setOnClickListener {
                 dialog.dismiss()
                 downloadAndInstall(ctx, ver.apkUrl)
@@ -235,9 +253,55 @@ object AutoUpdater {
     private fun downloadAndInstall(ctx: Context, url: String) {
         if (url.isEmpty()) return
         try {
-            val intent = Intent(Intent.ACTION_VIEW, Uri.parse(url))
-            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-            ctx.startActivity(intent)
-        } catch (_: Exception) {}
+            val fileName = "fluxtv_update.apk"
+            val request = android.app.DownloadManager.Request(Uri.parse(url)).apply {
+                setTitle("FluxTV Update")
+                setDescription("Descargando actualización...")
+                setNotificationVisibility(android.app.DownloadManager.Request.VISIBILITY_VISIBLE_NOTIFY_COMPLETED)
+                setDestinationInExternalPublicDir(android.os.Environment.DIRECTORY_DOWNLOADS, fileName)
+                setAllowedOverMetered(true)
+                setAllowedOverRoaming(true)
+            }
+            val dm = ctx.getSystemService(Context.DOWNLOAD_SERVICE) as android.app.DownloadManager
+            val downloadId = dm.enqueue(request)
+            // Esperar descarga e instalar
+            val handler = android.os.Handler(android.os.Looper.getMainLooper())
+            handler.post(object : Runnable {
+                override fun run() {
+                    val query = android.app.DownloadManager.Query().setFilterById(downloadId)
+                    val cursor = dm.query(query)
+                    if (cursor.moveToFirst()) {
+                        val status = cursor.getInt(cursor.getColumnIndexOrThrow(android.app.DownloadManager.COLUMN_STATUS))
+                        if (status == android.app.DownloadManager.STATUS_SUCCESSFUL) {
+                            cursor.close()
+                            val file = java.io.File(android.os.Environment.getExternalStoragePublicDirectory(android.os.Environment.DIRECTORY_DOWNLOADS), fileName)
+                            val apkUri = androidx.core.content.FileProvider.getUriForFile(ctx, ctx.packageName + ".provider", file)
+                            val install = Intent(Intent.ACTION_VIEW).apply {
+                                setDataAndType(apkUri, "application/vnd.android.package-archive")
+                                addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
+                                addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+                            }
+                            ctx.startActivity(install)
+                            return
+                        } else if (status == android.app.DownloadManager.STATUS_FAILED) {
+                            cursor.close()
+                            // Fallback al browser
+                            val intent = Intent(Intent.ACTION_VIEW, Uri.parse(url))
+                            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+                            ctx.startActivity(intent)
+                            return
+                        }
+                    }
+                    cursor.close()
+                    handler.postDelayed(this, 1000)
+                }
+            })
+        } catch (_: Exception) {
+            try {
+                val intent = Intent(Intent.ACTION_VIEW, Uri.parse(url))
+                intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+                ctx.startActivity(intent)
+            } catch (_: Exception) {}
+        }
     }
 }
