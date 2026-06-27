@@ -272,9 +272,14 @@ class MainActivity : AppCompatActivity() {
             ids.forEach { id ->
                 val v = findViewById<android.widget.LinearLayout>(id) ?: return@forEach
                 val active = id == activeId
-                v.setBackgroundColor(if (active) 0x33FFA500.toInt() else android.graphics.Color.TRANSPARENT)
-                val tv = v.getChildAt(1) as? android.widget.TextView
-                tv?.setTextColor(if (active) getColor(R.color.primary) else getColor(R.color.text_primary))
+                // Fondo con borde cyan si activo
+                val bg = android.graphics.drawable.GradientDrawable().apply {
+                    cornerRadius = 10 * resources.displayMetrics.density
+                    setColor(if (active) 0x1500E5FF.toInt() else android.graphics.Color.TRANSPARENT)
+                    if (active) setStroke((1 * resources.displayMetrics.density).toInt(), 0x4400E5FF.toInt())
+                }
+                v.background = bg
+                // Icono cyan si activo
                 val iv = v.getChildAt(0) as? android.widget.ImageView
                 iv?.setColorFilter(if (active) getColor(R.color.primary) else getColor(R.color.text_secondary))
             }
