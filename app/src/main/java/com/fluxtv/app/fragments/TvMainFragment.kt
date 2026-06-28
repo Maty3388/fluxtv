@@ -84,6 +84,7 @@ class TvMainFragment : Fragment() {
             val ctx = requireContext()
             val dp = ctx.resources.displayMetrics.density
 
+            banner.removeAllViews()
             banner.visibility = android.view.View.VISIBLE
             banner.isFocusable = true
             banner.isFocusableInTouchMode = false
