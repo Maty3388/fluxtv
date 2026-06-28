@@ -323,7 +323,7 @@ class ChannelCardAdapter(
         card.findViewWithTag<TextView>("num")?.text = "CH ${ch.number}"
         card.findViewWithTag<TextView>("name")?.text = ch.name
 
-        val logo = card.findViewWithTag<ImageView>("logo")
+        val logo = card.findViewWithTag<android.widget.ImageView>("logo")
         if (logo != null && !ch.logo.isNullOrBlank()) {
             Glide.with(ctx).load(ch.logo).into(logo)
         } else { logo?.setImageDrawable(null) }
