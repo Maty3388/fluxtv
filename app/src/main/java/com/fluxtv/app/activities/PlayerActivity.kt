@@ -23,6 +23,7 @@ import androidx.media3.exoplayer.drm.DefaultDrmSessionManager
 import androidx.media3.exoplayer.drm.FrameworkMediaDrm
 import androidx.media3.exoplayer.drm.LocalMediaDrmCallback
 import android.util.Base64
+import com.fluxtv.app.R
 import com.bumptech.glide.Glide
 import com.fluxtv.app.databinding.ActivityPlayerBinding
 import com.fluxtv.app.models.Channel
