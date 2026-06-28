@@ -269,8 +269,9 @@ class TvMainFragment : Fragment() {
         val isAdultFilter = channels.isNotEmpty() && channels.all { it.category == "ADULTOS" }
         val grouped = if (isAdultFilter) channels.groupBy { it.category }
                       else channels.filter { it.category != "ADULTOS" }.groupBy { it.category }
-        val sorted = catOrder.mapNotNull { grouped[it]?.let { chs -> it to chs } } +
-                     grouped.filter { it.key !in catOrder }.map { it.key to it.value }
+        val sorted = (catOrder.mapNotNull { grouped[it]?.let { chs -> it to chs } } +
+                     grouped.filter { it.key !in catOrder }.map { it.key to it.value })
+                     .filter { !it.first.contains("MUNDIAL", ignoreCase = true) }
         categoryAdapter.updateData(sorted)
     }
 
