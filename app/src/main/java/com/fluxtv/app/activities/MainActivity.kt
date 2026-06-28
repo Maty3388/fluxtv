@@ -317,7 +317,6 @@ class MainActivity : AppCompatActivity() {
             val ver = withContext(Dispatchers.IO) { try { com.fluxtv.app.services.ApiService.getVersion() } catch(_:Exception) { null } }
             if (ver != null) com.fluxtv.app.utils.AutoUpdater.check(this@MainActivity, BuildConfig.VERSION_NAME, ver)
         }
-        findViewById<android.widget.LinearLayout>(R.id.btnMiCuenta)?.setOnClickListener { startActivity(android.content.Intent(this, AccountActivity::class.java)) }
     }
 
     override fun onBackPressed() {
