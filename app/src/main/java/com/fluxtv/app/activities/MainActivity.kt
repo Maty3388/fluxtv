@@ -338,6 +338,16 @@ class MainActivity : AppCompatActivity() {
         super.onBackPressed()
     }
 
-    override fun onResume() { super.onResume(); highlightMobileNav(R.id.navInicio) }
+    override fun onResume() {
+        super.onResume()
+        highlightMobileNav(R.id.navInicio)
+        if (com.fluxtv.app.utils.SecurityUtils.isVpnActive(this)) {
+            com.fluxtv.app.utils.SecurityUtils.showVpnDialog(this) {
+                Prefs.saveToken(this, "")
+                startActivity(android.content.Intent(this, LoginActivity::class.java))
+                finish()
+            }
+        }
+    }
     override fun onDestroy() { super.onDestroy(); scope.cancel() }
 }

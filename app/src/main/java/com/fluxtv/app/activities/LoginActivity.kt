@@ -17,6 +17,11 @@ class LoginActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         binding = ActivityLoginBinding.inflate(layoutInflater)
         setContentView(binding.root)
+        // Verificar VPN
+        if (com.fluxtv.app.utils.SecurityUtils.isVpnActive(this)) {
+            com.fluxtv.app.utils.SecurityUtils.showVpnDialog(this) { finish() }
+            return
+        }
         binding.btnLogin.setOnClickListener { doLogin() }
     }
 
