@@ -324,8 +324,8 @@ class ChannelCardAdapter(
         card.findViewWithTag<TextView>("name")?.text = ch.name
 
         val logo = card.findViewWithTag<android.widget.ImageView>("logo")
-        if (logo != null && !ch.logo.isNullOrBlank()) {
-            logo.setImageURI(android.net.Uri.parse(ch.logo))
+        if (logo != null && !ch.logoUrl.isNullOrBlank()) {
+            logo.setImageURI(android.net.Uri.parse(ch.logoUrl))
         } else { logo?.setImageDrawable(null) }
 
         card.setOnClickListener { onClick(ch, channels) }
