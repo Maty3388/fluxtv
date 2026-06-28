@@ -281,7 +281,7 @@ class PlayerActivity : AppCompatActivity() {
     }
 
     private fun setupProgressControls() {
-        val layoutControls = findViewById<android.widget.LinearLayout>(R.id.layoutControls) ?: return
+        val layoutControls = findViewById<android.widget.LinearLayout>(R.id.layoutVodControls) ?: return
         val seekBar = findViewById<android.widget.SeekBar>(R.id.seekBar) ?: return
         val tvPosition = findViewById<android.widget.TextView>(R.id.tvPosition) ?: return
         val tvDuration = findViewById<android.widget.TextView>(R.id.tvDuration) ?: return

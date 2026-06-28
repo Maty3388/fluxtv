@@ -79,7 +79,7 @@
     </LinearLayout>
 
     <!-- Controles VOD -->
-    <LinearLayout android:id="@+id/layoutControls"
+    <LinearLayout android:id="@+id/layoutVodControls"
         android:layout_width="match_parent" android:layout_height="wrap_content"
         android:layout_gravity="bottom"
         android:orientation="vertical"
