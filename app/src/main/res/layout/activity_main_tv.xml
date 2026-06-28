@@ -1,169 +1,329 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="match_parent" android:layout_height="match_parent"
-    android:background="@color/background" android:orientation="horizontal">
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#080C18"
+    android:orientation="horizontal">
 
-    <!-- Sidebar minimalista con iconos -->
-    <LinearLayout android:id="@+id/sidebar"
-        android:layout_width="64dp" android:layout_height="match_parent"
-        android:background="@color/surface" android:orientation="vertical"
-        android:gravity="center_horizontal" android:paddingTop="16dp"
+    <LinearLayout
+        android:id="@+id/sidebar"
+        android:layout_width="64dp"
+        android:layout_height="match_parent"
+        android:background="#0F1422"
+        android:orientation="vertical"
+        android:gravity="center_horizontal"
+        android:paddingTop="16dp"
         android:paddingBottom="16dp">
 
-        <!-- Logo F -->
-        <TextView android:layout_width="44dp" android:layout_height="44dp"
-            android:text="F" android:textSize="20sp" android:textStyle="bold"
-            android:textColor="@color/background" android:gravity="center"
-            android:layout_marginBottom="16dp"
-            android:background="@drawable/logo_circle_bg"/>
+        <TextView
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:text="F"
+            android:textSize="18sp"
+            android:textStyle="bold"
+            android:textColor="#FFFFFF"
+            android:gravity="center"
+            android:layout_marginBottom="20dp"
+            android:background="@drawable/bg_logo_sidebar"/>
 
-        <!-- Botones icono -->
-        <LinearLayout android:id="@+id/btnMiCuenta"
+        <View
+            android:layout_width="32dp"
+            android:layout_height="1dp"
+            android:background="#0FFFFFFF"
+            android:layout_marginBottom="8dp"/>
+
+        <FrameLayout
+            android:id="@+id/btnMiCuenta"
+            android:layout_width="42dp"
+            android:layout_height="42dp"
+            android:layout_marginBottom="4dp"
+            android:focusable="true"
+            android:background="@drawable/bg_sidebar_btn_active">
+            <View
+                android:layout_width="3dp"
+                android:layout_height="20dp"
+                android:layout_gravity="start|center_vertical"
+                android:background="@drawable/bg_sidebar_indicator"/>
+            <ImageView
+                android:layout_width="20dp"
+                android:layout_height="20dp"
+                android:layout_gravity="center"
+                android:src="@drawable/ic_home"
+                android:tint="#00D4FF"/>
+        </FrameLayout>
+
+        <FrameLayout
+            android:id="@+id/btnTv"
+            android:layout_width="42dp"
+            android:layout_height="42dp"
+            android:layout_marginBottom="4dp"
+            android:focusable="true"
             android:nextFocusRight="@+id/rvCategories"
-            android:layout_width="44dp" android:layout_height="44dp"
-            android:gravity="center" android:focusable="true"
-            android:background="@drawable/sidebar_icon_selector"
-            android:layout_marginBottom="4dp">
-            <ImageView android:layout_width="22dp" android:layout_height="22dp"
-                android:src="@drawable/ic_home" android:tint="@color/text_secondary"/>
-        </LinearLayout>
+            android:background="@drawable/bg_sidebar_btn">
+            <ImageView
+                android:layout_width="20dp"
+                android:layout_height="20dp"
+                android:layout_gravity="center"
+                android:src="@drawable/ic_tv"
+                android:tint="#4A5568"/>
+        </FrameLayout>
 
-        <LinearLayout android:id="@+id/btnTv"
+        <FrameLayout
+            android:id="@+id/btnPeliculas"
+            android:layout_width="42dp"
+            android:layout_height="42dp"
+            android:layout_marginBottom="4dp"
+            android:focusable="true"
             android:nextFocusRight="@+id/rvCategories"
-            android:layout_width="44dp" android:layout_height="44dp"
-            android:gravity="center" android:focusable="true"
-            android:background="@drawable/sidebar_icon_selector"
-            android:layout_marginBottom="4dp">
-            <ImageView android:layout_width="22dp" android:layout_height="22dp"
-                android:src="@drawable/ic_tv" android:tint="@color/primary"/>
-        </LinearLayout>
+            android:background="@drawable/bg_sidebar_btn">
+            <ImageView
+                android:layout_width="20dp"
+                android:layout_height="20dp"
+                android:layout_gravity="center"
+                android:src="@drawable/ic_movie"
+                android:tint="#4A5568"/>
+        </FrameLayout>
 
-        <LinearLayout android:id="@+id/btnPeliculas"
+        <FrameLayout
+            android:id="@+id/btnSeries"
+            android:layout_width="42dp"
+            android:layout_height="42dp"
+            android:layout_marginBottom="4dp"
+            android:focusable="true"
             android:nextFocusRight="@+id/rvCategories"
-            android:layout_width="44dp" android:layout_height="44dp"
-            android:gravity="center" android:focusable="true"
-            android:background="@drawable/sidebar_icon_selector"
-            android:layout_marginBottom="4dp">
-            <ImageView android:layout_width="22dp" android:layout_height="22dp"
-                android:src="@drawable/ic_movie" android:tint="@color/text_secondary"/>
-        </LinearLayout>
+            android:background="@drawable/bg_sidebar_btn">
+            <ImageView
+                android:layout_width="20dp"
+                android:layout_height="20dp"
+                android:layout_gravity="center"
+                android:src="@drawable/ic_series"
+                android:tint="#4A5568"/>
+        </FrameLayout>
 
-        <LinearLayout android:id="@+id/btnSeries"
+        <View
+            android:layout_width="32dp"
+            android:layout_height="1dp"
+            android:background="#0FFFFFFF"
+            android:layout_marginTop="4dp"
+            android:layout_marginBottom="8dp"/>
+
+        <FrameLayout
+            android:id="@+id/btnFavoritos"
+            android:layout_width="42dp"
+            android:layout_height="42dp"
+            android:layout_marginBottom="4dp"
+            android:focusable="true"
             android:nextFocusRight="@+id/rvCategories"
-            android:layout_width="44dp" android:layout_height="44dp"
-            android:gravity="center" android:focusable="true"
-            android:background="@drawable/sidebar_icon_selector"
-            android:layout_marginBottom="4dp">
-            <ImageView android:layout_width="22dp" android:layout_height="22dp"
-                android:src="@drawable/ic_star" android:tint="@color/text_secondary"/>
-        </LinearLayout>
+            android:background="@drawable/bg_sidebar_btn">
+            <ImageView
+                android:layout_width="20dp"
+                android:layout_height="20dp"
+                android:layout_gravity="center"
+                android:src="@drawable/ic_star"
+                android:tint="#4A5568"/>
+        </FrameLayout>
 
-        <LinearLayout android:id="@+id/btnBuscar"
+        <FrameLayout
+            android:id="@+id/btnBuscar"
+            android:layout_width="42dp"
+            android:layout_height="42dp"
+            android:layout_marginBottom="4dp"
+            android:focusable="true"
             android:nextFocusRight="@+id/rvCategories"
-            android:layout_width="44dp" android:layout_height="44dp"
-            android:gravity="center" android:focusable="true"
-            android:background="@drawable/sidebar_icon_selector"
-            android:layout_marginBottom="4dp">
-            <ImageView android:layout_width="22dp" android:layout_height="22dp"
-                android:src="@drawable/ic_search" android:tint="@color/text_secondary"/>
-        </LinearLayout>
+            android:background="@drawable/bg_sidebar_btn">
+            <ImageView
+                android:layout_width="20dp"
+                android:layout_height="20dp"
+                android:layout_gravity="center"
+                android:src="@drawable/ic_search"
+                android:tint="#4A5568"/>
+        </FrameLayout>
 
-        <LinearLayout android:id="@+id/btnFavoritos"
+        <FrameLayout
+            android:id="@+id/btnAdultos"
+            android:layout_width="42dp"
+            android:layout_height="42dp"
+            android:focusable="true"
             android:nextFocusRight="@+id/rvCategories"
-            android:layout_width="44dp" android:layout_height="44dp"
-            android:gravity="center" android:focusable="true"
-            android:background="@drawable/sidebar_icon_selector"
-            android:layout_marginBottom="4dp">
-            <ImageView android:layout_width="22dp" android:layout_height="22dp"
-                android:src="@drawable/ic_star" android:tint="@color/text_secondary"/>
-        </LinearLayout>
+            android:background="@drawable/bg_sidebar_btn">
+            <ImageView
+                android:layout_width="20dp"
+                android:layout_height="20dp"
+                android:layout_gravity="center"
+                android:src="@drawable/ic_lock"
+                android:tint="#4A5568"/>
+        </FrameLayout>
 
-        <LinearLayout android:id="@+id/btnAdultos"
-            android:nextFocusRight="@+id/rvCategories"
-            android:layout_width="44dp" android:layout_height="44dp"
-            android:gravity="center" android:focusable="true"
-            android:background="@drawable/sidebar_icon_selector"
-            android:layout_marginBottom="4dp">
-            <ImageView android:layout_width="22dp" android:layout_height="22dp"
-                android:src="@drawable/ic_lock" android:tint="@color/text_secondary"/>
-        </LinearLayout>
-
-        <!-- Spacer -->
-        <View android:layout_width="match_parent" android:layout_height="0dp"
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
             android:layout_weight="1"/>
 
-        <LinearLayout android:id="@+id/btnClearCache"
-            android:layout_width="44dp" android:layout_height="44dp"
-            android:gravity="center" android:focusable="true"
-            android:background="@drawable/sidebar_icon_selector"
-            android:layout_marginBottom="4dp">
-            <ImageView android:layout_width="22dp" android:layout_height="22dp"
-                android:src="@drawable/ic_refresh" android:tint="@color/text_secondary"/>
-        </LinearLayout>
+        <FrameLayout
+            android:id="@+id/btnClearCache"
+            android:layout_width="42dp"
+            android:layout_height="42dp"
+            android:layout_marginBottom="4dp"
+            android:focusable="true"
+            android:background="@drawable/bg_sidebar_btn">
+            <ImageView
+                android:layout_width="20dp"
+                android:layout_height="20dp"
+                android:layout_gravity="center"
+                android:src="@drawable/ic_refresh"
+                android:tint="#4A5568"/>
+        </FrameLayout>
 
-        <LinearLayout android:id="@+id/btnLogout"
-            android:layout_width="44dp" android:layout_height="44dp"
-            android:gravity="center" android:focusable="true"
-            android:background="@drawable/sidebar_icon_selector">
-            <ImageView android:layout_width="22dp" android:layout_height="22dp"
-                android:src="@drawable/ic_logout" android:tint="@color/error"/>
-        </LinearLayout>
+        <FrameLayout
+            android:id="@+id/btnLogout"
+            android:layout_width="42dp"
+            android:layout_height="42dp"
+            android:focusable="true"
+            android:background="@drawable/bg_sidebar_btn_logout">
+            <ImageView
+                android:layout_width="20dp"
+                android:layout_height="20dp"
+                android:layout_gravity="center"
+                android:src="@drawable/ic_logout"
+                android:tint="#F43F5E"/>
+        </FrameLayout>
 
     </LinearLayout>
 
-    <!-- Borde cyan -->
-    <View android:layout_width="2dp" android:layout_height="match_parent"
-        android:background="@color/primary"/>
+    <View
+        android:layout_width="1dp"
+        android:layout_height="match_parent"
+        android:background="#0FFFFFFF"/>
 
-    <!-- Contenido principal -->
-    <LinearLayout android:layout_width="match_parent" android:layout_height="match_parent"
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
         android:orientation="vertical">
 
-        <!-- Top bar -->
-        <LinearLayout android:layout_width="match_parent" android:layout_height="48dp"
-            android:background="@color/surface" android:gravity="center_vertical"
-            android:paddingHorizontal="20dp" android:orientation="horizontal">
-            <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
-                android:text="FLUX" android:textColor="@color/primary"
-                android:textSize="18sp" android:textStyle="bold" android:letterSpacing="0.1"/>
-            <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
-                android:text="TV" android:textColor="#FFA500"
-                android:textSize="18sp" android:textStyle="bold"/>
-            <View android:layout_width="0dp" android:layout_height="match_parent"
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="52dp"
+            android:background="#E6080C18"
+            android:gravity="center_vertical"
+            android:paddingStart="20dp"
+            android:paddingEnd="20dp"
+            android:orientation="horizontal">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="FLUX"
+                android:textColor="#00D4FF"
+                android:textSize="17sp"
+                android:textStyle="bold"
+                android:letterSpacing="0.08"/>
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="TV"
+                android:textColor="#F5A623"
+                android:textSize="17sp"
+                android:textStyle="bold"/>
+
+            <View
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
                 android:layout_weight="1"/>
-            <TextView android:id="@+id/tvUserEmail"
-                android:layout_width="wrap_content" android:layout_height="wrap_content"
-                android:textColor="@color/text_secondary" android:textSize="10sp"
-                android:layout_marginEnd="16dp"/>
-            <TextView android:id="@+id/tvVencimiento"
-                android:layout_width="wrap_content" android:layout_height="wrap_content"
-                android:textColor="@color/primary" android:textSize="10sp"/>
+
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="28dp"
+                android:gravity="center_vertical"
+                android:paddingStart="10dp"
+                android:paddingEnd="12dp"
+                android:layout_marginEnd="8dp"
+                android:background="@drawable/bg_pill">
+                <View
+                    android:layout_width="6dp"
+                    android:layout_height="6dp"
+                    android:layout_marginEnd="6dp"
+                    android:background="@drawable/bg_dot_green"/>
+                <TextView
+                    android:id="@+id/tvUserEmail"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textColor="#00D4FF"
+                    android:textSize="10sp"
+                    android:textStyle="bold"/>
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="28dp"
+                android:gravity="center_vertical"
+                android:paddingStart="10dp"
+                android:paddingEnd="10dp"
+                android:background="@drawable/bg_pill">
+                <TextView
+                    android:id="@+id/tvVencimiento"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textColor="#8A95B0"
+                    android:textSize="10sp"
+                    android:fontFamily="monospace"/>
+            </LinearLayout>
+
         </LinearLayout>
 
-        <!-- Fragment canales -->
-        <FrameLayout android:layout_width="match_parent" android:layout_height="match_parent">
-            <FrameLayout android:id="@+id/mainContainer"
-                android:layout_width="match_parent" android:layout_height="match_parent"/>
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:background="#0FFFFFFF"/>
+
+        <FrameLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+            <FrameLayout
+                android:id="@+id/mainContainer"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"/>
+
             <com.facebook.shimmer.ShimmerFrameLayout
                 android:id="@+id/shimmerLayout"
-                android:layout_width="match_parent" android:layout_height="match_parent"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
                 android:visibility="visible">
-                <LinearLayout android:layout_width="match_parent"
+                <LinearLayout
+                    android:layout_width="match_parent"
                     android:layout_height="match_parent"
-                    android:orientation="vertical" android:padding="16dp">
-                    <View android:layout_width="200dp" android:layout_height="20dp"
-                        android:layout_marginBottom="16dp" android:background="#1AFFFFFF"/>
-                    <LinearLayout android:layout_width="match_parent"
-                        android:layout_height="wrap_content" android:orientation="horizontal">
-                        <View android:layout_width="160dp" android:layout_height="115dp"
-                            android:layout_marginEnd="8dp" android:background="#1AFFFFFF"/>
-                        <View android:layout_width="160dp" android:layout_height="115dp"
-                            android:layout_marginEnd="8dp" android:background="#1AFFFFFF"/>
-                        <View android:layout_width="160dp" android:layout_height="115dp"
-                            android:background="#1AFFFFFF"/>
+                    android:orientation="vertical"
+                    android:padding="20dp">
+                    <View android:layout_width="match_parent" android:layout_height="70dp"
+                        android:layout_marginBottom="24dp" android:background="@drawable/bg_shimmer_block"/>
+                    <View android:layout_width="120dp" android:layout_height="14dp"
+                        android:layout_marginBottom="12dp" android:background="@drawable/bg_shimmer_block"/>
+                    <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content"
+                        android:orientation="horizontal" android:layout_marginBottom="24dp">
+                        <View android:layout_width="120dp" android:layout_height="100dp"
+                            android:layout_marginEnd="8dp" android:background="@drawable/bg_shimmer_block"/>
+                        <View android:layout_width="120dp" android:layout_height="100dp"
+                            android:layout_marginEnd="8dp" android:background="@drawable/bg_shimmer_block"/>
+                        <View android:layout_width="120dp" android:layout_height="100dp"
+                            android:layout_marginEnd="8dp" android:background="@drawable/bg_shimmer_block"/>
+                        <View android:layout_width="120dp" android:layout_height="100dp"
+                            android:background="@drawable/bg_shimmer_block"/>
+                    </LinearLayout>
+                    <View android:layout_width="140dp" android:layout_height="14dp"
+                        android:layout_marginBottom="12dp" android:background="@drawable/bg_shimmer_block"/>
+                    <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content"
+                        android:orientation="horizontal">
+                        <View android:layout_width="120dp" android:layout_height="100dp"
+                            android:layout_marginEnd="8dp" android:background="@drawable/bg_shimmer_block"/>
+                        <View android:layout_width="120dp" android:layout_height="100dp"
+                            android:layout_marginEnd="8dp" android:background="@drawable/bg_shimmer_block"/>
+                        <View android:layout_width="120dp" android:layout_height="100dp"
+                            android:background="@drawable/bg_shimmer_block"/>
                     </LinearLayout>
                 </LinearLayout>
             </com.facebook.shimmer.ShimmerFrameLayout>
+
         </FrameLayout>
     </LinearLayout>
+
 </LinearLayout>
