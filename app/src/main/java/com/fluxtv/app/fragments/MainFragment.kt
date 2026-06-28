@@ -257,11 +257,16 @@ class ChannelPresenter : Presenter() {
 
         val liveBadge = card.findViewWithTag<android.widget.TextView>("live")
         liveBadge?.clearAnimation()
-        val anim = android.view.animation.AlphaAnimation(1f, 0.2f).apply {
-            duration = 800; repeatMode = android.view.animation.Animation.REVERSE
-            repeatCount = android.view.animation.Animation.INFINITE
+        if (ch.isLive) {
+            liveBadge?.visibility = android.view.View.VISIBLE
+            val anim = android.view.animation.AlphaAnimation(1f, 0.2f).apply {
+                duration = 800; repeatMode = android.view.animation.Animation.REVERSE
+                repeatCount = android.view.animation.Animation.INFINITE
+            }
+            liveBadge?.startAnimation(anim)
+        } else {
+            liveBadge?.visibility = android.view.View.GONE
         }
-        liveBadge?.startAnimation(anim)
 
         card.setOnFocusChangeListener { v, focused ->
             val (ct, cb) = catGradients[ch.category] ?: Pair(0xFF0D1B2A.toInt(), 0xFF060E1A.toInt())
