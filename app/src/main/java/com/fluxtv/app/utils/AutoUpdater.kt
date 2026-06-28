@@ -246,7 +246,7 @@ object AutoUpdater {
         })
 
         dialog.setContentView(root)
-        dialog.window?.setLayout((ctx.resources.displayMetrics.widthPixels * 0.9).toInt(), WindowManager.LayoutParams.WRAP_CONTENT)
+        dialog.window?.setLayout((ctx.resources.displayMetrics.widthPixels * 0.7).toInt(), WindowManager.LayoutParams.WRAP_CONTENT)
         dialog.show()
     }
 
