@@ -43,7 +43,7 @@ class LoginActivity : AppCompatActivity() {
         binding.tvError.visibility = View.GONE
         scope.launch {
             val token = withContext(Dispatchers.IO) {
-                try { ApiService.login(email, password) } catch (_: Exception) { null }
+                try { ApiService.login(email, password, com.fluxtv.app.utils.SecurityUtils.getDeviceId(this@LoginActivity)) } catch (_: Exception) { null }
             }
             if (isDestroyed) return@launch
             binding.progressBar.visibility = View.GONE

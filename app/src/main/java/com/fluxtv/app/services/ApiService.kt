@@ -61,8 +61,8 @@ object ApiService {
     }
 
     var loginError = ""
-    fun login(email: String, password: String): String? {
-        val bodyJson = JSONObject().put("email", email).put("password", password).toString()
+    fun login(email: String, password: String, deviceId: String = ""): String? {
+        val bodyJson = JSONObject().put("email", email).put("password", password).apply { if (deviceId.isNotEmpty()) put("device_id", deviceId) }.toString()
         val body = bodyJson.toRequestBody("application/json".toMediaType())
         val res = client.newCall(Request.Builder().url("$BASE/auth/login").post(body).build()).execute()
         val json = JSONObject(res.body?.string() ?: return null)
