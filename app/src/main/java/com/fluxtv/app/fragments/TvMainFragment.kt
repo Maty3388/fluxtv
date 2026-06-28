@@ -414,6 +414,26 @@ class ChannelCardAdapter(
             tag = "logo"
         }
 
+        // Shimmer placeholder
+        val shimmer = com.facebook.shimmer.ShimmerFrameLayout(ctx).apply {
+            layoutParams = android.widget.FrameLayout.LayoutParams(
+                (70*dp).toInt(), (60*dp).toInt()).apply {
+                gravity = android.view.Gravity.CENTER_HORIZONTAL or android.view.Gravity.TOP
+                topMargin = (8*dp).toInt()
+            }
+            tag = "shimmer"
+            val shimmerBg = android.widget.FrameLayout(ctx).apply {
+                layoutParams = android.widget.FrameLayout.LayoutParams(
+                    ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT)
+                background = GradientDrawable().apply {
+                    cornerRadius = 8*dp
+                    setColor(0x33FFFFFF)
+                }
+            }
+            addView(shimmerBg)
+            startShimmer()
+        }
+
         // Name bar
         val nameBar = android.widget.FrameLayout(ctx).apply {
             layoutParams = android.widget.FrameLayout.LayoutParams(
@@ -475,7 +495,7 @@ class ChannelCardAdapter(
         }
 
         nameBar.addView(name); nameBar.addView(liveDot)
-        card.addView(logo); card.addView(num); card.addView(nameBar)
+        card.addView(shimmer); card.addView(logo); card.addView(num); card.addView(nameBar)
         return CardVH(card)
     }
 
@@ -496,10 +516,22 @@ class ChannelCardAdapter(
         }
 
         val logo = card.findViewWithTag<android.widget.ImageView>("logo")
+        val shimmerView = card.findViewWithTag<com.facebook.shimmer.ShimmerFrameLayout>("shimmer")
         if (ch.logoUrl.isNotEmpty()) {
-            com.bumptech.glide.Glide.with(card).load(ch.logoUrl).into(logo!!)
+            shimmerView?.visibility = android.view.View.VISIBLE
+            shimmerView?.startShimmer()
+            com.bumptech.glide.Glide.with(card).load(ch.logoUrl)
+                .listener(object : com.bumptech.glide.request.RequestListener<android.graphics.drawable.Drawable> {
+                    override fun onLoadFailed(e: com.bumptech.glide.load.engine.GlideException?, model: Any?, target: com.bumptech.glide.request.target.Target<android.graphics.drawable.Drawable>, isFirstResource: Boolean): Boolean {
+                        shimmerView?.stopShimmer(); shimmerView?.visibility = android.view.View.GONE; return false
+                    }
+                    override fun onResourceReady(resource: android.graphics.drawable.Drawable, model: Any, target: com.bumptech.glide.request.target.Target<android.graphics.drawable.Drawable>?, dataSource: com.bumptech.glide.load.DataSource, isFirstResource: Boolean): Boolean {
+                        shimmerView?.stopShimmer(); shimmerView?.visibility = android.view.View.GONE; return false
+                    }
+                }).into(logo!!)
         } else {
             logo?.setImageDrawable(null)
+            shimmerView?.stopShimmer(); shimmerView?.visibility = android.view.View.GONE
         }
 
         card.setOnClickListener { onClick(ch, channels) }
