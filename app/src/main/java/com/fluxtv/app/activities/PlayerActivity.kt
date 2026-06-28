@@ -296,11 +296,14 @@ class PlayerActivity : AppCompatActivity() {
             override fun onPlaybackStateChanged(state: Int) {
                 if (state == androidx.media3.common.Player.STATE_READY) {
                     val duration = player?.duration ?: 0
-                    if (duration > 0) {
+                    val isLive = player?.isCurrentMediaItemLive ?: false
+                    if (duration > 0 && duration != Long.MIN_VALUE && !isLive) {
                         lc.visibility = android.view.View.VISIBLE
                         sb.max = (duration / 1000).toInt()
                         tvDur.text = formatTime(duration)
                         startProgressUpdate(sb, tvPos)
+                    } else {
+                        lc.visibility = android.view.View.GONE
                     }
                 }
             }
