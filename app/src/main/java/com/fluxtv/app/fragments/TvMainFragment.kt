@@ -77,6 +77,7 @@ class TvMainFragment : Fragment() {
             banner.visibility = android.view.View.VISIBLE
             banner.isFocusable = true
             banner.isFocusableInTouchMode = false
+            banner.isClickable = true
             banner.background = android.graphics.drawable.GradientDrawable(
                 android.graphics.drawable.GradientDrawable.Orientation.LEFT_RIGHT,
                 intArrayOf(0xFF0a2010.toInt(), 0xFF051508.toInt())
@@ -191,6 +192,24 @@ class TvMainFragment : Fragment() {
 
             banner.addView(border)
             banner.addView(content)
+            
+            val mundialList = channels.filter { it.category.contains("MUNDIAL", ignoreCase = true) }
+            banner.setOnClickListener {
+                startActivity(android.content.Intent(requireContext(), com.fluxtv.app.activities.PlayerActivity::class.java).apply {
+                    putExtra(com.fluxtv.app.activities.PlayerActivity.EXTRA_CHANNELS, ArrayList(mundialList))
+                    putExtra(com.fluxtv.app.activities.PlayerActivity.EXTRA_INDEX, 0)
+                })
+            }
+            banner.setOnFocusChangeListener { v, focused ->
+                v.background = android.graphics.drawable.GradientDrawable(
+                    android.graphics.drawable.GradientDrawable.Orientation.LEFT_RIGHT,
+                    intArrayOf(if (focused) 0xFF0a3a10.toInt() else 0xFF0a2010.toInt(), 0xFF051508.toInt())
+                ).apply { 
+                    cornerRadius = 14 * resources.displayMetrics.density
+                    setStroke((if (focused) 2 else 1) * resources.displayMetrics.density.toInt(), 
+                        if (focused) 0xFF00FF88.toInt() else 0x2200FF88.toInt())
+                }
+            }
         }
     }
 
