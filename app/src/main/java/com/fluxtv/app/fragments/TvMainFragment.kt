@@ -367,6 +367,8 @@ class CategoryRowAdapter(
             clipToPadding = false
             setPadding((16*dp).toInt(), 0, (16*dp).toInt(), 0)
             overScrollMode = android.view.View.OVER_SCROLL_NEVER
+            clipChildren = false
+            setHasFixedSize(true)
             adapter = ChannelCardAdapter(channels, color, onChannelClick)
         }
         root.addView(rv)
@@ -395,6 +397,10 @@ class ChannelCardAdapter(
                 marginEnd = (8*dp).toInt()
             }
             isFocusable = true; isFocusableInTouchMode = false
+            foreground = null
+            if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.LOLLIPOP) {
+                stateListAnimator = null
+            }
             background = GradientDrawable().apply {
                 cornerRadius = 12*dp
                 setColor(0x220A1020)
