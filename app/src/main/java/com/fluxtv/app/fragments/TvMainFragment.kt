@@ -539,7 +539,7 @@ class ChannelCardAdapter(
         card.setOnFocusChangeListener { v, focused ->
             v.background = GradientDrawable().apply {
                 cornerRadius = 12*dp
-                setColor(0xFF0A1020.toInt())
+                setColor(if (focused) 0xFF0A1020.toInt() else 0x220A1020)
                 setStroke(if (focused) (2*dp).toInt() else 1,
                     if (focused) 0xFFFFFFFF.toInt() else androidx.core.graphics.ColorUtils.setAlphaComponent(catColor, 40))
             }
