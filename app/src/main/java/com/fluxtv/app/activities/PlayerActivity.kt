@@ -43,6 +43,8 @@ class PlayerActivity : AppCompatActivity() {
     private var wasDisconnected = false
     private var isRetrying = false
     private var wasReady = false
+    private var controlsHandler = android.os.Handler(android.os.Looper.getMainLooper())
+    private var controlsVisible = false
 
     companion object {
         const val EXTRA_CHANNELS = "channels"
@@ -62,6 +64,7 @@ class PlayerActivity : AppCompatActivity() {
         initPlayer()
         loadChannel(idx)
 
+        setupProgressControls()
         networkMonitor = com.fluxtv.app.utils.NetworkMonitor(this).apply {
             onDisconnected = {
                 wasDisconnected = true
@@ -274,6 +277,74 @@ class PlayerActivity : AppCompatActivity() {
     private fun hideControls() {
         binding.layoutControls.visibility = View.GONE
         controlsTimer?.cancel()
+    }
+
+    private fun setupProgressControls() {
+        val layoutControls = findViewById<android.widget.LinearLayout>(R.id.layoutControls) ?: return
+        val seekBar = findViewById<android.widget.SeekBar>(R.id.seekBar) ?: return
+        val tvPosition = findViewById<android.widget.TextView>(R.id.tvPosition) ?: return
+        val tvDuration = findViewById<android.widget.TextView>(R.id.tvDuration) ?: return
+
+        // Mostrar controles solo en VOD (cuando hay duración)
+        player?.addListener(object : androidx.media3.common.Player.Listener {
+            override fun onPlaybackStateChanged(state: Int) {
+                if (state == androidx.media3.common.Player.STATE_READY) {
+                    val duration = player?.duration ?: 0
+                    if (duration > 0) {
+                        layoutControls.visibility = android.view.View.VISIBLE
+                        seekBar.max = (duration / 1000).toInt()
+                        tvDuration.text = formatTime(duration)
+                        startProgressUpdate(seekBar, tvPosition)
+                    }
+                }
+            }
+        })
+
+        seekBar.setOnSeekBarChangeListener(object : android.widget.SeekBar.OnSeekBarChangeListener {
+            override fun onProgressChanged(sb: android.widget.SeekBar?, progress: Int, fromUser: Boolean) {
+                if (fromUser) {
+                    player?.seekTo(progress * 1000L)
+                    tvPosition.text = formatTime(progress * 1000L)
+                }
+            }
+            override fun onStartTrackingTouch(sb: android.widget.SeekBar?) {}
+            override fun onStopTrackingTouch(sb: android.widget.SeekBar?) {}
+        })
+
+        // Tap para mostrar/ocultar controles
+        binding.textureView.setOnClickListener {
+            if (layoutControls.visibility == android.view.View.VISIBLE) {
+                layoutControls.visibility = android.view.View.GONE
+            } else {
+                val duration = player?.duration ?: 0
+                if (duration > 0) {
+                    layoutControls.visibility = android.view.View.VISIBLE
+                    controlsHandler.removeCallbacksAndMessages(null)
+                    controlsHandler.postDelayed({ layoutControls.visibility = android.view.View.GONE }, 4000)
+                }
+            }
+        }
+    }
+
+    private fun startProgressUpdate(seekBar: android.widget.SeekBar, tvPosition: android.widget.TextView) {
+        val runnable = object : Runnable {
+            override fun run() {
+                val pos = player?.currentPosition ?: 0
+                seekBar.progress = (pos / 1000).toInt()
+                tvPosition.text = formatTime(pos)
+                controlsHandler.postDelayed(this, 1000)
+            }
+        }
+        controlsHandler.post(runnable)
+    }
+
+    private fun formatTime(ms: Long): String {
+        val total = ms / 1000
+        val h = total / 3600
+        val m = (total % 3600) / 60
+        val s = total % 60
+        return if (h > 0) String.format("%d:%02d:%02d", h, m, s)
+               else String.format("%02d:%02d", m, s)
     }
 
     private fun getRandomUserAgent(): String {
