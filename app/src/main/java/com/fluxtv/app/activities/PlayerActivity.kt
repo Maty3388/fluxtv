@@ -289,6 +289,7 @@ class PlayerActivity : AppCompatActivity() {
         val tvPos = tvPosition
         val tvDur = tvDuration
         val lc = layoutControls
+        lc.visibility = android.view.View.GONE // oculto por defecto
 
         // Mostrar controles solo en VOD (cuando hay duración)
         player?.addListener(object : androidx.media3.common.Player.Listener {
