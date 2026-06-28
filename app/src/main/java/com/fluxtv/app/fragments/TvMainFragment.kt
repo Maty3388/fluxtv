@@ -492,7 +492,7 @@ class ChannelCardAdapter(
         card.background = GradientDrawable().apply {
             cornerRadius = 12*dp
             setColor(0xFF0A1020.toInt())
-            setStroke(1, catColor and 0x1FFFFFFF or 0x1F000000)
+            setStroke(1, androidx.core.graphics.ColorUtils.setAlphaComponent(catColor, 40))
         }
 
         val logo = card.findViewWithTag<android.widget.ImageView>("logo")
@@ -509,7 +509,7 @@ class ChannelCardAdapter(
                 cornerRadius = 12*dp
                 setColor(0xFF0A1020.toInt())
                 setStroke(if (focused) (2*dp).toInt() else 1,
-                    if (focused) 0xFFFFFFFF.toInt() else catColor and 0x1FFFFFFF or 0x1F000000)
+                    if (focused) 0xFFFFFFFF.toInt() else androidx.core.graphics.ColorUtils.setAlphaComponent(catColor, 40))
             }
             v.animate().scaleX(if (focused) 1.03f else 1f).scaleY(if (focused) 1.03f else 1f)
                 .translationZ(if (focused) 4f else 0f).setDuration(100).start()
@@ -523,3 +523,4 @@ class ChannelCardAdapter(
 
     class CardVH(view: View) : RecyclerView.ViewHolder(view)
 }
+
