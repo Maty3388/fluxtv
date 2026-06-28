@@ -60,6 +60,16 @@ class TvMainFragment : Fragment() {
         }
         rvCategories.layoutManager = LinearLayoutManager(requireContext())
         rvCategories.adapter = categoryAdapter
+        rvCategories.setOnKeyListener { _, keyCode, event ->
+            if (event.action == android.view.KeyEvent.ACTION_DOWN && keyCode == android.view.KeyEvent.KEYCODE_DPAD_UP) {
+                val lm = rvCategories.layoutManager as LinearLayoutManager
+                if (lm.findFirstCompletelyVisibleItemPosition() == 0) {
+                    view.findViewById<android.widget.FrameLayout>(R.id.heroBanner)?.requestFocus()
+                    return@setOnKeyListener true
+                }
+            }
+            false
+        }
 
         loadChannels()
     }
