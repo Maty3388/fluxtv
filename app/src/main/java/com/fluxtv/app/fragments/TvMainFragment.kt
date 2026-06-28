@@ -507,11 +507,12 @@ class ChannelCardAdapter(
         card.setOnFocusChangeListener { v, focused ->
             v.background = GradientDrawable().apply {
                 cornerRadius = 12*dp
-                setColor(if (focused) catColor and 0x22FFFFFF or 0x22000000 else 0xFF0A1020.toInt())
-                setStroke(if (focused) (2*dp).toInt() else 1, if (focused) catColor else catColor and 0x1FFFFFFF or 0x1F000000)
+                setColor(0xFF0A1020.toInt())
+                setStroke(if (focused) (2*dp).toInt() else 1,
+                    if (focused) 0xFFFFFFFF.toInt() else catColor and 0x1FFFFFFF or 0x1F000000)
             }
-            v.animate().scaleX(if (focused) 1.08f else 1f).scaleY(if (focused) 1.08f else 1f)
-                .translationZ(if (focused) 10f else 0f).setDuration(120).start()
+            v.animate().scaleX(if (focused) 1.03f else 1f).scaleY(if (focused) 1.03f else 1f)
+                .translationZ(if (focused) 4f else 0f).setDuration(100).start()
         }
     }
 
