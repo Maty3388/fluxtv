@@ -285,6 +285,10 @@ class PlayerActivity : AppCompatActivity() {
         val seekBar = findViewById<android.widget.SeekBar>(R.id.seekBar) ?: return
         val tvPosition = findViewById<android.widget.TextView>(R.id.tvPosition) ?: return
         val tvDuration = findViewById<android.widget.TextView>(R.id.tvDuration) ?: return
+        val sb = seekBar
+        val tvPos = tvPosition
+        val tvDur = tvDuration
+        val lc = layoutControls
 
         // Mostrar controles solo en VOD (cuando hay duración)
         player?.addListener(object : androidx.media3.common.Player.Listener {
@@ -292,10 +296,10 @@ class PlayerActivity : AppCompatActivity() {
                 if (state == androidx.media3.common.Player.STATE_READY) {
                     val duration = player?.duration ?: 0
                     if (duration > 0) {
-                        layoutControls.visibility = android.view.View.VISIBLE
-                        seekBar.max = (duration / 1000).toInt()
-                        tvDuration.text = formatTime(duration)
-                        startProgressUpdate(seekBar, tvPosition)
+                        lc.visibility = android.view.View.VISIBLE
+                        sb.max = (duration / 1000).toInt()
+                        tvDur.text = formatTime(duration)
+                        startProgressUpdate(sb, tvPos)
                     }
                 }
             }
