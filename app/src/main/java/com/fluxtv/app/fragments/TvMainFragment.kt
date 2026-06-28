@@ -400,7 +400,7 @@ class ChannelCardAdapter(
                 setColor(0x220A1020)
                 setStroke(1, 0xFF0D1A2A.toInt())
             }
-            elevation = 4*dp
+            elevation = 0f
         }
 
         // Logo
