@@ -292,6 +292,14 @@ class MainActivity : AppCompatActivity() {
             findViewById<android.widget.LinearLayout>(id)?.setOnFocusChangeListener { _, focused ->
                 if (focused) highlightSidebar(id)
             }
+            findViewById<android.widget.LinearLayout>(id)?.setOnKeyListener { _, keyCode, event ->
+                if (event.action == android.view.KeyEvent.ACTION_DOWN && keyCode == android.view.KeyEvent.KEYCODE_DPAD_RIGHT) {
+                    val rv = tvFragment?.view?.findViewById<androidx.recyclerview.widget.RecyclerView>(R.id.rvCategories)
+                    rv?.requestFocus() ?: findViewById<android.widget.FrameLayout>(R.id.mainContainer)?.requestFocus()
+                    return@setOnKeyListener true
+                }
+                false
+            }
         }
 
         highlightSidebar(R.id.btnTv)
