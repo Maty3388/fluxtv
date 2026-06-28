@@ -275,9 +275,9 @@ class ChannelCardAdapter(
             layoutParams = FrameLayout.LayoutParams(FrameLayout.LayoutParams.MATCH_PARENT, thumbH)
             setBackgroundColor(0xFF0F1422.toInt()); tag = "thumb"
         }
-        val logo = ImageView(ctx).apply {
+        val logo = android.widget.ImageView(ctx).apply {
             layoutParams = FrameLayout.LayoutParams((72*dp).toInt(),(56*dp).toInt(), Gravity.CENTER)
-            scaleType = ImageView.ScaleType.CENTER_INSIDE; tag = "logo"
+            scaleType = android.widget.ImageView.ScaleType.CENTER_INSIDE; tag = "logo"
         }
         val overlay = View(ctx).apply {
             layoutParams = FrameLayout.LayoutParams(FrameLayout.LayoutParams.MATCH_PARENT, FrameLayout.LayoutParams.MATCH_PARENT)
@@ -325,7 +325,7 @@ class ChannelCardAdapter(
 
         val logo = card.findViewWithTag<ImageView>("logo")
         if (logo != null && !ch.logo.isNullOrBlank()) {
-            Glide.with(ctx).load(ch.logo).transition(DrawableTransitionOptions.withCrossFade(200)).into(logo)
+            Glide.with(ctx).load(ch.logo).into(logo)
         } else { logo?.setImageDrawable(null) }
 
         card.setOnClickListener { onClick(ch, channels) }
