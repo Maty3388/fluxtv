@@ -207,20 +207,17 @@ class PlayerActivity : AppCompatActivity() {
     private fun playUrl(url: String) {
         val ch = channels[idx]
         val headers = mapOf("User-Agent" to "Mozilla/5.0") + ch.headers
+        val mergedHeaders = mapOf(
+            "User-Agent" to getRandomUserAgent(),
+            "Accept" to "*/*",
+            "Accept-Language" to "es-AR,es;q=0.9,en;q=0.8",
+            "Connection" to "keep-alive"
+        ) + headers
         val dsf = DefaultHttpDataSource.Factory()
-                .setConnectTimeoutMs(15000)
-                .setReadTimeoutMs(15000)
-                .setAllowCrossProtocolRedirects(true)
-                .setDefaultRequestProperties(mapOf(
-                    "User-Agent" to getRandomUserAgent(),
-                    "Accept" to "*/*",
-                    "Accept-Language" to "es-AR,es;q=0.9,en;q=0.8",
-                    "Connection" to "keep-alive"
-                ))
-            .setDefaultRequestProperties(headers)
-            .setAllowCrossProtocolRedirects(true)
             .setConnectTimeoutMs(15000)
             .setReadTimeoutMs(15000)
+            .setAllowCrossProtocolRedirects(true)
+            .setDefaultRequestProperties(mergedHeaders)
         val src = when {
             url.contains(".m3u8") || url.contains(".ts") ->
                 HlsMediaSource.Factory(dsf).createMediaSource(MediaItem.fromUri(url))
@@ -474,6 +471,6 @@ class PlayerActivity : AppCompatActivity() {
             }
         } catch (_: Exception) {}
         try { com.fluxtv.app.services.ApiService.stopWatching() } catch (_: Exception) {}
-        loadTimer?.cancel(); controlsTimer?.cancel(); scope.cancel(); player?.release(); networkMonitor?.stop()
+        loadTimer?.cancel(); controlsTimer?.cancel(); controlsHandler.removeCallbacksAndMessages(null); scope.cancel(); player?.release(); networkMonitor?.stop()
     }
 }
