@@ -79,7 +79,7 @@ class TvMainFragment : Fragment() {
             val channels = withContext(Dispatchers.IO) {
                 try { ApiService.getChannels() } catch (_: Exception) { emptyList() }
             }
-            val evento = channels.firstOrNull { it.category.contains("MUNDIAL", ignoreCase = true) } ?: channels.firstOrNull { it.category.contains("Evento", ignoreCase = true) || it.category.contains("PPV", ignoreCase = true) } ?: return@launch
+            val evento = channels.firstOrNull { it.category.contains("MUNDIAL", ignoreCase = true) } ?: return@launch
             val banner = view.findViewById<android.widget.FrameLayout>(R.id.heroBanner) ?: return@launch
             val ctx = requireContext()
             val dp = ctx.resources.displayMetrics.density
