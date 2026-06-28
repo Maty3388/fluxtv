@@ -10,8 +10,8 @@ android {
         applicationId 'com.fluxtv.app'
         minSdk 21
         targetSdk 34
-        versionCode 84
-        versionName "2.4.3"
+        versionCode 85
+        versionName "2.4.4"
     }
 
     signingConfigs {
@@ -59,3 +59,4 @@ dependencies {
     implementation 'com.google.firebase:firebase-messaging:24.0.0'
     implementation platform('com.google.firebase:firebase-bom:33.1.0')
 }
+
