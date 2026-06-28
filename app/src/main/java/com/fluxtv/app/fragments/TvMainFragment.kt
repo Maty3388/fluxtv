@@ -397,7 +397,7 @@ class ChannelCardAdapter(
             isFocusable = true; isFocusableInTouchMode = false
             background = GradientDrawable().apply {
                 cornerRadius = 12*dp
-                setColor(0xFF0A1020.toInt())
+                setColor(0x220A1020)
                 setStroke(1, 0xFF0D1A2A.toInt())
             }
             elevation = 4*dp
@@ -491,7 +491,7 @@ class ChannelCardAdapter(
         // Background con color de categoría oscuro
         card.background = GradientDrawable().apply {
             cornerRadius = 12*dp
-            setColor(0xFF0A1020.toInt())
+            setColor(0x220A1020)
             setStroke(1, androidx.core.graphics.ColorUtils.setAlphaComponent(catColor, 40))
         }
 
