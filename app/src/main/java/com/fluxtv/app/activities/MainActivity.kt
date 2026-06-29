@@ -272,7 +272,7 @@ class MainActivity : AppCompatActivity() {
         fun highlightSidebar(activeId: Int) {
             val ids = listOf(R.id.btnMiCuenta, R.id.btnTv, R.id.btnPeliculas, R.id.btnSeries, R.id.btnAdultos, R.id.btnBuscar, R.id.btnFavoritos)
             ids.forEach { id ->
-                val v = findViewById<android.widget.LinearLayout>(id) ?: return@forEach
+                val v = findViewById<android.widget.FrameLayout>(id) ?: return@forEach
                 val active = id == activeId
                 // Fondo con borde cyan si activo
                 val bg = android.graphics.drawable.GradientDrawable().apply {
