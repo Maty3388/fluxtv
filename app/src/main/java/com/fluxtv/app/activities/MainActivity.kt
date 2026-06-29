@@ -289,10 +289,10 @@ class MainActivity : AppCompatActivity() {
         // Focus listeners para highlight con D-pad
         val sidebarBtns = listOf(R.id.btnMiCuenta, R.id.btnTv, R.id.btnPeliculas, R.id.btnSeries, R.id.btnAdultos, R.id.btnBuscar, R.id.btnFavoritos)
         sidebarBtns.forEach { id ->
-            findViewById<android.widget.LinearLayout>(id)?.setOnFocusChangeListener { _, focused ->
+            findViewById<android.widget.FrameLayout>(id)?.setOnFocusChangeListener { _, focused ->
                 if (focused) highlightSidebar(id)
             }
-            findViewById<android.widget.LinearLayout>(id)?.setOnKeyListener { _, keyCode, event ->
+            findViewById<android.widget.FrameLayout>(id)?.setOnKeyListener { _, keyCode, event ->
                 if (event.action == android.view.KeyEvent.ACTION_DOWN && keyCode == android.view.KeyEvent.KEYCODE_DPAD_RIGHT) {
                     val rv = tvFragment?.view?.findViewById<androidx.recyclerview.widget.RecyclerView>(R.id.rvCategories)
                     rv?.requestFocus() ?: findViewById<android.widget.FrameLayout>(R.id.mainContainer)?.requestFocus()
