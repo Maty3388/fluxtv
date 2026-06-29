@@ -1,60 +1,57 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent" android:layout_height="match_parent"
-    android:background="@color/background" android:orientation="horizontal">
+    android:background="@color/background" android:orientation="vertical"
+    android:gravity="center">
 
-    <LinearLayout android:layout_width="0dp" android:layout_height="match_parent"
-        android:layout_weight="1" android:gravity="center" android:orientation="vertical">
+    <!-- Logo y título -->
+    <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content"
+        android:orientation="vertical" android:gravity="center"
+        android:layout_marginBottom="48dp">
         <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
-            android:text="Z" android:textColor="@color/primary"
-            android:textSize="96sp" android:textStyle="bold"/>
+            android:text="FLUX" android:textColor="@color/primary"
+            android:textSize="48sp" android:textStyle="bold" android:letterSpacing="0.1"/>
         <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
-            android:text="FLUX TV" android:textColor="@color/text_primary"
-            android:textSize="28sp" android:textStyle="bold"/>
+            android:text="TV" android:textColor="#F5A623"
+            android:textSize="48sp" android:textStyle="bold" android:letterSpacing="0.1"
+            android:layout_marginTop="-12dp"/>
         <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
             android:text="Tu universo de entretenimiento" android:textColor="@color/text_hint"
-            android:textSize="14sp" android:layout_marginTop="8dp"/>
+            android:textSize="13sp" android:layout_marginTop="8dp"/>
     </LinearLayout>
 
-    <View android:layout_width="1dp" android:layout_height="match_parent"
-        android:background="@color/border"/>
-
-    <LinearLayout android:layout_width="0dp" android:layout_height="match_parent"
-        android:layout_weight="1" android:gravity="center" android:orientation="vertical"
-        android:padding="48dp">
-
-        <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
-            android:text="Iniciar sesión" android:textColor="@color/text_primary"
-            android:textSize="24sp" android:textStyle="bold" android:layout_marginBottom="32dp"/>
+    <!-- Formulario -->
+    <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content"
+        android:orientation="vertical" android:paddingHorizontal="32dp">
 
         <EditText android:id="@+id/etEmail"
             android:layout_width="match_parent" android:layout_height="52dp"
             android:hint="Correo electrónico" android:textColor="@color/text_primary"
-            android:textColorHint="@color/text_hint" android:textSize="16sp"
+            android:textColorHint="@color/text_hint" android:textSize="15sp"
             android:background="@color/surface" android:paddingHorizontal="16dp"
-            android:inputType="textEmailAddress" android:layout_marginBottom="16dp"/>
+            android:inputType="textEmailAddress" android:layout_marginBottom="12dp"/>
 
         <EditText android:id="@+id/etPassword"
             android:layout_width="match_parent" android:layout_height="52dp"
             android:hint="Contraseña" android:textColor="@color/text_primary"
-            android:textColorHint="@color/text_hint" android:textSize="16sp"
+            android:textColorHint="@color/text_hint" android:textSize="15sp"
             android:background="@color/surface" android:paddingHorizontal="16dp"
-            android:inputType="textPassword" android:layout_marginBottom="24dp"/>
+            android:inputType="textPassword" android:layout_marginBottom="8dp"/>
 
         <TextView android:id="@+id/tvError"
             android:layout_width="wrap_content" android:layout_height="wrap_content"
-            android:textColor="@color/error" android:textSize="13sp"
-            android:layout_marginBottom="16dp" android:visibility="gone"/>
+            android:textColor="@color/error" android:textSize="12sp"
+            android:layout_marginBottom="12dp" android:visibility="gone"/>
 
         <Button android:id="@+id/btnLogin"
             android:layout_width="match_parent" android:layout_height="52dp"
             android:text="INGRESAR" android:textColor="@color/background"
-            android:textStyle="bold" android:backgroundTint="@color/primary"
-            android:focusable="true"/>
+            android:textStyle="bold" android:backgroundTint="@color/primary"/>
 
         <ProgressBar android:id="@+id/progressBar"
             android:layout_width="40dp" android:layout_height="40dp"
-            android:layout_marginTop="16dp" android:visibility="gone"
-            android:indeterminateTint="@color/primary"/>
+            android:layout_gravity="center" android:layout_marginTop="16dp"
+            android:visibility="gone" android:indeterminateTint="@color/primary"/>
     </LinearLayout>
+
 </LinearLayout>
