@@ -19,7 +19,7 @@
 
         <activity android:name=".activities.SplashActivity"
             android:exported="true"
-            android:screenOrientation="landscape"
+            android:screenOrientation="unspecified"
             android:theme="@style/SplashTheme">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN"/>
@@ -30,29 +30,29 @@
 
         <activity android:name=".activities.LoginActivity"
             android:exported="false"
-            android:screenOrientation="landscape"/>
+            android:screenOrientation="unspecified"/>
 
         <activity android:name=".activities.SelectProfileActivity"
             android:exported="false"
-            android:screenOrientation="landscape"/>
+            android:screenOrientation="unspecified"/>
 
         <activity android:name=".activities.MainActivity"
             android:exported="false"
-            android:screenOrientation="landscape"/>
+            android:screenOrientation="unspecified"/>
 
         <activity android:name=".activities.PlayerActivity"
             android:exported="false"
-            android:screenOrientation="landscape"
+            android:screenOrientation="unspecified"
             android:configChanges="keyboard|keyboardHidden|navigation"/>
 
-        <activity android:name=".activities.HistorialActivity" android:exported="false" android:screenOrientation="landscape"/>
-        <activity android:name=".activities.MisListasActivity" android:exported="false" android:screenOrientation="landscape"/>
-        <activity android:name=".activities.DetailActivity" android:exported="false" android:screenOrientation="landscape"/>
-        <activity android:name=".activities.AccountActivity" android:exported="false" android:screenOrientation="landscape"/>
-        <activity android:name=".activities.VodActivity" android:exported="false" android:screenOrientation="landscape"/>
+        <activity android:name=".activities.HistorialActivity" android:exported="false" android:screenOrientation="unspecified"/>
+        <activity android:name=".activities.MisListasActivity" android:exported="false" android:screenOrientation="unspecified"/>
+        <activity android:name=".activities.DetailActivity" android:exported="false" android:screenOrientation="unspecified"/>
+        <activity android:name=".activities.AccountActivity" android:exported="false" android:screenOrientation="unspecified"/>
+        <activity android:name=".activities.VodActivity" android:exported="false" android:screenOrientation="unspecified"/>
         <activity android:name=".activities.SearchActivity"
             android:exported="false"
-            android:screenOrientation="landscape"/>
+            android:screenOrientation="unspecified"/>
 
         <service android:name=".services.FluxMessagingService"
             android:exported="false">
