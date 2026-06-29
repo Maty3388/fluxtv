@@ -265,10 +265,10 @@ class MainActivity : AppCompatActivity() {
 
         tvFragment = TvMainFragment()
         supportFragmentManager.beginTransaction()
-        tvFragment!!.onChannelsLoaded = { runOnUiThread { findViewById<com.facebook.shimmer.ShimmerFrameLayout>(R.id.shimmerLayout)?.stopShimmer(); findViewById<com.facebook.shimmer.ShimmerFrameLayout>(R.id.shimmerLayout)?.visibility = android.view.View.GONE } }
             .replace(R.id.mainContainer, tvFragment!!)
             .commit()
 
+        tvFragment!!.onChannelsLoaded = { runOnUiThread { findViewById<com.facebook.shimmer.ShimmerFrameLayout>(R.id.shimmerLayout)?.stopShimmer(); findViewById<com.facebook.shimmer.ShimmerFrameLayout>(R.id.shimmerLayout)?.visibility = android.view.View.GONE } }
         // Botones sidebar TV
         fun highlightSidebar(activeId: Int) {
             val ids = listOf(R.id.btnMiCuenta, R.id.btnTv, R.id.btnPeliculas, R.id.btnSeries, R.id.btnAdultos, R.id.btnBuscar, R.id.btnFavoritos)
