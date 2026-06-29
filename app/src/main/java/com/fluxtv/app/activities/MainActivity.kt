@@ -265,6 +265,7 @@ class MainActivity : AppCompatActivity() {
 
         tvFragment = TvMainFragment()
         supportFragmentManager.beginTransaction()
+        tvFragment!!.onChannelsLoaded = { runOnUiThread { findViewById<com.facebook.shimmer.ShimmerFrameLayout>(R.id.shimmerLayout)?.stopShimmer(); findViewById<com.facebook.shimmer.ShimmerFrameLayout>(R.id.shimmerLayout)?.visibility = android.view.View.GONE } }
             .replace(R.id.mainContainer, tvFragment!!)
             .commit()
 
