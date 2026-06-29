@@ -333,14 +333,16 @@ class ChannelCardAdapter(
             card.background = GradientDrawable().apply {
                 cornerRadius = 12*dp
                 setColor(if (focused) 0xFF1A2540.toInt() else 0xFF111827.toInt())
-                setStroke((if (focused) 2 else 1)*dp.toInt(), if (focused) catColor else 0xFF0D1A2A.toInt())
+                setStroke((if (focused) 4 else 1)*dp.toInt(), if (focused) catColor else 0xFF0D1A2A.toInt())
             }
-            card.elevation = if (focused) 12*dp else 4*dp
-            card.findViewWithTag<View>("overlay")?.setBackgroundColor(if (focused) 0x22000000 else 0x00000000)
-            card.findViewWithTag<TextView>("play")?.animate()?.alpha(if (focused) 1f else 0f)?.setDuration(150)?.start()
+            card.elevation = if (focused) 20*dp else 4*dp
+            card.findViewWithTag<View>("overlay")?.setBackgroundColor(if (focused) 0x44000000 else 0x00000000)
+            card.findViewWithTag<TextView>("play")?.animate()?.alpha(if (focused) 1f else 0f)?.setDuration(120)?.start()
             card.findViewWithTag<TextView>("num")?.setTextColor(if (focused) catColor else 0xFF4A5568.toInt())
-            if (focused) card.animate().scaleX(1.04f).scaleY(1.04f).setDuration(150).start()
-            else card.animate().scaleX(1f).scaleY(1f).setDuration(150).start()
+            card.findViewWithTag<TextView>("name")?.setTextColor(if (focused) catColor else android.graphics.Color.WHITE)
+            card.findViewWithTag<LinearLayout>("infobar")?.setBackgroundColor(if (focused) 0xFF1A2A3A.toInt() else 0xFF111827.toInt())
+            val scale = if (focused) 1.08f else 1f
+            card.animate().scaleX(scale).scaleY(scale).setDuration(150).start()
         }
     }
 
