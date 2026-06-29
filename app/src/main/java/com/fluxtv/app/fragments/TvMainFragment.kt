@@ -268,7 +268,7 @@ class ChannelCardAdapter(
             layoutParams = RecyclerView.LayoutParams(cardW, cardH).apply { marginEnd = (10*dp).toInt() }
             isFocusable = true; isFocusableInTouchMode = false
             background = GradientDrawable().apply { cornerRadius = 12*dp; setColor(0xFF111827.toInt()); setStroke(1, 0xFF0D1A2A.toInt()) }
-            elevation = 4*dp; clipToOutline = true
+            elevation = 4*dp; // clipToOutline = true
         }
 
         val thumb = FrameLayout(ctx).apply {
