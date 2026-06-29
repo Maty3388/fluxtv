@@ -60,7 +60,7 @@ class SelectProfileActivity : AppCompatActivity() {
                 gravity = android.view.Gravity.CENTER
                 setPadding((24*dp).toInt(), (24*dp).toInt(), (24*dp).toInt(), (24*dp).toInt())
                 isFocusable = true; isFocusableInTouchMode = true
-                layoutParams = LinearLayout.LayoutParams((160*dp).toInt(), LinearLayout.LayoutParams.WRAP_CONTENT).apply {
+                layoutParams = LinearLayout.LayoutParams((120*dp).toInt(), LinearLayout.LayoutParams.WRAP_CONTENT).apply {
                     marginEnd = (24*dp).toInt()
                 }
                 setBackgroundColor(Color.parseColor("#060E1A"))
