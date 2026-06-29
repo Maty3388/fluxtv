@@ -5,7 +5,6 @@ import android.graphics.Color
 import android.graphics.Typeface
 import android.graphics.drawable.GradientDrawable
 import android.os.Bundle
-import com.bumptech.glide.Glide
 import android.text.TextUtils
 import android.view.*
 import android.widget.*
