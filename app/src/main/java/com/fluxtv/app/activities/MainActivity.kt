@@ -38,7 +38,7 @@ class MainActivity : AppCompatActivity() {
             setupTV()
             return
         }
-        requestedOrientation = android.content.pm.ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE
+        requestedOrientation = android.content.pm.ActivityInfo.SCREEN_ORIENTATION_PORTRAIT
         setContentView(R.layout.activity_main_mobile)
 
         // Setup info usuario
