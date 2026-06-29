@@ -5,6 +5,7 @@ import android.graphics.Color
 import android.graphics.Typeface
 import android.graphics.drawable.GradientDrawable
 import android.os.Bundle
+import com.bumptech.glide.Glide
 import android.text.TextUtils
 import android.view.*
 import android.widget.*
@@ -325,7 +326,7 @@ class ChannelCardAdapter(
 
         val logo = card.findViewWithTag<android.widget.ImageView>("logo")
         if (logo != null && !ch.logoUrl.isNullOrBlank()) {
-            logo.setImageURI(android.net.Uri.parse(ch.logoUrl))
+            Glide.with(ctx).load(ch.logoUrl).into(logo)
         } else { logo?.setImageDrawable(null) }
 
         card.setOnClickListener { onClick(ch, channels) }
