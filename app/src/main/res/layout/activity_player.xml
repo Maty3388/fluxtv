@@ -68,22 +68,30 @@
     <!-- Controles al presionar OK -->
     <LinearLayout android:id="@+id/layoutControls"
         android:layout_width="match_parent" android:layout_height="wrap_content"
-        android:layout_gravity="bottom" android:background="#CC000000"
-        android:orientation="horizontal" android:padding="16dp"
+        android:layout_gravity="bottom" android:background="@drawable/bg_player_controls"
+        android:orientation="horizontal" android:padding="20dp"
         android:gravity="center_vertical" android:visibility="gone">
 
-        <ImageView android:id="@+id/ivControlLogo"
-            android:layout_width="52dp" android:layout_height="52dp"
-            android:scaleType="centerInside" android:layout_marginEnd="16dp"/>
+        <FrameLayout
+            android:layout_width="60dp" android:layout_height="60dp"
+            android:layout_marginEnd="16dp"
+            android:background="@drawable/bg_player_logo"
+            android:elevation="8dp">
+            <ImageView android:id="@+id/ivControlLogo"
+                android:layout_width="44dp" android:layout_height="44dp"
+                android:layout_gravity="center"
+                android:scaleType="centerInside"/>
+        </FrameLayout>
 
         <LinearLayout android:layout_width="0dp" android:layout_height="wrap_content"
             android:layout_weight="1" android:orientation="vertical">
             <TextView android:id="@+id/tvControlName"
                 android:layout_width="wrap_content" android:layout_height="wrap_content"
-                android:textColor="#FFFFFF" android:textSize="18sp" android:textStyle="bold"/>
+                android:textColor="#FFFFFF" android:textSize="19sp" android:textStyle="bold"/>
             <TextView android:id="@+id/tvControlCategory"
                 android:layout_width="wrap_content" android:layout_height="wrap_content"
-                android:textColor="#A855F7" android:textSize="13sp" android:layout_marginTop="2dp"/>
+                android:textColor="#00D4FF" android:textSize="12sp" android:textStyle="bold"
+                android:letterSpacing="0.05" android:layout_marginTop="4dp"/>
         </LinearLayout>
 
         <LinearLayout android:layout_width="wrap_content" android:layout_height="wrap_content"
