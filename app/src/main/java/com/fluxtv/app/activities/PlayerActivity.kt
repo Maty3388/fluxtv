@@ -59,6 +59,9 @@ class PlayerActivity : AppCompatActivity() {
         binding = ActivityPlayerBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
+        binding.btnZapUp.setOnClickListener { prevChannel() }
+        binding.btnZapDown.setOnClickListener { nextChannel() }
+
         @Suppress("UNCHECKED_CAST")
         channels = (intent.getSerializableExtra(EXTRA_CHANNELS) as? ArrayList<Channel>) ?: arrayListOf()
         idx = intent.getIntExtra(EXTRA_INDEX, 0)
