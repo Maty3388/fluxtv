@@ -23,6 +23,7 @@ class TvMainFragment : Fragment() {
 
     private val scope = CoroutineScope(Dispatchers.Main)
     private var allChannels = listOf<Channel>()
+    private var epgNow = mapOf<String, String>()
     var onChannelsLoaded: (() -> Unit)? = null
 
     private lateinit var rvCategories: RecyclerView
@@ -160,6 +161,10 @@ class TvMainFragment : Fragment() {
             if (cached.isNotEmpty()) { allChannels = cached; buildRows(allChannels) }
             val fresh = withContext(Dispatchers.IO) { try { ApiService.getChannels() } catch (_: Exception) { emptyList() } }
             if (fresh.isNotEmpty()) { allChannels = fresh; buildRows(allChannels); onChannelsLoaded?.invoke() }
+
+            // EPG es "nice to have": se carga aparte y no bloquea ni rompe nada si falla
+            val epg = withContext(Dispatchers.IO) { try { ApiService.getEpgNow() } catch (_: Exception) { emptyMap() } }
+            if (epg.isNotEmpty()) { epgNow = epg; buildRows(allChannels) }
         }
     }
 
@@ -183,7 +188,7 @@ class TvMainFragment : Fragment() {
         val isAdultFilter = channels.isNotEmpty() && channels.all { it.category == "ADULTOS" }
         val grouped = if (isAdultFilter) channels.groupBy { it.category } else channels.filter { it.category != "ADULTOS" }.groupBy { it.category }
         val sorted = (catOrder.mapNotNull { grouped[it]?.let { chs -> it to chs } } + grouped.filter { it.key !in catOrder }.map { it.key to it.value }).filter { !it.first.contains("MUNDIAL", ignoreCase = true) }
-        categoryAdapter.updateData(sorted)
+        categoryAdapter.updateData(sorted, epgNow)
     }
 
     override fun onDestroy() { super.onDestroy(); scope.cancel() }
@@ -195,7 +200,11 @@ class CategoryRowAdapter(
     private val onChannelClick: (Channel, List<Channel>) -> Unit
 ) : RecyclerView.Adapter<CategoryRowAdapter.RowVH>() {
 
-    fun updateData(newRows: List<Pair<String, List<Channel>>>) { rows = newRows; notifyDataSetChanged() }
+    private var epgNow: Map<String, String> = emptyMap()
+
+    fun updateData(newRows: List<Pair<String, List<Channel>>>, epg: Map<String, String> = epgNow) {
+        rows = newRows; epgNow = epg; notifyDataSetChanged()
+    }
     override fun getItemCount() = rows.size
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RowVH {
@@ -243,7 +252,7 @@ class CategoryRowAdapter(
             clipToPadding = false
             setPadding((16*dp).toInt(), 0, (16*dp).toInt(), 0)
             overScrollMode = View.OVER_SCROLL_NEVER
-            adapter = ChannelCardAdapter(channels, color, onChannelClick)
+            adapter = ChannelCardAdapter(channels, color, epgNow, onChannelClick)
         })
     }
 
@@ -253,6 +262,7 @@ class CategoryRowAdapter(
 class ChannelCardAdapter(
     private val channels: List<Channel>,
     private val catColor: Int,
+    private val epgNow: Map<String, String> = emptyMap(),
     private val onClick: (Channel, List<Channel>) -> Unit
 ) : RecyclerView.Adapter<ChannelCardAdapter.CardVH>() {
 
@@ -261,8 +271,8 @@ class ChannelCardAdapter(
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): CardVH {
         val ctx = parent.context
         val dp = ctx.resources.displayMetrics.density
-        val cardW = (126*dp).toInt(); val cardH = (116*dp).toInt()
-        val thumbH = (76*dp).toInt(); val infoH = (40*dp).toInt()
+        val cardW = (126*dp).toInt(); val cardH = (130*dp).toInt()
+        val thumbH = (76*dp).toInt(); val infoH = (54*dp).toInt()
 
         val card = FrameLayout(ctx).apply {
             layoutParams = RecyclerView.LayoutParams(cardW, cardH).apply { marginEnd = (10*dp).toInt() }
@@ -298,6 +308,11 @@ class ChannelCardAdapter(
         }
         infoBar.addView(TextView(ctx).apply { textSize = 9f; setTextColor(0xFF4A5568.toInt()); typeface = Typeface.MONOSPACE; tag = "num" })
         infoBar.addView(TextView(ctx).apply { textSize = 10f; setTextColor(Color.WHITE); typeface = Typeface.DEFAULT_BOLD; maxLines = 1; ellipsize = TextUtils.TruncateAt.END; tag = "name" })
+        infoBar.addView(TextView(ctx).apply {
+            textSize = 8f; setTextColor(0xFF8A95B0.toInt()); maxLines = 1; ellipsize = TextUtils.TruncateAt.END
+            tag = "program"; visibility = View.GONE
+            layoutParams = LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT).apply { topMargin = (1*dp).toInt() }
+        })
 
         val liveRow = LinearLayout(ctx).apply {
             orientation = LinearLayout.HORIZONTAL; gravity = Gravity.CENTER_VERTICAL
@@ -322,6 +337,15 @@ class ChannelCardAdapter(
 
         card.findViewWithTag<TextView>("num")?.text = "CH ${ch.number}"
         card.findViewWithTag<TextView>("name")?.text = ch.name
+
+        val programNow = epgNow[ch.id]
+        val programView = card.findViewWithTag<TextView>("program")
+        if (!programNow.isNullOrBlank()) {
+            programView?.text = programNow
+            programView?.visibility = View.VISIBLE
+        } else {
+            programView?.visibility = View.GONE
+        }
 
         val logo = card.findViewWithTag<android.widget.ImageView>("logo")
         if (logo != null && !ch.logoUrl.isNullOrBlank()) {

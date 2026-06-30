@@ -81,6 +81,24 @@ object ApiService {
         } catch (_: Exception) { getCachedChannels() }
     }
 
+    // EPG: devuelve un mapa channelId -> nombre del programa que está ahora en aire.
+    // Si falla o no hay datos para un canal, simplemente no aparece en el mapa.
+    fun getEpgNow(): Map<String, String> {
+        return try {
+            val res = client.newCall(Request.Builder().url("$BASE/epg-now")
+                .header("Authorization", "Bearer $token").build()).execute()
+            val bodyStr = res.body?.string() ?: return emptyMap()
+            val json = JSONObject(bodyStr)
+            val nowObj = json.optJSONObject("now") ?: return emptyMap()
+            val map = mutableMapOf<String, String>()
+            nowObj.keys().forEach { channelId ->
+                val title = nowObj.optJSONObject(channelId)?.optString("title")
+                if (!title.isNullOrBlank()) map[channelId] = title
+            }
+            map
+        } catch (_: Exception) { emptyMap() }
+    }
+
     fun getFavorites(): List<Channel> {
         return try {
             val res = client.newCall(Request.Builder().url("$BASE/favorites")
