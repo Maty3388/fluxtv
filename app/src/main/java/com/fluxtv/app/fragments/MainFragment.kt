@@ -145,6 +145,7 @@ class MobileCategoryRowAdapter(
 ) : RecyclerView.Adapter<MobileCategoryRowAdapter.RowVH>() {
 
     fun updateData(newRows: List<Pair<String, List<Channel>>>) {
+        if (rows == newRows) return
         rows = newRows
         notifyDataSetChanged()
     }
