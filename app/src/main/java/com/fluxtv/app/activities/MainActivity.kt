@@ -52,7 +52,7 @@ class MainActivity : AppCompatActivity() {
 
         // Setup fragment
         mainFragment = MainFragment()
-        mainFragment.onChannelsLoaded = { buildCategories() }
+        mainFragment.onChannelsLoaded = { buildCategories(); findViewById<com.facebook.shimmer.ShimmerFrameLayout>(R.id.shimmerLayout)?.stopShimmer(); findViewById<com.facebook.shimmer.ShimmerFrameLayout>(R.id.shimmerLayout)?.visibility = android.view.View.GONE }
         supportFragmentManager.beginTransaction()
             .replace(R.id.mainContainer, mainFragment)
             .commit()
