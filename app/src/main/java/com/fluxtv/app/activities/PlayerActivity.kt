@@ -59,8 +59,13 @@ class PlayerActivity : AppCompatActivity() {
         binding = ActivityPlayerBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
+        if (com.fluxtv.app.utils.DeviceUtils.isTV(this)) {
+            binding.btnZapUp.visibility = android.view.View.GONE
+            binding.btnZapDown.visibility = android.view.View.GONE
+        } else {
         binding.btnZapUp.setOnClickListener { prevChannel() }
         binding.btnZapDown.setOnClickListener { nextChannel() }
+        }
 
         @Suppress("UNCHECKED_CAST")
         channels = (intent.getSerializableExtra(EXTRA_CHANNELS) as? ArrayList<Channel>) ?: arrayListOf()
