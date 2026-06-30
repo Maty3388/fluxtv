@@ -329,6 +329,21 @@ class ChannelCardAdapter(
         } else { logo?.setImageDrawable(null) }
 
         card.setOnClickListener { onClick(ch, channels) }
+
+        // Evita que el foco "se escape" a otra fila al llegar al límite horizontal:
+        // en el primer canal, DPAD_LEFT no hace nada; en el último, DPAD_RIGHT no hace nada.
+        card.setOnKeyListener { _, keyCode, event ->
+            if (event.action == android.view.KeyEvent.ACTION_DOWN) {
+                if (keyCode == android.view.KeyEvent.KEYCODE_DPAD_LEFT && position == 0) {
+                    return@setOnKeyListener true
+                }
+                if (keyCode == android.view.KeyEvent.KEYCODE_DPAD_RIGHT && position == channels.size - 1) {
+                    return@setOnKeyListener true
+                }
+            }
+            false
+        }
+
         card.setOnFocusChangeListener { _, focused ->
             card.background = GradientDrawable().apply {
                 cornerRadius = 12*dp
