@@ -146,8 +146,15 @@ class MobileCategoryRowAdapter(
 
     fun updateData(newRows: List<Pair<String, List<Channel>>>) {
         if (rows == newRows) return
+        val oldSize = rows.size
         rows = newRows
-        notifyDataSetChanged()
+        // Si la cantidad de filas no cambió, asumimos mismas categorías
+        // y solo refrescamos contenido sin parpadeo total
+        if (oldSize == newRows.size && oldSize > 0) {
+            notifyItemRangeChanged(0, newRows.size)
+        } else {
+            notifyDataSetChanged()
+        }
     }
 
     override fun getItemCount() = rows.size
