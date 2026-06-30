@@ -65,6 +65,40 @@
         </LinearLayout>
     </LinearLayout>
 
+    <!-- Estado de error -->
+    <LinearLayout android:id="@+id/layoutError"
+        android:layout_width="match_parent" android:layout_height="match_parent"
+        android:background="#0A0E1A" android:orientation="vertical"
+        android:gravity="center" android:padding="32dp" android:visibility="gone">
+
+        <FrameLayout
+            android:layout_width="56dp" android:layout_height="56dp"
+            android:background="@drawable/bg_error_icon"
+            android:layout_marginBottom="16dp">
+            <TextView
+                android:layout_width="wrap_content" android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:text="!" android:textSize="26sp" android:textStyle="bold"
+                android:textColor="#F43F5E"/>
+        </FrameLayout>
+
+        <TextView
+            android:layout_width="wrap_content" android:layout_height="wrap_content"
+            android:text="No se pudo cargar el canal" android:textColor="#FFFFFF"
+            android:textSize="16sp" android:textStyle="bold" android:layout_marginBottom="6dp"/>
+
+        <TextView android:id="@+id/tvErrorChannel"
+            android:layout_width="wrap_content" android:layout_height="wrap_content"
+            android:textColor="#6B7A8F" android:textSize="13sp" android:gravity="center"
+            android:layout_marginBottom="20dp"/>
+
+        <Button android:id="@+id/btnRetryError"
+            android:layout_width="wrap_content" android:layout_height="44dp"
+            android:minWidth="160dp"
+            android:text="REINTENTAR" android:textColor="#000000" android:textStyle="bold"
+            android:backgroundTint="#00D4FF" android:focusable="true"/>
+    </LinearLayout>
+
     <!-- Controles al presionar OK -->
     <LinearLayout android:id="@+id/layoutControls"
         android:layout_width="match_parent" android:layout_height="wrap_content"

@@ -116,7 +116,7 @@ class PlayerActivity : AppCompatActivity() {
         player?.addListener(object : Player.Listener {
             override fun onPlaybackStateChanged(state: Int) {
                 when (state) {
-                    Player.STATE_READY -> { showLoading(false); retries = 0; urlIdx = 0; loadTimer?.cancel(); isRetrying = false; wasReady = true }
+                    Player.STATE_READY -> { showLoading(false); retries = 0; urlIdx = 0; loadTimer?.cancel(); isRetrying = false; wasReady = true; binding.layoutError.visibility = android.view.View.GONE }
                     Player.STATE_BUFFERING -> { showLoading(true); if (retries == 0 && !wasReady) startLoadTimer() }
                     Player.STATE_ENDED -> nextChannel()
                     else -> {}
@@ -148,11 +148,20 @@ class PlayerActivity : AppCompatActivity() {
                             loadChannel(idx)
                         } else {
                             retries = 0; showLoading(false)
+                            binding.tvErrorChannel.text = channels.getOrNull(idx)?.name ?: ""
+                            binding.layoutError.visibility = android.view.View.VISIBLE; binding.layoutControls.visibility = android.view.View.GONE
+                            binding.btnRetryError.requestFocus()
                         }
                     }
                 }
             }
         })
+
+        binding.btnRetryError.setOnClickListener {
+            binding.layoutError.visibility = android.view.View.GONE
+            retries = 0; urlIdx = 0
+            loadChannel(idx)
+        }
     }
 
 
