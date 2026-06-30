@@ -7,6 +7,8 @@ import com.fluxtv.app.R
 import com.fluxtv.app.databinding.ActivityVodBinding
 import com.facebook.shimmer.ShimmerFrameLayout
 import com.fluxtv.app.fragments.VodFragment
+import com.fluxtv.app.fragments.VodMobileFragment
+import com.fluxtv.app.utils.DeviceUtils
 
 class VodActivity : AppCompatActivity() {
     private lateinit var binding: ActivityVodBinding
@@ -26,13 +28,11 @@ class VodActivity : AppCompatActivity() {
         binding.tvTitle.text = if (type == TYPE_MOVIES) "🎬 Películas" else "📺 Series"
         binding.btnBack.setOnClickListener { finish() }
 
-        val fragment = VodFragment()
-        fragment.onLoaded = {
-            binding.shimmerVod.stopShimmer()
-            binding.shimmerVod.visibility = android.view.View.GONE
-        }
         binding.shimmerVod.startShimmer()
-        fragment.onCategoriesLoaded = { categories ->
+
+        val isTV = DeviceUtils.isTV(this)
+
+        val onCategoriesLoaded: (List<Pair<String, Int>>) -> Unit = { categories ->
             runOnUiThread {
                 binding.filterContainer.removeAllViews()
                 categories.forEach { (cat, rowIndex) ->
@@ -49,7 +49,6 @@ class VodActivity : AppCompatActivity() {
                         )
                         params.marginEnd = 8
                         layoutParams = params
-                        setOnClickListener { fragment.setSelectedPosition(rowIndex, true) }
                         setOnFocusChangeListener { v, focused ->
                             setTextColor(if (focused) getColor(R.color.background) else getColor(R.color.text_secondary))
                             setBackgroundColor(if (focused) getColor(R.color.primary) else getColor(R.color.surface2))
@@ -60,10 +59,48 @@ class VodActivity : AppCompatActivity() {
             }
         }
 
-        supportFragmentManager.beginTransaction()
-            .replace(R.id.rvVod, fragment)
-            .runOnCommit { fragment.load(type) }
-            .commit()
+        if (isTV) {
+            val fragment = VodFragment()
+            fragment.onLoaded = {
+                binding.shimmerVod.stopShimmer()
+                binding.shimmerVod.visibility = android.view.View.GONE
+            }
+            fragment.onCategoriesLoaded = { categories ->
+                onCategoriesLoaded(categories)
+                // En TV los botones de filtro saltan de posición dentro del fragment leanback
+                binding.filterContainer.post {
+                    for (i in 0 until binding.filterContainer.childCount) {
+                        val btn = binding.filterContainer.getChildAt(i) as? android.widget.Button ?: continue
+                        val rowIndex = categories[i].second
+                        btn.setOnClickListener { fragment.setSelectedPosition(rowIndex, true) }
+                    }
+                }
+            }
+            supportFragmentManager.beginTransaction()
+                .replace(R.id.rvVod, fragment)
+                .runOnCommit { fragment.load(type) }
+                .commit()
+        } else {
+            val fragment = VodMobileFragment()
+            fragment.onLoaded = {
+                binding.shimmerVod.stopShimmer()
+                binding.shimmerVod.visibility = android.view.View.GONE
+            }
+            fragment.onCategoriesLoaded = { categories ->
+                onCategoriesLoaded(categories)
+                binding.filterContainer.post {
+                    for (i in 0 until binding.filterContainer.childCount) {
+                        val btn = binding.filterContainer.getChildAt(i) as? android.widget.Button ?: continue
+                        val rowIndex = categories[i].second
+                        btn.setOnClickListener { fragment.setSelectedPosition(rowIndex, true) }
+                    }
+                }
+            }
+            supportFragmentManager.beginTransaction()
+                .replace(R.id.rvVod, fragment)
+                .runOnCommit { fragment.load(type) }
+                .commit()
+        }
     }
 
     override fun onKeyDown(keyCode: Int, event: KeyEvent?): Boolean {
@@ -71,3 +108,4 @@ class VodActivity : AppCompatActivity() {
         return super.onKeyDown(keyCode, event)
     }
 }
+
