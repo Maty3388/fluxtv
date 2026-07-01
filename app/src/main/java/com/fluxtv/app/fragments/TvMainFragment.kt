@@ -349,7 +349,7 @@ class ChannelCardAdapter(
 
         val logo = card.findViewWithTag<android.widget.ImageView>("logo")
         if (logo != null && !ch.logoUrl.isNullOrBlank()) {
-            Glide.with(ctx).load(ch.logoUrl).into(logo)
+            Glide.with(ctx).load(ch.logoUrl).override(144, 108).centerInside().into(logo)
         } else { logo?.setImageDrawable(null) }
 
         card.setOnClickListener { onClick(ch, channels) }
