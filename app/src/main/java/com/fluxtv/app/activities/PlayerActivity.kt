@@ -98,13 +98,13 @@ class PlayerActivity : AppCompatActivity() {
 
     private fun initPlayer() {
         val loadControl = DefaultLoadControl.Builder()
-            .setBufferDurationsMs(32000, 64000, 1000, 1000)
-            .setBackBuffer(15000, true)
+            .setBufferDurationsMs(5000, 30000, 1000, 1000)
+            .setBackBuffer(5000, true)
             .setPrioritizeTimeOverSizeThresholds(true)
             .build()
         val trackSelector = androidx.media3.exoplayer.trackselection.DefaultTrackSelector(this).apply {
             setParameters(buildUponParameters()
-                .setMaxVideoBitrate(2_000_000) // máx 2Mbps
+                .setMaxVideoBitrate(1_500_000) // máx 2Mbps
                 .setForceLowestBitrate(false)
                 .build())
         }
