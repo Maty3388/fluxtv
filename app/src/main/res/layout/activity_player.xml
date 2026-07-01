@@ -106,7 +106,7 @@
         android:layout_gravity="bottom" android:background="@drawable/bg_player_controls"
         android:orientation="horizontal" android:paddingStart="20dp" android:paddingEnd="20dp"
         android:paddingTop="48dp" android:paddingBottom="18dp"
-        android:gravity="flex_end|bottom" android:visibility="gone">
+        android:gravity="bottom" android:visibility="gone">
 
         <!-- Logo canal -->
         <FrameLayout
@@ -148,11 +148,11 @@
                 android:layout_marginBottom="8dp"/>
 
             <!-- Barra de progreso decorativa -->
-            <FrameLayout android:layout_width="match_parent" android:layout_height="3dp"
-                android:background="#1AFFFFFF">
-                <View android:layout_width="45%" android:layout_height="match_parent"
+            <LinearLayout android:layout_width="match_parent" android:layout_height="3dp"
+                android:background="#1AFFFFFF" android:weightSum="1" android:orientation="horizontal">
+                <View android:layout_width="0dp" android:layout_weight="0.45" android:layout_height="match_parent"
                     android:background="@drawable/bg_epg_progress"/>
-            </FrameLayout>
+            </LinearLayout>
 
         </LinearLayout>
 
