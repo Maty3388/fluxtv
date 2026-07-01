@@ -91,9 +91,7 @@ object ApiService {
                 .build()
             val res = epgClient.newCall(Request.Builder().url("$BASE/epg-now")
                 .header("Authorization", "Bearer $token").build()).execute()
-            val bodyStr = res.body?.string()
-            android.util.Log.d("EPG_DEBUG", "code=${res.code} body=${bodyStr?.take(300)}")
-            if (bodyStr == null) return emptyMap()
+            val bodyStr = res.body?.string() ?: return emptyMap()
             val json = JSONObject(bodyStr)
             val nowObj = json.optJSONObject("now") ?: return emptyMap()
             val map = mutableMapOf<String, String>()
@@ -101,11 +99,8 @@ object ApiService {
                 val title = nowObj.optJSONObject(channelId)?.optString("title")
                 if (!title.isNullOrBlank()) map[channelId] = title
             }
-            android.util.Log.d("EPG_DEBUG", "mapSize=${map.size}")
             map
-        } catch (e: Exception) {
-            android.util.Log.e("EPG_DEBUG", "Exception: ${e.message}")
-            emptyMap()
+        } catch (_: Exception) { emptyMap()
         }
     }
 
