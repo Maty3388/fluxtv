@@ -85,7 +85,11 @@ object ApiService {
     // Si falla o no hay datos para un canal, simplemente no aparece en el mapa.
     fun getEpgNow(): Map<String, String> {
         return try {
-            val res = client.newCall(Request.Builder().url("$BASE/epg-now")
+            val epgClient = client.newBuilder()
+                .connectTimeout(30, TimeUnit.SECONDS)
+                .readTimeout(45, TimeUnit.SECONDS)
+                .build()
+            val res = epgClient.newCall(Request.Builder().url("$BASE/epg-now")
                 .header("Authorization", "Bearer $token").build()).execute()
             val bodyStr = res.body?.string()
             android.util.Log.d("EPG_DEBUG", "code=${res.code} body=${bodyStr?.take(300)}")
