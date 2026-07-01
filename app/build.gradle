@@ -10,8 +10,8 @@ android {
         applicationId 'com.fluxtv.app'
         minSdk 21
         targetSdk 34
-        versionCode 2105
-        versionName "2.10.5"
+        versionCode 2106
+        versionName "2.10.6"
     }
 
     signingConfigs {
