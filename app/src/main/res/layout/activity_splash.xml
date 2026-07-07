@@ -1,38 +1,72 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent" android:layout_height="match_parent"
-    android:background="@color/background" android:orientation="vertical"
-    android:gravity="center">
+    android:background="#050810">
 
-    <ImageView
-        android:id="@+id/splashLetter"
-        android:layout_width="140dp" android:layout_height="140dp"
-        android:src="@drawable/ic_f_animated"
-        android:layout_marginBottom="28dp"
-        android:alpha="0"/>
+    <!-- Glow superior cyan -->
+    <View
+        android:layout_width="300dp" android:layout_height="300dp"
+        android:layout_gravity="top|center_horizontal"
+        android:layout_marginTop="-120dp"
+        android:background="@drawable/bg_splash_glow_top"/>
 
-    <TextView
-        android:id="@+id/splashTitle"
-        android:layout_width="wrap_content" android:layout_height="wrap_content"
-        android:text="FLUX TV" android:textSize="32sp" android:textStyle="bold"
-        android:textColor="@color/text_primary" android:letterSpacing="0.3"
-        android:layout_marginBottom="8dp"
-        android:alpha="0"
-        android:translationY="30dp"/>
+    <!-- Glow inferior ambar -->
+    <View
+        android:layout_width="250dp" android:layout_height="250dp"
+        android:layout_gravity="bottom|end"
+        android:layout_marginEnd="-60dp" android:layout_marginBottom="-80dp"
+        android:background="@drawable/bg_splash_glow_bottom"/>
 
-    <TextView
-        android:id="@+id/splashSubtitle"
-        android:layout_width="wrap_content" android:layout_height="wrap_content"
-        android:text="Tu entretenimiento en un solo lugar"
-        android:textSize="13sp" android:textColor="@color/text_secondary"
-        android:layout_marginBottom="64dp"
-        android:alpha="0"
-        android:translationY="20dp"/>
+    <!-- Contenido central -->
+    <LinearLayout
+        android:layout_width="match_parent" android:layout_height="match_parent"
+        android:orientation="vertical" android:gravity="center"
+        android:paddingHorizontal="40dp">
 
-    <ProgressBar
-        android:id="@+id/splashProgress"
-        android:layout_width="wrap_content" android:layout_height="wrap_content"
-        android:indeterminateTint="@color/primary"
-        android:alpha="0"/>
+        <!-- FLUX TV texto grande con gradiente simulado -->
+        <LinearLayout
+            android:id="@+id/splashLetter"
+            android:layout_width="wrap_content" android:layout_height="wrap_content"
+            android:orientation="horizontal" android:layout_marginBottom="8dp"
+            android:alpha="0">
+            <TextView
+                android:layout_width="wrap_content" android:layout_height="wrap_content"
+                android:text="FLUX" android:textSize="52sp" android:textStyle="bold"
+                android:textColor="#00D4FF" android:letterSpacing="0.05"/>
+            <TextView
+                android:layout_width="wrap_content" android:layout_height="wrap_content"
+                android:text="TV" android:textSize="52sp" android:textStyle="bold"
+                android:textColor="#F5A623" android:letterSpacing="0.05"/>
+        </LinearLayout>
 
-</LinearLayout>
+        <!-- Línea gradiente -->
+        <View
+            android:id="@+id/splashTitle"
+            android:layout_width="80dp" android:layout_height="2dp"
+            android:layout_marginBottom="14dp"
+            android:background="@drawable/bg_epg_progress"
+            android:alpha="0"/>
+
+        <!-- Tagline -->
+        <TextView
+            android:id="@+id/splashSubtitle"
+            android:layout_width="wrap_content" android:layout_height="wrap_content"
+            android:text="TU UNIVERSO DE ENTRETENIMIENTO"
+            android:textSize="10sp" android:textColor="#2A3545"
+            android:letterSpacing="0.15" android:layout_marginBottom="64dp"
+            android:alpha="0"/>
+
+        <!-- Barra de progreso lineal -->
+        <FrameLayout
+            android:id="@+id/splashProgress"
+            android:layout_width="160dp" android:layout_height="2dp"
+            android:background="#0DFFFFFF"
+            android:alpha="0">
+            <View
+                android:layout_width="0dp" android:layout_height="match_parent"
+                android:background="@drawable/bg_epg_progress"
+                android:id="@+id/splashProgressFill"/>
+        </FrameLayout>
+
+    </LinearLayout>
+</FrameLayout>
