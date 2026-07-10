@@ -276,7 +276,7 @@ class MainActivity : AppCompatActivity() {
         tvFragment!!.onChannelsLoaded = { runOnUiThread { findViewById<com.facebook.shimmer.ShimmerFrameLayout>(R.id.shimmerLayout)?.stopShimmer(); findViewById<com.facebook.shimmer.ShimmerFrameLayout>(R.id.shimmerLayout)?.visibility = android.view.View.GONE } }
         // Botones sidebar TV
         fun highlightSidebar(activeId: Int) {
-            val ids = listOf(R.id.btnMiCuenta, R.id.btnTv, R.id.btnPeliculas, R.id.btnSeries, R.id.btnAdultos, R.id.btnBuscar, R.id.btnFavoritos)
+            val ids = listOf(R.id.btnMiCuenta, R.id.btnTv, R.id.btnTv2, R.id.btnPeliculas, R.id.btnSeries, R.id.btnAdultos, R.id.btnBuscar, R.id.btnFavoritos)
             ids.forEach { id ->
                 val v = findViewById<android.widget.FrameLayout>(id) ?: return@forEach
                 val active = id == activeId
@@ -293,7 +293,7 @@ class MainActivity : AppCompatActivity() {
             }
         }
         // Focus listeners para highlight con D-pad
-        val sidebarBtns = listOf(R.id.btnMiCuenta, R.id.btnTv, R.id.btnPeliculas, R.id.btnSeries, R.id.btnAdultos, R.id.btnBuscar, R.id.btnFavoritos)
+        val sidebarBtns = listOf(R.id.btnMiCuenta, R.id.btnTv, R.id.btnTv2, R.id.btnPeliculas, R.id.btnSeries, R.id.btnAdultos, R.id.btnBuscar, R.id.btnFavoritos)
         sidebarBtns.forEach { id ->
             findViewById<android.widget.FrameLayout>(id)?.setOnFocusChangeListener { _, focused ->
                 if (focused) highlightSidebar(id)
@@ -309,7 +309,8 @@ class MainActivity : AppCompatActivity() {
         }
 
         highlightSidebar(R.id.btnTv)
-        findViewById<android.widget.FrameLayout>(R.id.btnTv)?.setOnClickListener { tvFragment?.filterCategory(null); highlightSidebar(R.id.btnTv) }
+        findViewById<android.widget.FrameLayout>(R.id.btnTv)?.setOnClickListener { tvFragment?.loadChannelsList(false); highlightSidebar(R.id.btnTv) }
+        findViewById<android.widget.FrameLayout>(R.id.btnTv2)?.setOnClickListener { tvFragment?.loadChannelsList(true); highlightSidebar(R.id.btnTv2) }
         findViewById<android.widget.FrameLayout>(R.id.btnPeliculas)?.setOnClickListener { highlightSidebar(R.id.btnPeliculas); startActivity(android.content.Intent(this, VodActivity::class.java).apply { putExtra("type", "movies") }) }
         findViewById<android.widget.FrameLayout>(R.id.btnSeries)?.setOnClickListener { highlightSidebar(R.id.btnSeries); startActivity(android.content.Intent(this, VodActivity::class.java).apply { putExtra("type", "series") }) }
         findViewById<android.widget.FrameLayout>(R.id.btnAdultos)?.setOnClickListener { highlightSidebar(R.id.btnAdultos); showPinDialog { tvFragment?.filterCategory("ADULTOS") } }

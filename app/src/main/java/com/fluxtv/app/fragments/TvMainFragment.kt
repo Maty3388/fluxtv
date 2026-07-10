@@ -155,16 +155,20 @@ class TvMainFragment : Fragment() {
         }
     }
 
-    fun loadChannels() {
+    fun loadChannels() = loadChannelsList(false)
+
+    fun loadChannelsList(useList2: Boolean) {
         scope.launch {
-            val cached = withContext(Dispatchers.IO) { try { ApiService.getCachedChannels() } catch (_: Exception) { emptyList() } }
+            val cached = withContext(Dispatchers.IO) { try { if (useList2) ApiService.getCachedChannels2() else ApiService.getCachedChannels() } catch (_: Exception) { emptyList() } }
             if (cached.isNotEmpty()) { allChannels = cached; buildRows(allChannels) }
-            val fresh = withContext(Dispatchers.IO) { try { ApiService.getChannels() } catch (_: Exception) { emptyList() } }
+            val fresh = withContext(Dispatchers.IO) { try { if (useList2) ApiService.getChannels2() else ApiService.getChannels() } catch (_: Exception) { emptyList() } }
             if (fresh.isNotEmpty()) { allChannels = fresh; buildRows(allChannels); onChannelsLoaded?.invoke() }
 
-            // EPG es "nice to have": se carga aparte y no bloquea ni rompe nada si falla
-            val epg = withContext(Dispatchers.IO) { try { ApiService.getEpgNow() } catch (_: Exception) { emptyMap() } }
-            if (epg.isNotEmpty()) { epgNow = epg; buildRows(allChannels) }
+            // EPG solo para lista 1
+            if (!useList2) {
+                val epg = withContext(Dispatchers.IO) { try { ApiService.getEpgNow() } catch (_: Exception) { emptyMap() } }
+                if (epg.isNotEmpty()) { epgNow = epg; buildRows(allChannels) }
+            }
         }
     }
 

@@ -69,6 +69,24 @@
         </FrameLayout>
 
         <FrameLayout
+            android:id="@+id/btnTv2"
+            android:layout_width="42dp"
+            android:layout_height="42dp"
+            android:layout_marginBottom="4dp"
+            android:focusable="true"
+            android:nextFocusRight="@+id/rvCategories"
+            android:background="@drawable/bg_sidebar_btn">
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:text="2"
+                android:textSize="14sp"
+                android:textStyle="bold"
+                android:textColor="#4A5568"/>
+        </FrameLayout>
+
+        <FrameLayout
             android:id="@+id/btnPeliculas"
             android:layout_width="42dp"
             android:layout_height="42dp"
