@@ -103,15 +103,17 @@ class MainFragment : Fragment() {
         buildRows(allChannels.filter { it.category in cats })
     }
 
-    fun loadChannels() {
+    fun loadChannels() = loadChannelsList(false)
+
+    fun loadChannelsList(useList2: Boolean) {
         scope.launch {
             val cached = withContext(Dispatchers.IO) {
-                try { ApiService.getCachedChannels() } catch (_: Exception) { emptyList() }
+                try { if (useList2) ApiService.getCachedChannels2() else ApiService.getCachedChannels() } catch (_: Exception) { emptyList() }
             }
             if (cached.isNotEmpty()) { allChannels = cached; buildRows(allChannels) }
 
             val fresh = withContext(Dispatchers.IO) {
-                try { ApiService.getChannels() } catch (_: Exception) { emptyList() }
+                try { if (useList2) ApiService.getChannels2() else ApiService.getChannels() } catch (_: Exception) { emptyList() }
             }
             if (fresh.isNotEmpty()) {
                 allChannels = fresh

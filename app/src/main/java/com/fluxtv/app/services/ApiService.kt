@@ -81,6 +81,23 @@ object ApiService {
         } catch (_: Exception) { getCachedChannels() }
     }
 
+    fun getChannels2(): List<Channel> {
+        return try {
+            val res = client.newCall(Request.Builder().url("$BASE/channels2")
+                .header("Authorization", "Bearer $token").build()).execute()
+            val bodyStr = res.body?.string() ?: return getCachedChannels2()
+            saveCache("channels2", bodyStr)
+            parseChannels(bodyStr)
+        } catch (_: Exception) { getCachedChannels2() }
+    }
+
+    fun getCachedChannels2(): List<Channel> {
+        return try {
+            val bodyStr = getCache("channels2") ?: return emptyList()
+            parseChannels(bodyStr)
+        } catch (_: Exception) { emptyList() }
+    }
+
     // EPG: devuelve un mapa channelId -> nombre del programa que está ahora en aire.
     // Si falla o no hay datos para un canal, simplemente no aparece en el mapa.
     fun getEpgNow(): Map<String, String> {

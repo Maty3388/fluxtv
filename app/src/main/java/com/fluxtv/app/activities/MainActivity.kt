@@ -25,8 +25,8 @@ class MainActivity : AppCompatActivity() {
     private var currentTab = 0
     private val scope = CoroutineScope(Dispatchers.Main)
 
-    // Tabs: 0=Television, 1=Películas, 2=Series
-    private val tabs = listOf("Televisión", "Películas", "Series")
+    // Tabs: 0=Television, 1=Televisión 2, 2=Películas, 3=Series
+    private val tabs = listOf("Televisión", "Televisión 2", "Películas", "Series")
     private var allCategories = listOf<String>()
     private var selectedCategory = "All"
 
@@ -111,15 +111,20 @@ class MainActivity : AppCompatActivity() {
         selectedCategory = "All"
         when (i) {
             0 -> { // Televisión
-                mainFragment.filterCategory(null)
+                mainFragment.loadChannelsList(false)
                 buildCategories()
                 findViewById<HorizontalScrollView>(R.id.categoriesScroll)?.visibility = android.view.View.VISIBLE
             }
-            1 -> { // Películas
+            1 -> { // Televisión 2
+                mainFragment.loadChannelsList(true)
+                buildCategories()
+                findViewById<HorizontalScrollView>(R.id.categoriesScroll)?.visibility = android.view.View.VISIBLE
+            }
+            2 -> { // Películas
                 startActivity(Intent(this, VodActivity::class.java).apply { putExtra("type", "movies") })
                 currentTab = 0; setupTabs()
             }
-            2 -> { // Series
+            3 -> { // Series
                 startActivity(Intent(this, VodActivity::class.java).apply { putExtra("type", "series") })
                 currentTab = 0; setupTabs()
             }
